@@ -3,8 +3,6 @@ import { createEngine } from '../src/engine';
 import { standardFilters } from '../src/filters';
 import { fixtures } from '../bench/fixtures';
 
-// A benchmark that measures the error path measures nothing useful, so keep
-// the bench fixtures honest: every one must render cleanly.
 describe('benchmark fixtures', () => {
 	const engine = createEngine({ filters: standardFilters });
 

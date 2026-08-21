@@ -1,10 +1,3 @@
-// Shared benchmark fixtures for Knap.
-//
-// Each fixture pairs a template with the variables a host application would
-// supply. They are grouped by the shape of work they exercise so a regression
-// in one phase (tokenize, parse, render) is attributable to a template shape
-// rather than to the suite as a whole.
-
 import type { TemplateVariables } from '../src/types';
 
 export interface Fixture {
@@ -13,7 +6,6 @@ export interface Fixture {
 	variables: TemplateVariables;
 }
 
-/** Markdown prose with no template syntax: pure tokenizer scanning throughput. */
 const proseParagraph = [
 	'Knap is a flexible template engine for creating Markdown. It is shared by',
 	'Obsidian tools, and it uses an AST interpreter rather than `eval`.',
@@ -48,14 +40,11 @@ function makeLinks(count: number) {
 
 export const fixtures: Fixture[] = [
 	{
-		// Baseline: no template syntax at all. Anything slow here is scanning cost
-		// paid by every template, including ones that barely use the engine.
 		name: 'prose (no syntax)',
 		template: prose,
 		variables: {},
 	},
 	{
-		// The common case: prose with a handful of interpolations.
 		name: 'prose + variables',
 		template: `# {{ title }}\n\n${proseParagraph}\n\nBy {{ author.name }} on {{ published }}.\n${proseParagraph}`,
 		variables: {
@@ -65,7 +54,6 @@ export const fixtures: Fixture[] = [
 		},
 	},
 	{
-		// Filter dispatch and chaining, no control flow.
 		name: 'filter chains',
 		template: [
 			'{{ title | trim | lower | replace:" ":"-" }}',
@@ -83,7 +71,6 @@ export const fixtures: Fixture[] = [
 		},
 	},
 	{
-		// Conditionals, assignment, and comparison expressions.
 		name: 'logic',
 		template: [
 			'{% set count = links | length %}',
@@ -99,20 +86,16 @@ export const fixtures: Fixture[] = [
 		},
 	},
 	{
-		// Loop body cost dominates: 200 iterations with member access and filters.
 		name: 'loop x200',
 		template: '{% for link in links %}- [{{ loop.index }}. {{ link.title | trim }}]({{ link.url }}) {{ link.tags | join:", " }}\n{% endfor %}',
 		variables: { links: makeLinks(200) },
 	},
 	{
-		// HTML-heavy input passed through the sanitizing filters, the shape
-		// Web Clipper hits on a real page.
 		name: 'html filters',
 		template: '{{ content | strip_tags | trim }}\n\n{{ content | remove_attr:"data-id" | strip_attr }}',
 		variables: { content: htmlArticle },
 	},
 	{
-		// End-to-end realistic template: frontmatter, logic, loops, filter chains.
 		name: 'clipper template',
 		template: [
 			'---',

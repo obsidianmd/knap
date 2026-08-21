@@ -131,10 +131,8 @@ const KEYWORDS: Record<string, TokenType> = {
 	'null': 'null',
 };
 
-// Character codes for the delimiter scan in text mode, compared directly so
-// the hot loop never allocates single-character strings.
-const CHAR_OPEN_BRACE = 0x7b;  // {
-const CHAR_PERCENT = 0x25;     // %
+const CHAR_OPEN_BRACE = 0x7b; // {
+const CHAR_PERCENT = 0x25; // %
 
 // ============================================================================
 // Main Tokenizer Function
@@ -196,9 +194,7 @@ function tokenizeText(state: TokenizerState): void {
 	const input = state.input;
 
 	while (state.pos < input.length) {
-		// Text runs are usually long compared to the tags inside them, so jump
-		// straight to the next candidate brace instead of inspecting (and
-		// slicing) every character along the way.
+		// Skip directly to the next possible delimiter.
 		const brace = input.indexOf('{', state.pos);
 		if (brace === -1) break;
 
@@ -207,14 +203,12 @@ function tokenizeText(state: TokenizerState): void {
 		const isTag = next === CHAR_PERCENT;
 
 		if (!isVariable && !isTag) {
-			// A lone brace is ordinary text; resume the search after it.
 			advanceTo(state, brace + 1);
 			continue;
 		}
 
 		advanceTo(state, brace);
 
-		// Emit any accumulated text
 		if (state.pos > startPos) {
 			state.tokens.push({
 				type: 'text',
@@ -224,7 +218,6 @@ function tokenizeText(state: TokenizerState): void {
 			});
 		}
 
-		// Variables preserve whitespace by default (unlike tags which trim by default)
 		advance(state, 2);
 
 		state.tokens.push({
@@ -232,7 +225,7 @@ function tokenizeText(state: TokenizerState): void {
 			value: isVariable ? '{{' : '{%',
 			line: state.line,
 			column: state.column - 2,
-			trimLeft: false,  // Both preserve whitespace before the delimiter
+			trimLeft: false,
 		});
 
 		state.mode = isVariable ? 'variable' : 'tag';
@@ -940,10 +933,7 @@ function lookAhead(state: TokenizerState, str: string): boolean {
 	return state.input.startsWith(str, state.pos);
 }
 
-/**
- * Advance to an absolute position, keeping line and column in sync without
- * stepping through the span one character at a time.
- */
+/** Advance while preserving line and column. */
 function advanceTo(state: TokenizerState, target: number): void {
 	if (target <= state.pos) return;
 
@@ -958,7 +948,6 @@ function advanceTo(state: TokenizerState, target: number): void {
 
 	if (newlines > 0) {
 		state.line += newlines;
-		// The character after a newline is column 1.
 		state.column = target - lastNewline;
 	} else {
 		state.column += target - state.pos;

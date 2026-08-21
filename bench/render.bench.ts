@@ -4,8 +4,6 @@ import { renderAST } from '../src/renderer';
 import { standardFilters } from '../src/filters';
 import { fixtures } from './fixtures';
 
-// Renders a pre-parsed AST, isolating evaluation from tokenize/parse cost.
-// The filter bridge mirrors engine.createEngine() minus warning collection.
 function contextFor(variables: Record<string, unknown>) {
 	return {
 		variables,

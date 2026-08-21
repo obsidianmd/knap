@@ -278,9 +278,6 @@ describe('Tokenizer', () => {
 			expect(endif?.line).toBe(3);
 		});
 
-		// Text mode skips ahead to the next candidate brace rather than walking
-		// character by character, so lone braces and multi-line prose must still
-		// leave line and column exactly where a per-character scan would.
 		test('tracks position past braces that do not open a tag', () => {
 			const result = tokenize('a { b } c {{x}}');
 			expect(result.errors).toHaveLength(0);

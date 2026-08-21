@@ -415,7 +415,7 @@ async function evaluateIdentifier(expr: IdentifierExpression, state: RenderState
 	const name = expr.name;
 
 	// Resolve local values first, then delegate unknown names to the host.
-	const value = resolveVariable(name, state.context.variables);
+	const value = resolveVariable(name, state.context.variables, expr.path);
 	if (value !== undefined) {
 		return value;
 	}
@@ -577,7 +577,7 @@ function evaluateContains(left: any, right: any): boolean {
 // Variable Resolution
 // ============================================================================
 
-function resolveVariable(name: string, variables: Record<string, any>): any {
+function resolveVariable(name: string, variables: Record<string, any>, path?: readonly string[]): any {
 	const trimmed = name.trim();
 
 	// Try with {{ }} wrapper first (how variables are stored)
@@ -593,16 +593,14 @@ function resolveVariable(name: string, variables: Record<string, any>): any {
 
 	// Handle nested property access: author.name
 	if (trimmed.includes('.')) {
-		return getNestedValue(variables, trimmed);
+		return getNestedValue(variables, path ?? trimmed.split('.'));
 	}
 
 	return undefined;
 }
 
-function getNestedValue(obj: any, path: string): any {
-	if (!path || !obj) return undefined;
-
-	const keys = path.split('.');
+function getNestedValue(obj: any, keys: readonly string[]): any {
+	if (keys.length === 0 || !obj) return undefined;
 	let value = obj;
 
 	for (const key of keys) {

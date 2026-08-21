@@ -3,8 +3,6 @@ import { createEngine } from '../src/engine';
 import { standardFilters } from '../src/filters';
 import { fixtures } from './fixtures';
 
-// End-to-end: what a host application actually calls. Includes parse,
-// filter validation, and render on every invocation.
 const engine = createEngine({ filters: standardFilters });
 
 describe('engine.render', () => {
@@ -15,8 +13,6 @@ describe('engine.render', () => {
 	}
 });
 
-// Filter validation alone. Passing an AST avoids reparsing the template, which
-// is already measured by the parse benchmarks.
 describe('engine.validate (AST)', () => {
 	for (const fixture of fixtures) {
 		const { ast } = engine.parse(fixture.template);
