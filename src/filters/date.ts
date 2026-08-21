@@ -1,16 +1,17 @@
-import { debugLog } from '../debug';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek.js';
 import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
+import type { FilterContext } from '../types';
+import { reportFilterWarning } from './warnings';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
 dayjs.extend(weekOfYear);
 dayjs.extend(advancedFormat);
 
-export const date = (str: string, param?: string): string => {
+export const date = (str: string, param?: string, context?: FilterContext): string => {
 	// Return empty string as-is without attempting to parse
 	if (str === '') {
 		return str;
@@ -44,7 +45,7 @@ export const date = (str: string, param?: string): string => {
 	}
 
 	if (!date.isValid()) {
-		debugLog('Invalid date for date filter:', str);
+		reportFilterWarning(context, `Could not parse "${str}" as a date`, 'INVALID_FILTER_INPUT');
 		return str;
 	}
 

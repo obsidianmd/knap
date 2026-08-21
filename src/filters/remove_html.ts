@@ -1,8 +1,4 @@
-import { debugLog } from '../debug';
-
 export const remove_html = (html: string, params: string = ''): string => {
-	debugLog('RemoveHTML', 'Input:', { html, params });
-
 	// Remove outer parentheses if present
 	params = params.replace(/^\((.*)\)$/, '$1');
 
@@ -13,8 +9,6 @@ export const remove_html = (html: string, params: string = ''): string => {
 	const elementsToRemove = params.split(/,(?=(?:(?:[^"']*["'][^"']*["'])*[^"']*$))/)
 		.map(elem => elem.trim())
 		.filter(Boolean);
-
-	debugLog('RemoveHTML', 'Elements to remove:', elementsToRemove);
 
 	// If no elements specified, return the original HTML
 	if (elementsToRemove.length === 0) {
@@ -41,7 +35,5 @@ export const remove_html = (html: string, params: string = ''): string => {
 			result += node.textContent;
 		}
 	});
-	debugLog('RemoveHTML', 'Output:', result);
-
 	return result;
 };

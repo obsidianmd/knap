@@ -26,7 +26,13 @@ import {
 } from './parser';
 import { TemplateRuntimeError, type TemplateError } from './errors';
 
-type ApplyFilterFn = (value: string, filterName: string, paramString: string | undefined) => any;
+type ApplyFilterFn = (
+	value: string,
+	filterName: string,
+	paramString: string | undefined,
+	line: number,
+	column: number,
+) => any | Promise<any>;
 
 // ============================================================================
 // Render Context
@@ -541,7 +547,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		paramString = formattedArgs.join(',');
 	}
 
-	return state.context.applyFilter(stringValue, expr.name, paramString);
+	return await state.context.applyFilter(stringValue, expr.name, paramString, expr.line, expr.column);
 }
 
 function evaluateContains(left: any, right: any): boolean {

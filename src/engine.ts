@@ -5,6 +5,7 @@ import type {
 	EngineOptions,
 	FilterMetadata,
 	FilterRegistry,
+	FilterWarning,
 	RenderInput,
 	RenderOptions,
 	TemplateEngine,
@@ -56,9 +57,10 @@ export function createEngine<TContext = unknown>(
 	): Promise<TemplateResult> {
 		const parsed = parse(template);
 		const errors = parsed.errors.map(normalizeParserError);
-		if (errors.length > 0) return { output: '', errors };
+		if (errors.length > 0) return { output: '', errors, warnings: [] };
 
 		const validationErrors = validateFilters(parsed.ast, filterMetadata).map(normalizeParserError);
+		const warnings: TemplateResult['warnings'] = [];
 
 		const resolverContext = {
 			variables: input.variables,
@@ -79,13 +81,24 @@ export function createEngine<TContext = unknown>(
 					}
 				}
 				: undefined,
-			applyFilter: (value, filterName, param) => {
+			applyFilter: async (value, filterName, param, line, column) => {
 				const filter = filters[filterName];
 				if (!filter) {
 					return value;
 				}
 				try {
-					return filter(value, param, resolverContext);
+					return await filter(value, param, {
+						...resolverContext,
+						reportWarning: (warning: FilterWarning) => {
+							warnings.push({
+								message: warning.message,
+								line,
+								column,
+								code: warning.code ?? 'FILTER_WARNING',
+								filter: filterName,
+							});
+						},
+					});
 				} catch (error) {
 					if (error instanceof TemplateRuntimeError) throw error;
 					throw new TemplateRuntimeError(
@@ -99,6 +112,7 @@ export function createEngine<TContext = unknown>(
 		return {
 			output: rendered.output,
 			errors: [...validationErrors, ...rendered.errors],
+			warnings,
 		};
 	}
 

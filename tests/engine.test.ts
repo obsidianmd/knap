@@ -68,6 +68,67 @@ describe('createEngine', () => {
 		consoleSpy.mockRestore();
 	});
 
+	test('reports pass-through filter failures as non-fatal warnings', async () => {
+		const engine = createEngine({ filters: standardFilters });
+		const result = await engine.render(
+			'{{ value | replace:"/[/":"x" }}\n{{ published | date:"YYYY-MM-DD" }}',
+			{ variables: { value: 'a[b', published: 'not-a-date' } },
+		);
+
+		expect(result.output).toBe('a[b\nnot-a-date');
+		expect(result.errors).toHaveLength(0);
+		expect(result.warnings).toHaveLength(2);
+		expect(result.warnings[0]).toMatchObject({
+			code: 'INVALID_FILTER_INPUT',
+			filter: 'replace',
+			line: 1,
+		});
+		expect(result.warnings[1]).toMatchObject({
+			code: 'INVALID_FILTER_INPUT',
+			filter: 'date',
+			line: 2,
+		});
+	});
+
+	test('supports async filters and wraps rejected promises as filter errors', async () => {
+		const delayedUpper: TemplateFilter = async value => value.toUpperCase();
+		const reject: TemplateFilter = async () => { throw new Error('offline'); };
+		const engine = createEngine({ filters: { delayedUpper, reject } });
+
+		const success = await engine.render('{{value|delayedUpper}}', {
+			variables: { value: 'knap' },
+		});
+		const failure = await engine.render('{{value|reject}}', {
+			variables: { value: 'knap' },
+		});
+
+		expect(success).toEqual({ output: 'KNAP', errors: [], warnings: [] });
+		expect(failure.errors[0]).toMatchObject({
+			code: 'FILTER_ERROR',
+			message: 'Filter "reject" failed: offline',
+		});
+	});
+
+	test('lets custom filters report engine-scoped warnings', async () => {
+		const fallback: TemplateFilter = (value, _param, context) => {
+			context?.reportWarning?.({ message: 'Used the original value' });
+			return value;
+		};
+		const engine = createEngine({ filters: { fallback } });
+
+		const result = await engine.render('{{value|fallback}}', {
+			variables: { value: 'Knap' },
+		});
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.warnings[0]).toMatchObject({
+			code: 'FILTER_WARNING',
+			filter: 'fallback',
+			message: 'Used the original value',
+			line: 1,
+		});
+	});
+
 	test('renderOrThrow throws the structured error collection', async () => {
 		const engine = createEngine({ filters: standardFilters });
 

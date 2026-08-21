@@ -48,6 +48,11 @@ Every error contains a stable `code`, `message`, `line`, and `column`. Use
 const output = await engine.renderOrThrow('{{ title | upper }}', { variables });
 ```
 
+Filters that deliberately preserve their input after invalid runtime data can
+report non-fatal diagnostics in `result.warnings`. Each warning includes a
+stable `code`, `message`, `filter`, `line`, and `column`. Warnings do not make
+`renderOrThrow()` throw.
+
 ## Syntax
 
 ```liquid
@@ -128,6 +133,20 @@ const engine = createEngine({
 });
 ```
 
+Custom filters may be asynchronous. A filter can also report a non-fatal
+diagnostic while returning a fallback value:
+
+```ts
+const lookup: TemplateFilter = async (value, _param, context) => {
+	const result = await findValue(value);
+	if (result === undefined) {
+		context?.reportWarning?.({ message: `Could not find ${value}` });
+		return value;
+	}
+	return result;
+};
+```
+
 The filter parameter is passed in its serialized Knap form so filters that
 accept multiple parameters can preserve delimiters and quoting. A custom filter
 that expects one scalar parameter can normalize surrounding quotes as above.
@@ -174,7 +193,8 @@ application can register them as custom filters.
 ## API
 
 - `createEngine({ filters })` creates an immutable engine-scoped registry.
-- `engine.render(template, input, options?)` returns output and structured errors.
+- `engine.render(template, input, options?)` returns output, structured errors,
+  and non-fatal warnings.
 - `engine.renderOrThrow(template, input, options?)` returns output or throws `TemplateRenderError`.
 - `engine.parse(template)` returns the AST and parser diagnostics.
 - `engine.validate(templateOrAst)` validates syntax and the configured filters.

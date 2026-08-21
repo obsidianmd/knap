@@ -40,6 +40,7 @@ export type {
 	FilterContext,
 	FilterMetadata,
 	FilterRegistry,
+	FilterWarning,
 	ParamValidationResult,
 	ParamValidator,
 	RenderInput,
@@ -57,6 +58,6 @@ export {
 	TemplateRuntimeError,
 	type TemplateError,
 	type TemplateErrorCode,
+	type TemplateWarning,
+	type TemplateWarningCode,
 } from './errors';
-
-export const VERSION = '0.1.0';

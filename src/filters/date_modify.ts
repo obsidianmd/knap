@@ -1,10 +1,11 @@
-import { debugLog } from '../debug';
 import dayjs from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek.js';
 import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { reportFilterWarning } from './warnings';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
@@ -39,9 +40,8 @@ export const validateDateModifyParams = (param: string | undefined): ParamValida
 	return { valid: true };
 };
 
-export const date_modify = (str: string, param?: string): string => {
+export const date_modify = (str: string, param?: string, context?: FilterContext): string => {
 	if (!param) {
-		debugLog('date_modify filter requires a parameter');
 		return str;
 	}
 
@@ -52,7 +52,7 @@ export const date_modify = (str: string, param?: string): string => {
 
 	let date = dayjs(str);
 	if (!date.isValid()) {
-		debugLog('Invalid date for date_modify filter:', str);
+		reportFilterWarning(context, `Could not parse "${str}" as a date`, 'INVALID_FILTER_INPUT');
 		return str;
 	}
 
@@ -67,7 +67,6 @@ export const date_modify = (str: string, param?: string): string => {
 	const match = param.match(regex);
 
 	if (!match) {
-		debugLog('Invalid format for date_modify filter:', param);
 		return str;
 	}
 

@@ -1,5 +1,6 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { reportFilterWarning } from './warnings';
 
 export const validateSliceParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -20,9 +21,8 @@ export const validateSliceParams = (param: string | undefined): ParamValidationR
 	return { valid: true };
 };
 
-export const slice = (str: string, param?: string): string => {
+export const slice = (str: string, param?: string, context?: FilterContext): string => {
 	if (!param) {
-		debugLog('Slice filter requires parameters');
 		return str;
 	}
 
@@ -40,10 +40,10 @@ export const slice = (str: string, param?: string): string => {
 	let value;
 	try {
 		value = JSON.parse(str);
-	} catch (error) {
-		// Only log error for non-trivial parse failures (not plain strings)
+	} catch {
+		// Warn only for values that appear intended to be structured data.
 		if (str.startsWith('[') || str.startsWith('{')) {
-			debugLog('Error parsing JSON in slice filter:', error);
+			reportFilterWarning(context, 'Could not parse structured value as JSON', 'INVALID_FILTER_INPUT');
 		}
 		value = str;
 	}

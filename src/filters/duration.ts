@@ -1,11 +1,12 @@
-import { debugLog } from '../debug';
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration.js';
 import { Duration } from 'dayjs/plugin/duration.js';
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
 
 dayjs.extend(durationPlugin);
 
-export const duration = (str: string, param?: string): string => {
+export const duration = (str: string, param?: string, context?: FilterContext): string => {
 	if (!str) {
 		return str;
 	}
@@ -42,7 +43,7 @@ export const duration = (str: string, param?: string): string => {
 
 		return formatDuration(dur, param);
 	} catch (error) {
-		debugLog('Error in duration filter:', error);
+		reportFilterWarning(context, `Could not format duration: ${errorMessage(error)}`);
 		return str;
 	}
 };

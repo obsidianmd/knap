@@ -1,5 +1,7 @@
-import { debugLog } from '../debug';
-export const html_to_json = (input: string): string => {
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
+
+export const html_to_json = (input: string, _param?: string, context?: FilterContext): string => {
 	const parseNode = (node: Node): any => {
 		if (node.nodeType === Node.TEXT_NODE) {
 			const text = node.textContent?.trim();
@@ -51,7 +53,7 @@ export const html_to_json = (input: string): string => {
 
 		return JSON.stringify(result);
 	} catch (error) {
-		debugLog('Error in html_to_json filter:', error);
+		reportFilterWarning(context, `Could not convert HTML to JSON: ${errorMessage(error)}`);
 		return input;
 	}
 };

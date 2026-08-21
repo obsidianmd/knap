@@ -1,5 +1,7 @@
-import { debugLog } from '../debug';
-export const merge = (str: string, param?: string): string => {
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
+
+export const merge = (str: string, param?: string, context?: FilterContext): string => {
 	// Return early if input is empty or invalid
 	if (!str || str === 'undefined' || str === 'null') {
 		return '[]';
@@ -8,8 +10,7 @@ export const merge = (str: string, param?: string): string => {
 	let array;
 	try {
 		array = JSON.parse(str);
-	} catch (error) {
-		debugLog('Error parsing JSON in merge filter:', error);
+	} catch {
 		return str;
 	}
 
@@ -36,7 +37,7 @@ export const merge = (str: string, param?: string): string => {
 
 		return JSON.stringify([...array, ...processedItems]);
 	} catch (error) {
-		debugLog('Error processing parameters in merge filter:', error);
+		reportFilterWarning(context, `Could not merge values: ${errorMessage(error)}`);
 		return JSON.stringify(array);
 	}
 };

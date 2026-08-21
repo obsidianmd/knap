@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
 
 export const validateTemplateParams = (param: string | undefined): ParamValidationResult => {
@@ -10,11 +9,7 @@ export const validateTemplateParams = (param: string | undefined): ParamValidati
 };
 
 export const template = (input: string | any[], param?: string): string => {
-	debugLog('Template', 'Template input:', input);
-	debugLog('Template', 'Template param:', param);
-
 	if (!param) {
-		debugLog('Template', 'No param provided, returning input');
 		return typeof input === 'string' ? input : JSON.stringify(input);
 	}
 
@@ -27,9 +22,7 @@ export const template = (input: string | any[], param?: string): string => {
 	if (typeof input === 'string') {
 		try {
 			obj = JSON.parse(input);
-			debugLog('Template', 'Parsed input:', obj);
-		} catch (error) {
-			debugLog('Template', 'Parsing failed, using input as is');
+		} catch {
 			obj = [input];
 		}
 	} else {
@@ -39,25 +32,17 @@ export const template = (input: string | any[], param?: string): string => {
 	// Ensure obj is always an array
 	obj = Array.isArray(obj) ? obj : [obj];
 
-	debugLog('Template', 'Object to process:', obj);
-
-	const result = obj.map(item => replaceTemplateVariables(item, param)).join('\n\n');
-	debugLog('Template', 'Processing result:', result);
-	return result;
+	return obj.map(item => replaceTemplateVariables(item, param)).join('\n\n');
 };
 
 function replaceTemplateVariables(obj: any, template: string): string {
-	debugLog('Template', 'Replacing template variables for:', obj);
-	debugLog('Template', 'Template:', template);
-
 	// If obj is a plain string, make it available as ${str} for template compatibility
 	if (typeof obj === 'string') {
 		const strValue = obj;
 		try {
 			obj = parseObjectString(obj);
-			debugLog('Template', 'Parsed object:', obj);
-		} catch (error) {
-			debugLog('Template', 'Failed to parse object string:', obj);
+		} catch {
+			// Keep the original string available to the template.
 		}
 		// Ensure str property is set for plain strings
 		if (obj.str === undefined) {
@@ -65,22 +50,16 @@ function replaceTemplateVariables(obj: any, template: string): string {
 		}
 	}
 
-	let result = template.replace(/\$\{([\w.]+)\}/g, (match, path) => {
-		debugLog('Template', 'Replacing:', match);
+	let result = template.replace(/\$\{([\w.]+)\}/g, (_match, path) => {
 		const value = getNestedProperty(obj, path);
-		debugLog('Template', 'Replaced with:', value);
 		return value !== undefined && value !== 'undefined' ? value : '';
 	});
 
-	debugLog('Template', 'Result after variable replacement:', result);
-
 	// Replace \n with actual newlines
 	result = result.replace(/\\n/g, '\n');
-	debugLog('Template', 'Result after newline replacement:', result);
 
 	// Remove any empty lines (which might be caused by undefined values)
 	result = result.split('\n').filter(line => line.trim() !== '').join('\n');
-	debugLog('Template', 'Result after empty line removal:', result);
 
 	return result.trim();
 }
@@ -103,10 +82,7 @@ function parseObjectString(str: string): any {
 }
 
 function getNestedProperty(obj: any, path: string): any {
-	debugLog('Template', 'Getting nested property:', { obj, path });
-	const result = path.split('.').reduce((current, key) => {
+	return path.split('.').reduce((current, key) => {
 		return current && typeof current === 'object' ? current[key] : undefined;
 	}, obj);
-	debugLog('Template', 'Nested property result:', result);
-	return result;
 }

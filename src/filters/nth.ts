@@ -1,5 +1,6 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { reportFilterWarning } from './warnings';
 
 export const validateNthParams = (param: string | undefined): ParamValidationResult => {
 	// Param is optional - no param means return all items
@@ -42,7 +43,7 @@ export const validateNthParams = (param: string | undefined): ParamValidationRes
 	return { valid: false, error: 'invalid syntax. Use number (2), multiplier (5n), offset (n+7), or basis (1,2:5)' };
 };
 
-export const nth = (str: string, params?: string): string => {
+export const nth = (str: string, params?: string, context?: FilterContext): string => {
 	// Handle empty or invalid input
 	if (!str || str === 'undefined' || str === 'null') {
 		return str;
@@ -101,11 +102,10 @@ export const nth = (str: string, params?: string): string => {
 		}
 
 		// Invalid syntax
-		debugLog('Invalid nth filter syntax:', params);
 		return str;
 
-	} catch (error) {
-		debugLog('Error in nth filter:', error);
+	} catch {
+		reportFilterWarning(context, 'Could not parse value as a JSON array', 'INVALID_FILTER_INPUT');
 		return str;
 	}
 };

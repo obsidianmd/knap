@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
 
 type ListType = 'bullet' | 'numbered' | 'task' | 'numbered-task';
@@ -82,8 +81,7 @@ export const list = (input: string | any[], param?: string): string => {
 		}
 		// If it's an object or a single value, wrap it in an array
 		return processArray([parsedInput], determineListType(param));
-	} catch (error) {
-		debugLog('Error processing list filter:', error);
+	} catch {
 		// If parsing fails, treat it as a single string
 		return processListItem(input, determineListType(param));
 	}

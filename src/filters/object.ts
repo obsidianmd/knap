@@ -1,5 +1,6 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { reportFilterWarning } from './warnings';
 
 const validObjectParams = ['array', 'keys', 'values'];
 
@@ -18,7 +19,7 @@ export const validateObjectParams = (param: string | undefined): ParamValidation
 	return { valid: true };
 };
 
-export const object = (str: string, param?: string): string => {
+export const object = (str: string, param?: string, context?: FilterContext): string => {
 	try {
 		const obj = JSON.parse(str);
 		if (typeof obj === 'object' && obj !== null) {
@@ -33,8 +34,8 @@ export const object = (str: string, param?: string): string => {
 					return str; // Return original string if no valid param
 			}
 		}
-	} catch (error) {
-		debugLog('Error parsing JSON for object filter:', error);
+	} catch {
+		reportFilterWarning(context, 'Could not parse value as JSON', 'INVALID_FILTER_INPUT');
 	}
 	return str;
 };

@@ -1,5 +1,6 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
 
 export const validateCalcParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -30,7 +31,7 @@ export const validateCalcParams = (param: string | undefined): ParamValidationRe
 	return { valid: true };
 };
 
-export const calc = (str: string, param?: string): string => {
+export const calc = (str: string, param?: string, context?: FilterContext): string => {
 	if (!param) {
 		return str;
 	}
@@ -39,7 +40,7 @@ export const calc = (str: string, param?: string): string => {
 		// Convert input to number
 		const num = Number(str);
 		if (isNaN(num)) {
-			debugLog('Input is not a number:', str);
+			reportFilterWarning(context, `Could not parse "${str}" as a number`, 'INVALID_FILTER_INPUT');
 			return str;
 		}
 
@@ -51,7 +52,6 @@ export const calc = (str: string, param?: string): string => {
 		const value = Number(operation.slice(operator === '**' ? 2 : 1));
 
 		if (isNaN(value)) {
-			debugLog('Invalid calculation value:', operation);
 			return str;
 		}
 
@@ -74,14 +74,13 @@ export const calc = (str: string, param?: string): string => {
 				result = Math.pow(num, value);
 				break;
 			default:
-				debugLog('Invalid operator:', operator);
 				return str;
 		}
 
 		// Convert to string and remove trailing zeros after decimal
 		return Number(result.toFixed(10)).toString();
 	} catch (error) {
-		debugLog('Error in calc filter:', error);
+		reportFilterWarning(context, `Could not calculate value: ${errorMessage(error)}`);
 		return str;
 	}
 };

@@ -1,6 +1,7 @@
-import { debugLog } from '../debug';
 import { createParserState, processCharacter, parseRegexPattern } from '../parser-utils';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
 
 export const validateReplaceParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -26,7 +27,7 @@ export const validateReplaceParams = (param: string | undefined): ParamValidatio
 	return { valid: true };
 };
 
-export const replace = (str: string, param?: string): string => {
+export const replace = (str: string, param?: string, context?: FilterContext): string => {
 	if (!param) {
 		return str;
 	}
@@ -73,7 +74,11 @@ export const replace = (str: string, param?: string): string => {
 				const regex = new RegExp(regexInfo.pattern, regexInfo.flags);
 				return acc.replace(regex, replace);
 			} catch (error) {
-				debugLog('Invalid regex pattern:', error);
+				reportFilterWarning(
+					context,
+					`Invalid regular expression: ${errorMessage(error)}`,
+					'INVALID_FILTER_INPUT',
+				);
 				return acc;
 			}
 		}

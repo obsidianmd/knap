@@ -1,5 +1,7 @@
-import { debugLog } from '../debug';
-export const table = (str: string, params?: string): string => {
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
+
+export const table = (str: string, params?: string, context?: FilterContext): string => {
 	// Handle empty or invalid input
 	if (!str || str === 'undefined' || str === 'null') {
 		return str;
@@ -18,7 +20,7 @@ export const table = (str: string, params?: string): string => {
 					header.trim().replace(/^["'](.*)["']$/, '$1')
 				);
 			} catch (error) {
-				debugLog('Error parsing table headers:', error);
+				reportFilterWarning(context, `Could not parse table headers: ${errorMessage(error)}`);
 			}
 		}
 
@@ -92,8 +94,8 @@ export const table = (str: string, params?: string): string => {
 
 		// If none of the above cases match, return the original string
 		return str;
-	} catch (error) {
-		debugLog('Error parsing JSON for table filter:', error);
+	} catch {
+		reportFilterWarning(context, 'Could not parse value as JSON table data', 'INVALID_FILTER_INPUT');
 		return str;
 	}
 };

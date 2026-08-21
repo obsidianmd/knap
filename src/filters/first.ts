@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 export const first = (str: string): string => {
 	// Return empty string as-is without attempting to parse
 	if (str === '') {
@@ -10,8 +9,8 @@ export const first = (str: string): string => {
 		if (Array.isArray(array) && array.length > 0) {
 			return array[0].toString();
 		}
-	} catch (error) {
-		debugLog('Error parsing JSON in first filter:', error);
+	} catch {
+		// Plain strings are valid pass-through values.
 	}
 	return str;
 };

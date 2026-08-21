@@ -6,11 +6,23 @@ export type TemplateErrorCode =
 	| 'FILTER_ERROR'
 	| 'RENDER_ERROR';
 
+export type TemplateWarningCode =
+	| 'INVALID_FILTER_INPUT'
+	| 'FILTER_WARNING';
+
 export interface TemplateError {
 	message: string;
 	line: number;
 	column: number;
 	code: TemplateErrorCode;
+}
+
+export interface TemplateWarning {
+	message: string;
+	line: number;
+	column: number;
+	code: TemplateWarningCode;
+	filter: string;
 }
 
 export class TemplateRuntimeError extends Error {

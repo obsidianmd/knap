@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 import { createParserState, processCharacter } from '../parser-utils';
 import type {
 	FilterMetadata,
@@ -59,13 +58,17 @@ import { upper } from './upper';
 import { wikilink } from './wikilink';
 import { duration } from './duration';
 
-type FilterFunction = (value: string, param?: string) => string | any[];
+type FilterFunction = (
+	value: string,
+	param?: string,
+	context?: FilterContext,
+) => string | any[];
 
 // ============================================================================
 // Filter Metadata for Validation
 // ============================================================================
 
-export const standardFilterMetadata: Record<string, FilterMetadata> = {
+const filterMetadata: Record<string, FilterMetadata> = {
 	// Filters with validators
 	calc: { example: 'calc:"+10"', validateParams: validateCalcParams },
 	date_modify: { example: 'date_modify:"+1 day"', validateParams: validateDateModifyParams },
@@ -120,6 +123,12 @@ export const standardFilterMetadata: Record<string, FilterMetadata> = {
 	wikilink: {},
 };
 
+export const standardFilterMetadata: Readonly<Record<string, FilterMetadata>> = Object.freeze(
+	Object.fromEntries(
+		Object.entries(filterMetadata).map(([name, metadata]) => [name, Object.freeze({ ...metadata })]),
+	),
+);
+
 const filters: Record<string, FilterFunction> = {
 	blockquote,
 	calc,
@@ -173,7 +182,7 @@ const filters: Record<string, FilterFunction> = {
 };
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {
-	const wrapped: TemplateFilter = (value, param) => filter(value, param);
+	const wrapped: TemplateFilter = (value, param, context) => filter(value, param, context);
 	wrapped.metadata = standardFilterMetadata[name] ?? {};
 	return wrapped;
 }
@@ -261,16 +270,15 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 		const [name, ...params] = parseFilterString(filterExpression);
 		const filter = registry[name];
 
-		if (!filter) {
-			debugLog(`Invalid filter: ${name}`);
-			debugLog('Filters', 'Available filters:', Object.keys(registry));
-			continue;
-		}
+		if (!filter) continue;
 
 		const stringInput = typeof processedValue === 'string'
 			? processedValue
 			: JSON.stringify(processedValue);
 		const output = filter(stringInput, params.join(':'), context);
+		if (output instanceof Promise) {
+			throw new TypeError(`Filter "${name}" is asynchronous; use engine.render() for async filters`);
+		}
 
 		if (typeof output === 'string' && (output.startsWith('[') || output.startsWith('{'))) {
 			try {

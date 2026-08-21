@@ -1,9 +1,9 @@
 import { html_to_json } from './filters/html_to_json';
 import { remove_html } from './filters/remove_html';
-import type { FilterRegistry, TemplateFilter } from './types';
+import type { FilterContext, FilterRegistry, TemplateFilter } from './types';
 
-function htmlFilter(filter: (value: string, param?: string) => string): TemplateFilter {
-	const wrapped: TemplateFilter = (value, param) => filter(value, param);
+function htmlFilter(filter: (value: string, param?: string, context?: FilterContext) => string): TemplateFilter {
+	const wrapped: TemplateFilter = (value, param, context) => filter(value, param, context);
 	wrapped.metadata = {};
 	return wrapped;
 }

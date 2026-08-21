@@ -54,6 +54,10 @@ Filter metadata, including parameter validation and examples, is exported as
 `standardFilterMetadata`. Invalid filter names and invalid parameters are
 reported by `engine.validate()` and `engine.render()`.
 
+When a filter cannot use runtime input but preserves that input for
+compatibility, `engine.render()` reports a non-fatal structured warning. This
+includes values such as an unparseable date or an invalid regular expression.
+
 ## HTML preset
 
 Import `htmlFilters` from `@obsidianmd/knap/html` to enable:

@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 export const footnote = (str: string): string => {
 	// Return empty string as-is without attempting to parse
 	if (str === '') {
@@ -17,8 +16,8 @@ export const footnote = (str: string): string => {
 				return `[^${footnoteId}]: ${value}`;
 			}).join('\n\n');
 		}
-	} catch (error) {
-		debugLog('Error parsing JSON in footnote filter:', error);
+	} catch {
+		// Plain strings are valid pass-through values.
 	}
 	return str;
 };

@@ -1859,7 +1859,7 @@ function collectFilters(nodes: ASTNode[]): FilterUsage[] {
  */
 export function validateFilters(
 	ast: ASTNode[],
-	registryMetadata: Record<string, FilterMetadata>,
+	registryMetadata: Readonly<Record<string, FilterMetadata>>,
 ): ParserError[] {
 	const errors: ParserError[] = [];
 	const usages = collectFilters(ast);

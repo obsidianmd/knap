@@ -1,5 +1,5 @@
 import type { ASTNode, ParserResult } from './parser';
-import type { TemplateError } from './errors';
+import type { TemplateError, TemplateWarning, TemplateWarningCode } from './errors';
 
 export type TemplateValue = unknown;
 export type TemplateVariables = Record<string, TemplateValue>;
@@ -16,13 +16,19 @@ export interface FilterMetadata {
 	validateParams?: ParamValidator;
 }
 
+export interface FilterWarning {
+	message: string;
+	code?: TemplateWarningCode;
+}
+
 export interface FilterContext<TContext = unknown> {
 	variables: TemplateVariables;
 	context?: TContext;
+	reportWarning?: (warning: FilterWarning) => void;
 }
 
 export interface TemplateFilter<TContext = unknown> {
-	(value: string, param?: string, context?: FilterContext<TContext>): TemplateValue;
+	(value: string, param?: string, context?: FilterContext<TContext>): TemplateValue | Promise<TemplateValue>;
 	metadata?: FilterMetadata;
 }
 
@@ -55,6 +61,7 @@ export interface RenderOptions {
 export interface TemplateResult {
 	output: string;
 	errors: TemplateError[];
+	warnings: TemplateWarning[];
 }
 
 export interface TemplateEngine<TContext = unknown> {

@@ -1,5 +1,7 @@
-import { debugLog } from '../debug';
-export const number_format = (input: string, param?: string): string => {
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
+
+export const number_format = (input: string, param?: string, context?: FilterContext): string => {
 	const formatNumber = (num: number, decimals: number, decPoint: string, thousandsSep: string): string => {
 		const parts = num.toFixed(decimals).split('.');
 		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
@@ -82,7 +84,7 @@ export const number_format = (input: string, param?: string): string => {
 		const result = processValue(parsedInput, decimals, decPoint, thousandsSep);
 		return typeof result === 'string' ? result : JSON.stringify(result);
 	} catch (error) {
-		debugLog('Error in number_format filter:', error);
+		reportFilterWarning(context, `Could not format number: ${errorMessage(error)}`);
 		return input; // Return original input if any unexpected error occurs
 	}
 };

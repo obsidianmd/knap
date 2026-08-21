@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 import { strip_md } from "./strip_md";
 
 type SelectedText = string;
@@ -84,8 +83,8 @@ export const fragment_link = (str: string, param?: string): string[] => {
 				)})`,
 			];
 		}
-	} catch (error) {
-		debugLog("Fragment filter error:", error);
+	} catch {
+		// Plain strings are valid pass-through values.
 	}
 	return [str];
 };

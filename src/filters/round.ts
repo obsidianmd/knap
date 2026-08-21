@@ -1,5 +1,6 @@
-import { debugLog } from '../debug';
 import type { ParamValidationResult } from '../filters';
+import type { FilterContext } from '../types';
+import { errorMessage, reportFilterWarning } from './warnings';
 
 export const validateRoundParams = (param: string | undefined): ParamValidationResult => {
 	// Param is optional - no param means round to integer
@@ -19,7 +20,7 @@ export const validateRoundParams = (param: string | undefined): ParamValidationR
 	return { valid: true };
 };
 
-export const round = (input: string, param?: string): string => {
+export const round = (input: string, param?: string, context?: FilterContext): string => {
 	const roundNumber = (num: number, decimalPlaces?: number): number => {
 		if (decimalPlaces === undefined) {
 			return Math.round(num);
@@ -63,7 +64,7 @@ export const round = (input: string, param?: string): string => {
 		const result = processValue(parsedInput, decimalPlaces);
 		return typeof result === 'string' ? result : JSON.stringify(result);
 	} catch (error) {
-		debugLog('Error in round filter:', error);
+		reportFilterWarning(context, `Could not round value: ${errorMessage(error)}`);
 		return input; // Return original input if any unexpected error occurs
 	}
 };

@@ -1,4 +1,3 @@
-import { debugLog } from '../debug';
 export const join = (str: string, param?: string): string => {
 	// Return early if input is empty or invalid
 	if (!str || str === 'undefined' || str === 'null') {
@@ -8,8 +7,7 @@ export const join = (str: string, param?: string): string => {
 	let array;
 	try {
 		array = JSON.parse(str);
-	} catch (error) {
-		debugLog('Error parsing JSON in join filter:', error);
+	} catch {
 		return str;
 	}
 
