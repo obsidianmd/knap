@@ -1,8 +1,10 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
 import { replace, validateReplaceParams } from '../../src/filters/replace';
-import { render } from '../../src/renderer';
-import { applyFilters } from '../../src/filters';
+import { standardFilterMetadata, standardFilters } from '../../src/filters';
 import { parse, validateFilters } from '../../src/parser';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('replace filter', () => {
 	test('simple replacement', () => {
@@ -52,29 +54,26 @@ describe('replace filter', () => {
 
 describe('replace filter via renderer', () => {
 	// These tests verify the full parser → renderer → filter pipeline
-	const createContext = (variables: Record<string, any> = {}) => ({
-		variables,
-		currentUrl: 'https://example.com',
-		applyFilters,
-	});
-
 	test('applies multiple replacements through template', async () => {
-		const ctx = createContext({ msg: 'hello world' });
-		const result = await render('{{msg|replace:"e":"a","o":"0"}}', ctx);
+		const result = await engine.render('{{msg|replace:"e":"a","o":"0"}}', {
+			variables: { msg: 'hello world' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('hall0 w0rld');
 	});
 
 	test('applies three replacements through template', async () => {
-		const ctx = createContext({ msg: 'hello world' });
-		const result = await render('{{msg|replace:"h":"H"," ":"-","d":"D"}}', ctx);
+		const result = await engine.render('{{msg|replace:"h":"H"," ":"-","d":"D"}}', {
+			variables: { msg: 'hello world' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('Hello-worlD');
 	});
 
 	test('applies parenthesized replacements per docs example', async () => {
-		const ctx = createContext({ msg: 'hello world' });
-		const result = await render('{{msg|replace:("e":"a","o":"0")}}', ctx);
+		const result = await engine.render('{{msg|replace:("e":"a","o":"0")}}', {
+			variables: { msg: 'hello world' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('hall0 w0rld');
 	});
@@ -109,14 +108,14 @@ describe('replace param validation', () => {
 	test('validates multiple pairs without errors via parser', () => {
 		const result = parse('{{msg|replace:"h":"H","d":"D"}}');
 		expect(result.errors).toHaveLength(0);
-		const filterWarnings = validateFilters(result.ast);
+		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
 		expect(filterWarnings).toHaveLength(0);
 	});
 
 	test('validates parenthesized multiple pairs via parser', () => {
 		const result = parse('{{msg|replace:("prefecture":"","Prefecture":"")}}');
 		expect(result.errors).toHaveLength(0);
-		const filterWarnings = validateFilters(result.ast);
+		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
 		expect(filterWarnings).toHaveLength(0);
 	});
 });

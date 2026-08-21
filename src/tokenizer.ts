@@ -1,4 +1,4 @@
-// Template tokenizer for the Web Clipper template engine
+// Template tokenizer for Knap
 // Converts template strings into a stream of tokens for parsing
 //
 // This tokenizer handles:

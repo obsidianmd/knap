@@ -1,8 +1,16 @@
 import { describe, test, expect } from 'vitest';
-import { render, renderTemplate, RenderContext } from '../src/renderer';
+import { createEngine } from '../src/engine';
+import { standardFilters } from '../src/filters';
+import { render, RenderContext } from '../src/renderer';
+
+const standardEngine = createEngine({ filters: standardFilters });
+
+async function renderTemplate(template: string, variables: Record<string, any>): Promise<string> {
+	return standardEngine.renderOrThrow(template, { variables });
+}
 
 // Simple filter implementation for testing (direct invocation)
-function testApplyFilterDirect(value: string, filterName: string, _paramString: string | undefined, _currentUrl: string): string {
+function testApplyFilterDirect(value: string, filterName: string, _paramString: string | undefined): string {
 	switch (filterName) {
 		case 'lower':
 			return value.toLowerCase();
@@ -27,8 +35,7 @@ function testApplyFilterDirect(value: string, filterName: string, _paramString: 
 function createContext(variables: Record<string, any> = {}): RenderContext {
 	return {
 		variables,
-		currentUrl: 'https://example.com',
-		applyFilterDirect: testApplyFilterDirect,
+		applyFilter: testApplyFilterDirect,
 	};
 }
 

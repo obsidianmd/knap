@@ -18,7 +18,7 @@ export const fragment_link = (str: string, param?: string): string[] => {
 	const linktext = String(
 		match?.[1]?.trim().replace(/(['"])/g, "") || "link"
 	); // Custom name (if any), with quotes removed
-	const currentUrl = String(match?.[2] || param); // URL (or whole param if no URL found)
+	const sourceUrl = String(match?.[2] || param); // URL (or whole param if no URL found)
 
 	const extractTextFragmentParts = (
 		selectedText: SelectedText
@@ -58,12 +58,12 @@ export const fragment_link = (str: string, param?: string): string[] => {
 						...item,
 						text: `${
 							item.text
-						} [${linktext}](${currentUrl}${createTextFragmentUrl(
+						} [${linktext}](${sourceUrl}${createTextFragmentUrl(
 							item.text
 						)})`,
 					};
 				} else {
-					return `${item} [${linktext}](${currentUrl}${createTextFragmentUrl(
+					return `${item} [${linktext}](${sourceUrl}${createTextFragmentUrl(
 						String(item)
 					)})`;
 				}
@@ -72,14 +72,14 @@ export const fragment_link = (str: string, param?: string): string[] => {
 			// Maybe useful for other filters
 			return Object.entries(data).map(
 				([key, value]) =>
-					`${value} [${linktext}](${currentUrl}${createTextFragmentUrl(
+					`${value} [${linktext}](${sourceUrl}${createTextFragmentUrl(
 						String(value)
 					)})`
 			);
 		} else if (typeof data === "string") {
 			// If user pass a string
 			return [
-				`${data} [${linktext}](${currentUrl}${createTextFragmentUrl(
+				`${data} [${linktext}](${sourceUrl}${createTextFragmentUrl(
 					data
 				)})`,
 			];

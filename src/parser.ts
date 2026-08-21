@@ -1,4 +1,4 @@
-// Template parser for the Web Clipper template engine
+// Template parser for Knap
 // Converts token stream into an Abstract Syntax Tree (AST)
 //
 // The parser handles:
@@ -8,7 +8,7 @@
 // - Expressions with operators and literals
 
 import { Token, TokenType, tokenize, TokenizerResult } from './tokenizer';
-import { filterMetadata, validFilterNames, type FilterMetadata } from './filters';
+import type { FilterMetadata } from './types';
 import type { TemplateErrorCode } from './errors';
 
 // ============================================================================
@@ -1769,7 +1769,7 @@ function argsToParamString(args: Expression[]): string | undefined {
 /**
  * Find the closest matching filter name for suggestions
  */
-function findSimilarFilter(name: string, filterNames: Iterable<string> = validFilterNames): string | null {
+function findSimilarFilter(name: string, filterNames: Iterable<string>): string | null {
 	let bestMatch: string | null = null;
 	let bestDistance = Infinity;
 
@@ -1858,17 +1858,6 @@ function collectFilters(nodes: ASTNode[]): FilterUsage[] {
  * Checks: 1) filter exists, 2) params are valid (via validator)
  */
 export function validateFilters(
-	ast: ASTNode[],
-	customFilterMetadata: Record<string, FilterMetadata> = {},
-): ParserError[] {
-	return validateFiltersWithRegistry(ast, {
-		...filterMetadata,
-		...customFilterMetadata,
-	});
-}
-
-/** Validate filters against exactly the supplied registry metadata. */
-export function validateFiltersWithRegistry(
 	ast: ASTNode[],
 	registryMetadata: Record<string, FilterMetadata>,
 ): ParserError[] {

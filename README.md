@@ -98,7 +98,7 @@ Local variables take precedence over the resolver.
 ## Custom filters
 
 The engine's filter registry is used for both validation and rendering.
-Filter parameters use the existing Web Clipper parameter-string format.
+Filter parameters use Knap's colon-delimited parameter syntax.
 
 ```ts
 import {
@@ -107,7 +107,8 @@ import {
 	type TemplateFilter,
 } from '@obsidianmd/knap';
 
-const markdown: TemplateFilter = (html, baseUrl, context) => {
+const markdown: TemplateFilter = (html, param, context) => {
+	const baseUrl = param?.replace(/^(['"])(.*)\1$/s, '$2');
 	return convertToMarkdown(html, baseUrl, context);
 };
 
@@ -124,6 +125,29 @@ const engine = createEngine({
 		...standardFilters,
 		markdown,
 	},
+});
+```
+
+The filter parameter is passed in its serialized Knap form so filters that
+accept multiple parameters can preserve delimiters and quoting. A custom filter
+that expects one scalar parameter can normalize surrounding quotes as above.
+
+Host data needed by a custom filter belongs in the generic engine context:
+
+```ts
+type HostContext = { sourceUrl: string };
+
+const sourceLink: TemplateFilter<HostContext> = (value, _param, filterContext) => {
+	return `[${value}](${filterContext?.context?.sourceUrl})`;
+};
+
+const engine = createEngine<HostContext>({
+	filters: { ...standardFilters, source_link: sourceLink },
+});
+
+await engine.render('{{ title | source_link }}', {
+	variables: { title: 'Knap' },
+	context: { sourceUrl: 'https://example.com' },
 });
 ```
 
@@ -154,9 +178,15 @@ application can register them as custom filters.
 - `engine.renderOrThrow(template, input, options?)` returns output or throws `TemplateRenderError`.
 - `engine.parse(template)` returns the AST and parser diagnostics.
 - `engine.validate(templateOrAst)` validates syntax and the configured filters.
-- `tokenize(template)` and `parse(template)` support editor tooling.
+- `tokenize(template)`, `parse(template)`, `validateVariables(ast)`, and
+  `validateFilters(ast, metadata)` support editor tooling.
 - `standardFilters` contains environment-neutral filters.
+- `standardFilterMetadata` describes the standard registry for standalone validation.
+- `applyFiltersWithRegistry(value, filterString, registry, context)` applies a filter
+  chain when a host needs filter syntax outside a full render.
 - `htmlFilters` is available from `@obsidianmd/knap/html`.
+
+See the [filter reference](FILTERS.md) for the standard and opt-in filters.
 
 ## Application boundary
 

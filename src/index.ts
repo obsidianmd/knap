@@ -1,7 +1,40 @@
-export * from './tokenizer';
-export * from './parser';
 export { createEngine } from './engine';
-export { applyFiltersWithRegistry, standardFilters } from './filters';
+export {
+	applyFiltersWithRegistry,
+	standardFilterMetadata,
+	standardFilters,
+} from './filters';
+export {
+	parse,
+	validateFilters,
+	validateVariables,
+} from './parser';
+export type {
+	ASTNode,
+	BaseNode,
+	BinaryExpression,
+	Expression,
+	FilterExpression,
+	ForNode,
+	GroupExpression,
+	IdentifierExpression,
+	IfNode,
+	LiteralExpression,
+	MemberExpression,
+	ParserError,
+	ParserResult,
+	SetNode,
+	TextNode,
+	UnaryExpression,
+	VariableNode,
+} from './parser';
+export { tokenize } from './tokenizer';
+export type {
+	Token,
+	TokenizerError,
+	TokenizerResult,
+	TokenType,
+} from './tokenizer';
 export type {
 	EngineOptions,
 	FilterContext,
@@ -25,6 +58,5 @@ export {
 	type TemplateError,
 	type TemplateErrorCode,
 } from './errors';
-export { setDebugLogger, type DebugLogger } from './debug';
 
 export const VERSION = '0.1.0';

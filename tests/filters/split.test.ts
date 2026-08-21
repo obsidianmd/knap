@@ -1,7 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { split } from '../../src/filters/split';
-import { render } from '../../src/renderer';
-import { applyFilters } from '../../src/filters';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('split filter', () => {
 	test('splits string by comma', () => {
@@ -42,15 +44,10 @@ describe('split filter', () => {
 });
 
 describe('split filter via renderer', () => {
-	const createContext = (variables: Record<string, any> = {}) => ({
-		variables,
-		currentUrl: 'https://example.com',
-		applyFilters,
-	});
-
 	test('split with bracket character class through template', async () => {
-		const ctx = createContext({ msg: 'abc123def456' });
-		const result = await render('{{msg|split:[0-9]}}', ctx);
+		const result = await engine.render('{{msg|split:[0-9]}}', {
+			variables: { msg: 'abc123def456' },
+		});
 		expect(result.errors).toHaveLength(0);
 		// Should split on digits
 		expect(result.output).toContain('abc');

@@ -1,7 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { callout } from '../../src/filters/callout';
-import { render } from '../../src/renderer';
-import { applyFilters } from '../../src/filters';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('callout filter', () => {
 	test('creates default info callout', () => {
@@ -34,15 +36,10 @@ describe('callout filter', () => {
 });
 
 describe('callout filter via renderer', () => {
-	const createContext = (variables: Record<string, any> = {}) => ({
-		variables,
-		currentUrl: 'https://example.com',
-		applyFilters,
-	});
-
 	test('callout with type, title, and fold state through template', async () => {
-		const ctx = createContext({ msg: 'content' });
-		const result = await render('{{msg|callout:("info","My Title",true)}}', ctx);
+		const result = await engine.render('{{msg|callout:("info","My Title",true)}}', {
+			variables: { msg: 'content' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toContain('[!info]-');
 		expect(result.output).toContain('My Title');
@@ -50,15 +47,17 @@ describe('callout filter via renderer', () => {
 	});
 
 	test('callout with just type through template', async () => {
-		const ctx = createContext({ msg: 'content' });
-		const result = await render('{{msg|callout:"warning"}}', ctx);
+		const result = await engine.render('{{msg|callout:"warning"}}', {
+			variables: { msg: 'content' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toContain('[!warning]');
 	});
 
 	test('applies a callout filter to a string literal', async () => {
-		const ctx = createContext();
-		const result = await render('{{"prompt text"|callout:("info","Summary",false)}}', ctx);
+		const result = await engine.render('{{"prompt text"|callout:("info","Summary",false)}}', {
+			variables: {},
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('> [!info]+ Summary\n> prompt text');
 	});

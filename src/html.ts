@@ -13,5 +13,3 @@ export const htmlFilters: Readonly<FilterRegistry> = Object.freeze({
 	html_to_json: htmlFilter(html_to_json),
 	remove_html: htmlFilter(remove_html),
 });
-
-export { html_to_json, remove_html };

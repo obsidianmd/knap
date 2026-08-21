@@ -1,7 +1,7 @@
 {
 	"name": "@obsidianmd/knap",
 	"version": "0.1.0",
-	"description": "An extensible template engine for Markdown and structured content.",
+	"description": "An environment-neutral template language with logic, structured errors, and extensible filters.",
 	"keywords": [
 		"template",
 		"markdown",
@@ -21,10 +21,11 @@
 		"access": "public"
 	},
 	"type": "module",
-	"sideEffects": false,
 	"files": [
 		"dist",
 		"README.md",
+		"FILTERS.md",
+		"CHANGELOG.md",
 		"LICENSE"
 	],
 	"main": "./dist/index.cjs",
@@ -54,7 +55,7 @@
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit",
 		"check": "pnpm typecheck && pnpm test && pnpm build",
-		"prepublishOnly": "pnpm check"
+		"prepack": "pnpm check"
 	},
 	"engines": {
 		"node": ">=20"

@@ -1,5 +1,5 @@
 import { TemplateRenderError, TemplateRuntimeError, type TemplateError } from './errors';
-import { parse, validateFiltersWithRegistry, type ASTNode, type ParserError } from './parser';
+import { parse, validateFilters, type ASTNode, type ParserError } from './parser';
 import { renderAST } from './renderer';
 import type {
 	EngineOptions,
@@ -43,7 +43,7 @@ export function createEngine<TContext = unknown>(
 		}
 
 		if (errors.length === 0) {
-			errors.push(...validateFiltersWithRegistry(ast, filterMetadata).map(normalizeParserError));
+			errors.push(...validateFilters(ast, filterMetadata).map(normalizeParserError));
 		}
 
 		return errors;
@@ -58,17 +58,15 @@ export function createEngine<TContext = unknown>(
 		const errors = parsed.errors.map(normalizeParserError);
 		if (errors.length > 0) return { output: '', errors };
 
-		const validationErrors = validateFiltersWithRegistry(parsed.ast, filterMetadata).map(normalizeParserError);
+		const validationErrors = validateFilters(parsed.ast, filterMetadata).map(normalizeParserError);
 
 		const resolverContext = {
 			variables: input.variables,
-			currentUrl: input.currentUrl,
 			context: input.context,
 		};
 
 		const rendered = await renderAST(parsed.ast, {
 			variables: input.variables,
-			currentUrl: input.currentUrl ?? '',
 			asyncResolver: input.resolveVariable
 				? async name => {
 					try {
@@ -81,7 +79,7 @@ export function createEngine<TContext = unknown>(
 					}
 				}
 				: undefined,
-			applyFilterDirect: (value, filterName, param) => {
+			applyFilter: (value, filterName, param) => {
 				const filter = filters[filterName];
 				if (!filter) {
 					return value;

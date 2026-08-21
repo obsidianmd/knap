@@ -59,13 +59,13 @@ import { upper } from './upper';
 import { wikilink } from './wikilink';
 import { duration } from './duration';
 
-export type FilterFunction = (value: string, param?: string) => string | any[];
+type FilterFunction = (value: string, param?: string) => string | any[];
 
 // ============================================================================
 // Filter Metadata for Validation
 // ============================================================================
 
-export const filterMetadata: Record<string, FilterMetadata> = {
+export const standardFilterMetadata: Record<string, FilterMetadata> = {
 	// Filters with validators
 	calc: { example: 'calc:"+10"', validateParams: validateCalcParams },
 	date_modify: { example: 'date_modify:"+1 day"', validateParams: validateDateModifyParams },
@@ -120,9 +120,7 @@ export const filterMetadata: Record<string, FilterMetadata> = {
 	wikilink: {},
 };
 
-export const validFilterNames = new Set(Object.keys(filterMetadata));
-
-export const filters: { [key: string]: FilterFunction } = {
+const filters: Record<string, FilterFunction> = {
 	blockquote,
 	calc,
 	callout,
@@ -176,7 +174,7 @@ export const filters: { [key: string]: FilterFunction } = {
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {
 	const wrapped: TemplateFilter = (value, param) => filter(value, param);
-	wrapped.metadata = filterMetadata[name] ?? {};
+	wrapped.metadata = standardFilterMetadata[name] ?? {};
 	return wrapped;
 }
 
@@ -240,133 +238,6 @@ function parseFilterString(filterString: string): string[] {
 	}
 
 	return parts;
-}
-
-/**
- * Apply a single filter by name with a pre-formatted parameter string.
- * Use this when you already have the filter name and parameters separated.
- * For filter strings like "filter1:arg|filter2", use applyFilters() instead.
- *
- * @param value - The input value to filter
- * @param filterName - The name of the filter to apply (e.g., "replace", "slice")
- * @param paramString - The parameter string without the filter name (e.g., "0,5" for slice:0,5)
- * @param currentUrl - Optional current URL for filters that need it
- * @returns The filtered value as a string
- */
-export function applyFilterDirect(
-	value: string | any[],
-	filterName: string,
-	paramString: string | undefined,
-	currentUrl?: string
-): string {
-	debugLog('Filters', 'applyFilterDirect called with:', { value, filterName, paramString, currentUrl });
-
-	const filter = filters[filterName];
-	if (!filter) {
-		debugLog(`Invalid filter: ${filterName}`);
-		debugLog('Filters', `Available filters:`, Object.keys(filters));
-		return typeof value === 'string' ? value : JSON.stringify(value);
-	}
-
-	// Convert the input to a string if it's not already
-	const stringInput = typeof value === 'string' ? value : JSON.stringify(value);
-
-	// Build params array for special case handling
-	let params = paramString ? [paramString] : [];
-
-	// Special case for markdown filter: use currentUrl if no params provided
-	if (filterName === 'markdown' && !paramString && currentUrl) {
-		params = [currentUrl];
-	}
-
-	// Special case for fragment_link filter: append currentUrl
-	if (filterName === 'fragment_link' && currentUrl) {
-		params.push(currentUrl);
-	}
-
-	// Apply the filter
-	const output = filter(stringInput, params.join(':'));
-
-	debugLog('Filters', `Filter ${filterName} output:`, output);
-
-	// If the output is a string that looks like JSON, try to parse it
-	if (typeof output === 'string' && (output.startsWith('[') || output.startsWith('{'))) {
-		try {
-			const parsed = JSON.parse(output);
-			return JSON.stringify(parsed);
-		} catch {
-			return output;
-		}
-	}
-
-	return typeof output === 'string' ? output : JSON.stringify(output);
-}
-
-/**
- * Apply filters from a filter string (legacy path).
- * Used when filters are specified as a string like "filter1:arg|filter2".
- * For the optimized path with pre-parsed filters, use applyFilterDirect.
- */
-export function applyFilters(value: string | any[], filterString: string, currentUrl?: string): string {
-	debugLog('Filters', 'applyFilters called with:', { value, filterString, currentUrl });
-
-	if (!filterString) {
-		debugLog('Filters', 'Empty filter string, returning original value');
-		return typeof value === 'string' ? value : JSON.stringify(value);
-	}
-
-	let processedValue = value;
-
-	// Split the filter string into individual filter names, accounting for escaped pipes and quotes
-	const filterNames = splitFilterString(filterString);
-	debugLog('Filters', 'Split filter string:', filterNames);
-
-	// Reduce through all filter names, applying each filter sequentially
-	const result = filterNames.reduce((result, filterName) => {
-			// Parse the filter string into name and parameters
-			const [name, ...params] = parseFilterString(filterName);
-			debugLog('Filters', `Parsed filter: ${name}, Params:`, params);
-
-			// Get the filter function from the filters object
-			const filter = filters[name];
-			if (filter) {
-				// Convert the input to a string if it's not already
-				const stringInput = typeof result === 'string' ? result : JSON.stringify(result);
-
-				// Special case for markdown filter: use currentUrl if no params provided
-				if (name === 'markdown' && params.length === 0 && currentUrl) {
-					params.push(currentUrl);
-				}
-
-				// Special case for fragment filter: use currentUrl if no params provided
-				if (name === 'fragment_link' && currentUrl) {
-					params.push(currentUrl);
-				}
-
-				// Apply the filter and get the output
-				const output = filter(stringInput, params.join(':'));
-
-				debugLog('Filters', `Filter ${name} output:`, output);
-
-				// If the output is a string that looks like JSON, try to parse it
-				if (typeof output === 'string' && (output.startsWith('[') || output.startsWith('{'))) {
-					try {
-						return JSON.parse(output);
-					} catch {
-						return output;
-					}
-				}
-				return output;
-			} else {
-				// If the filter doesn't exist, log an error and return the unmodified result
-				debugLog(`Invalid filter: ${name}`);
-				debugLog('Filters', `Available filters:`, Object.keys(filters));
-				return result;
-			}
-		}, processedValue);
-
-	// Ensure the final result is a string
-	return typeof result === 'string' ? result : JSON.stringify(result);
 }
 
 /**

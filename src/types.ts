@@ -18,7 +18,6 @@ export interface FilterMetadata {
 
 export interface FilterContext<TContext = unknown> {
 	variables: TemplateVariables;
-	currentUrl?: string;
 	context?: TContext;
 }
 
@@ -31,7 +30,6 @@ export type FilterRegistry<TContext = unknown> = Record<string, TemplateFilter<T
 
 export interface VariableResolverContext<TContext = unknown> {
 	variables: TemplateVariables;
-	currentUrl?: string;
 	context?: TContext;
 }
 
@@ -46,7 +44,6 @@ export interface EngineOptions<TContext = unknown> {
 
 export interface RenderInput<TContext = unknown> {
 	variables: TemplateVariables;
-	currentUrl?: string;
 	context?: TContext;
 	resolveVariable?: VariableResolver<TContext>;
 }

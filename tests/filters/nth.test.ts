@@ -1,8 +1,10 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
 import { nth, validateNthParams } from '../../src/filters/nth';
-import { render } from '../../src/renderer';
-import { applyFilters } from '../../src/filters';
+import { standardFilterMetadata, standardFilters } from '../../src/filters';
 import { parse, validateFilters, FilterExpression, LiteralExpression, VariableNode } from '../../src/parser';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('nth filter', () => {
 	test('keeps nth element (1-based)', () => {
@@ -89,43 +91,40 @@ describe('nth param validation', () => {
 	test('validates nth:2n without errors', () => {
 		const result = parse('{{items|nth:2n}}');
 		expect(result.errors).toHaveLength(0);
-		const filterWarnings = validateFilters(result.ast);
+		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
 		expect(filterWarnings).toHaveLength(0);
 	});
 
 	test('validates nth:2,3:4 without errors', () => {
 		const result = parse('{{items|nth:2,3:4}}');
 		expect(result.errors).toHaveLength(0);
-		const filterWarnings = validateFilters(result.ast);
+		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
 		expect(filterWarnings).toHaveLength(0);
 	});
 });
 
 describe('nth filter via renderer', () => {
-	const createContext = (variables: Record<string, any> = {}) => ({
-		variables,
-		currentUrl: 'https://example.com',
-		applyFilters,
-	});
-
 	test('nth:2 gets single element through template', async () => {
-		const ctx = createContext({ msg: '["a","b","c","d","e"]' });
-		const result = await render('{{msg|nth:2}}', ctx);
+		const result = await engine.render('{{msg|nth:2}}', {
+			variables: { msg: '["a","b","c","d","e"]' },
+		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('["b"]');
 	});
 
 	test('nth:2n gets every 2nd element through template', async () => {
-		const ctx = createContext({ msg: '["a","b","c","d","e","f"]' });
-		const result = await render('{{msg|nth:2n}}', ctx);
+		const result = await engine.render('{{msg|nth:2n}}', {
+			variables: { msg: '["a","b","c","d","e","f"]' },
+		});
 		expect(result.errors).toHaveLength(0);
 		const parsed = JSON.parse(result.output);
 		expect(parsed).toEqual(['b', 'd', 'f']);
 	});
 
 	test('nth:2,3:4 gets positions 2,3 from each group of 4 through template', async () => {
-		const ctx = createContext({ msg: '[1,2,3,4,5,6,7,8]' });
-		const result = await render('{{msg|nth:2,3:4}}', ctx);
+		const result = await engine.render('{{msg|nth:2,3:4}}', {
+			variables: { msg: '[1,2,3,4,5,6,7,8]' },
+		});
 		expect(result.errors).toHaveLength(0);
 		const parsed = JSON.parse(result.output);
 		expect(parsed).toEqual([2, 3, 6, 7]);

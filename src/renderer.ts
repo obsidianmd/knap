@@ -1,4 +1,4 @@
-// Template renderer for the Web Clipper template engine
+// Template renderer for Knap
 // Evaluates an AST and produces string output
 //
 // The renderer handles:
@@ -24,14 +24,9 @@ import {
 	MemberExpression,
 	parse,
 } from './parser';
-import { applyFilterDirect as builtInApplyFilterDirect } from './filters';
 import { TemplateRuntimeError, type TemplateError } from './errors';
 
-// Filter application function type for direct invocation (already-parsed filter name and params)
-type ApplyFilterDirectFn = (value: string, filterName: string, paramString: string | undefined, currentUrl: string) => any;
-
-// Default filter implementation using the built-in filters
-const defaultApplyFilterDirect: ApplyFilterDirectFn = builtInApplyFilterDirect;
+type ApplyFilterFn = (value: string, filterName: string, paramString: string | undefined) => any;
 
 // ============================================================================
 // Render Context
@@ -47,17 +42,11 @@ export interface RenderContext {
 	/** Variables available in the template */
 	variables: Record<string, any>;
 
-	/** Current URL for filter processing */
-	currentUrl: string;
-
 	/** Resolver for values not present in `variables` (optional). */
 	asyncResolver?: AsyncResolver;
 
-	/** Custom filter functions (optional, merged with built-in filters) */
-	filters?: Record<string, (...args: any[]) => any>;
-
-	/** Custom applyFilterDirect implementation (optional, uses built-in if not provided) */
-	applyFilterDirect?: ApplyFilterDirectFn;
+	/** Registry-backed filter invocation supplied by the owning engine. */
+	applyFilter: ApplyFilterFn;
 }
 
 /**
@@ -524,11 +513,6 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		args.push(argValue);
 	}
 
-	// Check for custom filters first
-	if (state.context.filters && state.context.filters[expr.name]) {
-		return state.context.filters[expr.name](value, ...args.map(normalizeCustomFilterArg));
-	}
-
 	const stringValue = valueToString(value);
 
 	// Build parameter string from args (already parsed by AST)
@@ -557,15 +541,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		paramString = formattedArgs.join(',');
 	}
 
-	// Use direct filter invocation (optimized path - no re-parsing needed)
-	const applyFilterDirectFn = state.context.applyFilterDirect || defaultApplyFilterDirect;
-	return applyFilterDirectFn(stringValue, expr.name, paramString, state.context.currentUrl);
-}
-
-function normalizeCustomFilterArg(value: any): any {
-	if (typeof value !== 'string') return value;
-	const match = value.match(/^(["'])([^"']*)\1$/s);
-	return match ? match[2] : value;
+	return state.context.applyFilter(stringValue, expr.name, paramString);
 }
 
 function evaluateContains(left: any, right: any): boolean {
@@ -722,20 +698,4 @@ function toRenderError(error: unknown, prefix: string, line: number, column: num
 		column,
 		code: 'RENDER_ERROR',
 	};
-}
-
-// ============================================================================
-// Convenience Functions
-// ============================================================================
-
-/**
- * Simple render function for basic usage
- */
-export async function renderTemplate(
-	template: string,
-	variables: Record<string, any>,
-	currentUrl: string = ''
-): Promise<string> {
-	const result = await render(template, { variables, currentUrl });
-	return result.output;
 }
