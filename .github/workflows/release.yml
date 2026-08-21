@@ -1,0 +1,51 @@
+name: Release Knap
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify tag matches package version
+        run: |
+          package_version="$(node -p "require('./package.json').version")"
+          test "${GITHUB_REF_NAME#v}" = "$package_version"
+      - name: Check package
+        run: pnpm check
+      - name: Pack release
+        run: |
+          mkdir release
+          npm pack --ignore-scripts --pack-destination release
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: release/*.tgz
+      - name: Publish to npm
+        run: npm publish release/*.tgz --access public --provenance
+      - name: Create draft GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title="$GITHUB_REF_NAME" \
+            --draft \
+            release/*.tgz

@@ -1,7 +1,7 @@
 {
 	"name": "@obsidianmd/knap",
 	"version": "0.1.0",
-	"description": "An environment-neutral template language with logic, structured errors, and extensible filters.",
+	"description": "A flexible template engine for creating Markdown.",
 	"keywords": [
 		"template",
 		"markdown",
