@@ -696,7 +696,12 @@ function valueToString(value: any): string {
 
 function toRenderError(error: unknown, prefix: string, line: number, column: number): RenderError {
 	if (error instanceof TemplateRuntimeError) {
-		return { message: error.message, line, column, code: error.code };
+		return {
+			message: error.message,
+			line: error.line ?? line,
+			column: error.column ?? column,
+			code: error.code,
+		};
 	}
 	return {
 		message: `${prefix}: ${error instanceof Error ? error.message : String(error)}`,

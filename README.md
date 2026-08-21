@@ -51,7 +51,8 @@ const output = await engine.renderOrThrow('{{ title | upper }}', { variables });
 Filters that deliberately preserve their input after invalid runtime data can
 report non-fatal diagnostics in `result.warnings`. Each warning includes a
 stable `code`, `message`, `filter`, `line`, and `column`. Warnings do not make
-`renderOrThrow()` throw.
+`renderOrThrow()` throw. Identical warnings from repeated evaluation of the
+same filter expression are deduplicated within each render.
 
 ## Syntax
 

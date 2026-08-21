@@ -90,6 +90,21 @@ describe('createEngine', () => {
 		});
 	});
 
+	test('deduplicates repeated warnings from the same filter expression', async () => {
+		const engine = createEngine({ filters: standardFilters });
+		const result = await engine.render(
+			'{% for item in items %}{{item|date:"YYYY-MM-DD"}}{% endfor %}',
+			{ variables: { items: Array.from({ length: 500 }, () => 'not-a-date') } },
+		);
+
+		expect(result.errors).toHaveLength(0);
+		expect(result.warnings).toHaveLength(1);
+		expect(result.warnings[0]).toMatchObject({
+			code: 'INVALID_FILTER_INPUT',
+			filter: 'date',
+		});
+	});
+
 	test('supports async filters and wraps rejected promises as filter errors', async () => {
 		const delayedUpper: TemplateFilter = async value => value.toUpperCase();
 		const reject: TemplateFilter = async () => { throw new Error('offline'); };
@@ -106,6 +121,8 @@ describe('createEngine', () => {
 		expect(failure.errors[0]).toMatchObject({
 			code: 'FILTER_ERROR',
 			message: 'Filter "reject" failed: offline',
+			line: 1,
+			column: 9,
 		});
 	});
 

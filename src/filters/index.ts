@@ -249,6 +249,12 @@ function parseFilterString(filterString: string): string[] {
 	return parts;
 }
 
+function isThenable(value: unknown): value is PromiseLike<unknown> {
+	return value !== null
+		&& (typeof value === 'object' || typeof value === 'function')
+		&& typeof (value as { then?: unknown }).then === 'function';
+}
+
 /**
  * Apply a synchronous filter chain against an application-provided registry.
  * This supports host adapters that need filter syntax outside a full render,
@@ -276,7 +282,7 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 			? processedValue
 			: JSON.stringify(processedValue);
 		const output = filter(stringInput, params.join(':'), context);
-		if (output instanceof Promise) {
+		if (isThenable(output)) {
 			throw new TypeError(`Filter "${name}" is asynchronous; use engine.render() for async filters`);
 		}
 

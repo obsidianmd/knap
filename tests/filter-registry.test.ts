@@ -36,6 +36,21 @@ describe('applyFiltersWithRegistry', () => {
 		)).toThrow('use engine.render() for async filters');
 	});
 
+	test('rejects thenables that are not native promises in the synchronous helper', () => {
+		const thenableFilter = ((value: string) => ({
+			then(resolve: (result: string) => void) {
+				resolve(value);
+			},
+		})) as unknown as FilterRegistry[string];
+
+		expect(() => applyFiltersWithRegistry(
+			'knap',
+			'thenable',
+			{ thenable: thenableFilter },
+			{ variables: {} },
+		)).toThrow('use engine.render() for async filters');
+	});
+
 	test('freezes standard filter metadata and each metadata entry', () => {
 		expect(Object.isFrozen(standardFilterMetadata)).toBe(true);
 		expect(Object.isFrozen(standardFilterMetadata.calc)).toBe(true);

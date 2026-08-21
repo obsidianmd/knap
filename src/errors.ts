@@ -29,6 +29,8 @@ export class TemplateRuntimeError extends Error {
 	constructor(
 		message: string,
 		readonly code: TemplateErrorCode = 'RENDER_ERROR',
+		readonly line?: number,
+		readonly column?: number,
 	) {
 		super(message);
 		this.name = 'TemplateRuntimeError';

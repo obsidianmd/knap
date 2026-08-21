@@ -61,6 +61,7 @@ export function createEngine<TContext = unknown>(
 
 		const validationErrors = validateFilters(parsed.ast, filterMetadata).map(normalizeParserError);
 		const warnings: TemplateResult['warnings'] = [];
+		const warningKeys = new Set<string>();
 
 		const resolverContext = {
 			variables: input.variables,
@@ -90,20 +91,40 @@ export function createEngine<TContext = unknown>(
 					return await filter(value, param, {
 						...resolverContext,
 						reportWarning: (warning: FilterWarning) => {
-							warnings.push({
+							const templateWarning = {
 								message: warning.message,
 								line,
 								column,
 								code: warning.code ?? 'FILTER_WARNING',
 								filter: filterName,
-							});
+							} satisfies TemplateResult['warnings'][number];
+							const warningKey = JSON.stringify([
+								templateWarning.code,
+								templateWarning.filter,
+								templateWarning.line,
+								templateWarning.column,
+								templateWarning.message,
+							]);
+							if (!warningKeys.has(warningKey)) {
+								warningKeys.add(warningKey);
+								warnings.push(templateWarning);
+							}
 						},
 					});
 				} catch (error) {
-					if (error instanceof TemplateRuntimeError) throw error;
+					if (error instanceof TemplateRuntimeError) {
+						throw new TemplateRuntimeError(
+							error.message,
+							error.code,
+							error.line ?? line,
+							error.column ?? column,
+						);
+					}
 					throw new TemplateRuntimeError(
 						`Filter "${filterName}" failed: ${error instanceof Error ? error.message : String(error)}`,
 						'FILTER_ERROR',
+						line,
+						column,
 					);
 				}
 			},
