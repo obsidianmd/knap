@@ -40,7 +40,7 @@ jobs:
         with:
           subject-path: release/*.tgz
       - name: Publish to npm
-        run: npm publish release/*.tgz --access public --provenance
+        run: npm publish ./release/*.tgz --access public --provenance
       - name: Create draft GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
