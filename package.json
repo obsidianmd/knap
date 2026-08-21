@@ -1,13 +1,11 @@
 {
 	"name": "@obsidianmd/knap",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"description": "A flexible template engine for creating Markdown.",
 	"keywords": [
 		"template",
 		"markdown",
-		"obsidian",
-		"liquid",
-		"twig"
+		"obsidian"
 	],
 	"homepage": "https://github.com/obsidianmd/knap#readme",
 	"bugs": "https://github.com/obsidianmd/knap/issues",
