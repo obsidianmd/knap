@@ -131,6 +131,11 @@ const KEYWORDS: Record<string, TokenType> = {
 	'null': 'null',
 };
 
+// Character codes for the delimiter scan in text mode, compared directly so
+// the hot loop never allocates single-character strings.
+const CHAR_OPEN_BRACE = 0x7b;  // {
+const CHAR_PERCENT = 0x25;     // %
+
 // ============================================================================
 // Main Tokenizer Function
 // ============================================================================
@@ -188,64 +193,53 @@ function tokenizeText(state: TokenizerState): void {
 	const startPos = state.pos;
 	const startLine = state.line;
 	const startColumn = state.column;
+	const input = state.input;
 
-	while (state.pos < state.input.length) {
-		// Check for variable start: {{
-		if (lookAhead(state, '{{')) {
-			// Emit any accumulated text
-			if (state.pos > startPos) {
-				state.tokens.push({
-					type: 'text',
-					value: state.input.slice(startPos, state.pos),
-					line: startLine,
-					column: startColumn,
-				});
-			}
+	while (state.pos < input.length) {
+		// Text runs are usually long compared to the tags inside them, so jump
+		// straight to the next candidate brace instead of inspecting (and
+		// slicing) every character along the way.
+		const brace = input.indexOf('{', state.pos);
+		if (brace === -1) break;
 
-			// Variables preserve whitespace by default (unlike tags which trim by default)
-			advance(state, 2);
+		const next = input.charCodeAt(brace + 1);
+		const isVariable = next === CHAR_OPEN_BRACE;
+		const isTag = next === CHAR_PERCENT;
 
-			state.tokens.push({
-				type: 'variable_start',
-				value: '{{',
-				line: state.line,
-				column: state.column - 2,
-				trimLeft: false,  // Variables preserve whitespace by default
-			});
-
-			state.mode = 'variable';
-			return;
+		if (!isVariable && !isTag) {
+			// A lone brace is ordinary text; resume the search after it.
+			advanceTo(state, brace + 1);
+			continue;
 		}
 
-		// Check for tag start: {%
-		if (lookAhead(state, '{%')) {
-			// Emit any accumulated text
-			if (state.pos > startPos) {
-				state.tokens.push({
-					type: 'text',
-					value: state.input.slice(startPos, state.pos),
-					line: startLine,
-					column: startColumn,
-				});
-			}
+		advanceTo(state, brace);
 
-			advance(state, 2);
-
+		// Emit any accumulated text
+		if (state.pos > startPos) {
 			state.tokens.push({
-				type: 'tag_start',
-				value: '{%',
-				line: state.line,
-				column: state.column - 2,
-				trimLeft: false,  // Preserve whitespace before tags
+				type: 'text',
+				value: input.slice(startPos, state.pos),
+				line: startLine,
+				column: startColumn,
 			});
-
-			state.mode = 'tag';
-			return;
 		}
 
-		// Regular character - advance
-		advanceChar(state);
+		// Variables preserve whitespace by default (unlike tags which trim by default)
+		advance(state, 2);
+
+		state.tokens.push({
+			type: isVariable ? 'variable_start' : 'tag_start',
+			value: isVariable ? '{{' : '{%',
+			line: state.line,
+			column: state.column - 2,
+			trimLeft: false,  // Both preserve whitespace before the delimiter
+		});
+
+		state.mode = isVariable ? 'variable' : 'tag';
+		return;
 	}
+
+	advanceTo(state, input.length);
 
 	// End of input - emit remaining text
 	if (state.pos > startPos) {
@@ -943,7 +937,34 @@ function tokenizeCssSelector(state: TokenizerState, value: string): string {
 // ============================================================================
 
 function lookAhead(state: TokenizerState, str: string): boolean {
-	return state.input.slice(state.pos, state.pos + str.length) === str;
+	return state.input.startsWith(str, state.pos);
+}
+
+/**
+ * Advance to an absolute position, keeping line and column in sync without
+ * stepping through the span one character at a time.
+ */
+function advanceTo(state: TokenizerState, target: number): void {
+	if (target <= state.pos) return;
+
+	const input = state.input;
+	let lastNewline = -1;
+	let newlines = 0;
+
+	for (let i = input.indexOf('\n', state.pos); i !== -1 && i < target; i = input.indexOf('\n', i + 1)) {
+		lastNewline = i;
+		newlines++;
+	}
+
+	if (newlines > 0) {
+		state.line += newlines;
+		// The character after a newline is column 1.
+		state.column = target - lastNewline;
+	} else {
+		state.column += target - state.pos;
+	}
+
+	state.pos = target;
 }
 
 function advance(state: TokenizerState, count: number): void {
