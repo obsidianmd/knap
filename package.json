@@ -1,0 +1,72 @@
+{
+	"name": "@obsidianmd/knap",
+	"version": "0.1.0",
+	"description": "An extensible template engine for Markdown and structured content.",
+	"keywords": [
+		"template",
+		"markdown",
+		"obsidian",
+		"liquid",
+		"twig"
+	],
+	"homepage": "https://github.com/obsidianmd/knap#readme",
+	"bugs": "https://github.com/obsidianmd/knap/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/obsidianmd/knap.git"
+	},
+	"author": "Obsidian",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"type": "module",
+	"sideEffects": false,
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"typesVersions": {
+		"*": {
+			"html": [
+				"dist/html.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		},
+		"./html": {
+			"types": "./dist/html.d.ts",
+			"import": "./dist/html.js",
+			"require": "./dist/html.cjs"
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"check": "pnpm typecheck && pnpm test && pnpm build",
+		"prepublishOnly": "pnpm check"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"packageManager": "pnpm@10.20.0",
+	"dependencies": {
+		"dayjs": "^1.11.13"
+	},
+	"devDependencies": {
+		"@types/node": "^20.19.27",
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.3",
+		"vitest": "^4.0.18"
+	}
+}
