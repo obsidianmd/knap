@@ -77,6 +77,8 @@ export interface LiteralExpression extends BaseNode {
 export interface IdentifierExpression extends BaseNode {
 	type: 'identifier';
 	name: string;
+	/** Pre-split dotted segments. */
+	path?: readonly string[];
 }
 
 export interface BinaryExpression extends BaseNode {
@@ -1251,6 +1253,7 @@ function parsePrimaryExpression(state: ParserState): Expression | null {
 		return {
 			type: 'identifier',
 			name,
+			...(name.includes('.') ? { path: name.split('.') } : {}),
 			line: idToken.line,
 			column: idToken.column,
 		};

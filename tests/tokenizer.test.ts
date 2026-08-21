@@ -277,6 +277,32 @@ describe('Tokenizer', () => {
 			const endif = result.tokens.find(t => t.type === 'keyword_endif');
 			expect(endif?.line).toBe(3);
 		});
+
+		test('tracks position past braces that do not open a tag', () => {
+			const result = tokenize('a { b } c {{x}}');
+			expect(result.errors).toHaveLength(0);
+
+			const varStart = result.tokens.find(t => t.type === 'variable_start');
+			expect(varStart?.line).toBe(1);
+			expect(varStart?.column).toBe(11);
+		});
+
+		test('tracks position across prose spanning several lines', () => {
+			const result = tokenize('one\ntwo { three\nfour\n  {% if x %}');
+			expect(result.errors).toHaveLength(0);
+
+			const tagStart = result.tokens.find(t => t.type === 'tag_start');
+			expect(tagStart?.line).toBe(4);
+			expect(tagStart?.column).toBe(3);
+		});
+
+		test('keeps trailing text that ends in a brace', () => {
+			const result = tokenize('{{x}} tail {');
+			expect(result.errors).toHaveLength(0);
+
+			const text = result.tokens.filter(t => t.type === 'text');
+			expect(text.map(t => t.value)).toEqual([' tail {']);
+		});
 	});
 
 	describe('Complex Templates', () => {
