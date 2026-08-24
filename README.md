@@ -16,7 +16,7 @@ The Obsidian Web Clipper documentation includes examples of Knap's shared
 ## Install
 
 ```sh
-pnpm add @obsidianmd/knap
+pnpm add knap
 ```
 
 ## Use
@@ -26,7 +26,7 @@ import {
 	createEngine,
 	standardFilters,
 	type TemplateVariables,
-} from '@obsidianmd/knap';
+} from 'knap';
 
 const engine = createEngine({ filters: standardFilters });
 
@@ -113,7 +113,7 @@ Local variables take precedence over the resolver.
 
 Filters are registered explicitly when an engine is created. The standard
 registry is available as `standardFilters`; DOM-dependent filters are available
-separately from `@obsidianmd/knap/html`.
+separately from `knap/html`.
 
 Parameters follow a filter name after a colon, and filters can be chained with
 `|`:
@@ -171,7 +171,7 @@ includes values such as an unparseable date or an invalid regular expression.
 
 ### HTML preset
 
-Import `htmlFilters` from `@obsidianmd/knap/html` to enable:
+Import `htmlFilters` from `knap/html` to enable:
 
 | Filter | Purpose |
 | --- | --- |
@@ -182,8 +182,8 @@ These filters are opt-in because they require browser-compatible DOM globals
 such as `DOMParser`; they do not ship in the root runtime graph:
 
 ```ts
-import { createEngine, standardFilters } from '@obsidianmd/knap';
-import { htmlFilters } from '@obsidianmd/knap/html';
+import { createEngine, standardFilters } from 'knap';
+import { htmlFilters } from 'knap/html';
 
 const engine = createEngine({
 	filters: {
@@ -203,7 +203,7 @@ import {
 	createEngine,
 	standardFilters,
 	type TemplateFilter,
-} from '@obsidianmd/knap';
+} from 'knap';
 
 const markdown: TemplateFilter = (html, param, context) => {
 	const baseUrl = param?.replace(/^(['"])(.*)\1$/s, '$2');
@@ -277,7 +277,7 @@ await engine.render('{{ title | source_link }}', {
 - `standardFilterMetadata` describes the standard registry for standalone validation.
 - `applyFiltersWithRegistry(value, filterString, registry, context)` applies a filter
   chain when a host needs filter syntax outside a full render.
-- `htmlFilters` is available from `@obsidianmd/knap/html`.
+- `htmlFilters` is available from `knap/html`.
 
 ## Development
 

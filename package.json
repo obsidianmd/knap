@@ -1,6 +1,6 @@
 {
-	"name": "@obsidianmd/knap",
-	"version": "0.2.0",
+	"name": "knap",
+	"version": "0.2.1",
 	"description": "A flexible template engine for creating Markdown.",
 	"keywords": [
 		"template",

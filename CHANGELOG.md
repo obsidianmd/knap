@@ -2,6 +2,10 @@
 
 All notable changes to Knap will be documented in this file.
 
+## 0.2.1
+
+- Rename the npm package from `@obsidianmd/knap` to `knap`.
+
 ## 0.1.0
 
 - Extract the shared template tokenizer, parser, AST interpreter, and standard
