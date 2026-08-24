@@ -57,6 +57,7 @@ import { unique } from './unique';
 import { upper } from './upper';
 import { wikilink } from './wikilink';
 import { duration } from './duration';
+import { yaml } from './yaml';
 
 type FilterFunction = (
 	value: string,
@@ -121,6 +122,7 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	unique: {},
 	upper: {},
 	wikilink: {},
+	yaml: {},
 };
 
 export const standardFilterMetadata: Readonly<Record<string, FilterMetadata>> = Object.freeze(
@@ -178,7 +180,8 @@ const filters: Record<string, FilterFunction> = {
 	unescape,
 	unique,
 	upper,
-	wikilink
+	wikilink,
+	yaml,
 };
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {

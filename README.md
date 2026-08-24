@@ -160,6 +160,7 @@ Parameters follow a filter name after a colon, and filters can be chained with
 | `trim` | Remove surrounding whitespace. |
 | `uncamel` | Convert camel-cased text into words. |
 | `unescape` | Unescape encoded text. |
+| `yaml` | Format a value as a YAML-safe scalar. |
 
 Filter metadata, including parameter validation and examples, is exported as
 `standardFilterMetadata`. Invalid filter names and invalid parameters are
