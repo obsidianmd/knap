@@ -279,7 +279,7 @@ footer > a:last-child { justify-self: end; }
 .docs-toc a { color: var(--muted); font-size: 0.8rem; }
 .docs-toc a:hover { color: var(--paper); }
 .docs-toc { display: grid; gap: 8px; border-left: 1px solid var(--line); padding-left: 18px; }
-.docs-toc a[data-depth="3"] { padding-left: 12px; font-size: 0.74rem; }
+.docs-toc a[data-depth="3"] { padding-left: 12px; }
 
 .docs-title { container-type: inline-size; margin-bottom: 70px; }
 .docs-title h1 {
