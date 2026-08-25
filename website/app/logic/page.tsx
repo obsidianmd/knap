@@ -18,7 +18,7 @@ const toc = [
 
 export default function LogicPage() {
   return (
-    <DocShell current="logic" eyebrow="Language guide · 02" title="Logic" description="Include content conditionally, choose fallback values, and repeat Markdown over arrays—all with a deliberately small template language." toc={toc}>
+    <DocShell current="logic" title="Logic" description="Include content conditionally, choose fallback values, and repeat Markdown over arrays—all with a deliberately small template language." toc={toc}>
       <section id="conditionals" className="doc-section">
         <h2>Conditionals</h2>
         <p>Use <code>{'{% if %}'}</code> to include content only when an expression is true. Add <code>elseif</code> and <code>else</code> for alternative branches.</p>

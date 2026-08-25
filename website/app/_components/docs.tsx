@@ -35,7 +35,7 @@ export function DocShell({
   children,
 }: {
   current: DocRoute;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   toc: Array<{ href: string; label: string }>;
@@ -65,7 +65,7 @@ export function DocShell({
 
         <article className="docs-content">
           <header className="docs-title">
-            <p className="eyebrow">{eyebrow}</p>
+            {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h1>{title}</h1>
             <p>{description}</p>
           </header>

@@ -59,7 +59,6 @@ export default function Home() {
 
       <section className="feature-grid" aria-labelledby="why-knap">
         <div className="section-heading">
-          <p className="eyebrow">Small language, clear contract</p>
           <h2 id="why-knap">Made for applications that create Markdown.</h2>
         </div>
         <div className="feature-cards">

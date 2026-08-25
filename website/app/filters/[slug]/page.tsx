@@ -30,7 +30,7 @@ export default async function FilterPage({ params }: PageProps) {
   ];
 
   return (
-    <DocShell current="filters" eyebrow={`${filter.category} · Filter reference`} title={filter.name} description={filter.summary} toc={toc}>
+    <DocShell current="filters" title={filter.name} description={filter.summary} toc={toc}>
       <nav className="filter-breadcrumb" aria-label="Breadcrumb"><a href="/filters">Filters</a><span>/</span><code>{filter.name}</code></nav>
       {filter.environment === 'html' ? <Note title="HTML preset"><p>This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</p></Note> : null}
 
