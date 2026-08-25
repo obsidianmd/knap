@@ -328,14 +328,7 @@ footer > a:last-child { justify-self: end; }
 .doc-code-copy[data-copied] { color: var(--green); }
 .doc-code pre { margin: 0; overflow-x: auto; padding-block: 18px; color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; line-height: 1.72; }
 .doc-code-unlabeled pre { padding-block: 14px; }
-.doc-code pre, .code-window pre { scrollbar-color: var(--muted) transparent; scrollbar-width: thin; }
-.doc-code pre::-webkit-scrollbar, .code-window pre::-webkit-scrollbar { height: 10px; }
-.doc-code pre::-webkit-scrollbar-track, .code-window pre::-webkit-scrollbar-track { background: transparent; }
-.doc-code pre::-webkit-scrollbar-thumb, .code-window pre::-webkit-scrollbar-thumb {
-  border: 3px solid var(--panel);
-  border-radius: 999px;
-  background: var(--muted);
-}
+.doc-code pre, .code-window pre { color-scheme: dark; }
 .doc-code-unlabeled > .doc-code-copy { position: absolute; z-index: 1; top: 8px; right: 10px; }
 .doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: minmax(0, 1fr); padding-inline: 20px; }
 .doc-code-numbered .doc-code-line { grid-template-columns: 42px minmax(0, 1fr); padding-left: 10px; }
