@@ -106,8 +106,61 @@ function tokenClass(token: string, language: CodeLanguage) {
   return undefined;
 }
 
+function highlightMarkdownInline(text: string, keyPrefix: string) {
+  const parts = text.split(/(\[[^\]\n]+\]\([^)\n]+\)|\[\^[^\]\n]+\])/g).filter(Boolean);
+
+  return parts.map((part, index) => {
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) {
+      return (
+        <span key={`${keyPrefix}-${index}`}>
+          <span className="syn-punctuation">[</span>
+          <span className="syn-md-link">{link[1]}</span>
+          <span className="syn-punctuation">](</span>
+          <span className="syn-md-link">{link[2]}</span>
+          <span className="syn-punctuation">)</span>
+        </span>
+      );
+    }
+
+    if (/^\[\^[^\]]+\]$/.test(part)) return <span className="syn-punctuation" key={`${keyPrefix}-${index}`}>{part}</span>;
+    return <span key={`${keyPrefix}-${index}`}>{part}</span>;
+  });
+}
+
+function highlightMarkdownLine(line: string) {
+  if (/^\s*---\s*$/.test(line)) return <span className="syn-punctuation">{line}</span>;
+
+  const heading = line.match(/^(#{1,6})(\s+)(.*)$/);
+  if (heading) {
+    return <><span className="syn-punctuation">{heading[1]}</span>{heading[2]}<span className="syn-md-heading">{highlightMarkdownInline(heading[3], 'heading')}</span></>;
+  }
+
+  const blockquote = line.match(/^(\s*)(>)(\s?)(.*)$/);
+  if (blockquote) {
+    return <>{blockquote[1]}<span className="syn-punctuation">{blockquote[2]}</span>{blockquote[3]}{highlightMarkdownInline(blockquote[4], 'blockquote')}</>;
+  }
+
+  const footnote = line.match(/^(\[\^[^\]]+\])(:)(\s*)(.*)$/);
+  if (footnote) {
+    return <><span className="syn-punctuation">{footnote[1]}{footnote[2]}</span>{footnote[3]}{highlightMarkdownInline(footnote[4], 'footnote')}</>;
+  }
+
+  const yaml = line.match(/^([A-Za-z][\w-]*)(:)(\s*)(.*)$/);
+  if (yaml) {
+    const quoted = yaml[4].match(/^(["'])(.*)\1$/);
+    return <><span className="syn-md-key">{yaml[1]}</span><span className="syn-punctuation">{yaml[2]}</span>{yaml[3]}{quoted ? <><span className="syn-punctuation">{quoted[1]}</span>{quoted[2]}<span className="syn-punctuation">{quoted[1]}</span></> : highlightMarkdownInline(yaml[4], 'yaml')}</>;
+  }
+
+  if (/^\s*\|.*\|\s*$/.test(line)) {
+    return line.split(/(\||:?-+:?)/g).filter(Boolean).map((part, index) => <span className={/^(?:\||:?-+:?)$/.test(part) ? 'syn-punctuation' : undefined} key={`table-${index}`}>{part}</span>);
+  }
+
+  return highlightMarkdownInline(line, 'markdown');
+}
+
 function highlightLine(line: string, language: CodeLanguage) {
-  if (language === 'md') return line;
+  if (language === 'md') return highlightMarkdownLine(line);
 
   const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   let expectsFilter = false;

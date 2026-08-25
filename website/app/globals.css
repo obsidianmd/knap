@@ -115,12 +115,8 @@ a { color: inherit; text-decoration: none; }
 .markdown-native-heading > div { max-width: 570px; }
 .markdown-native-heading p { margin: 0; color: var(--body); font-size: 1rem; }
 .markdown-native-heading p + p { margin-top: 18px; color: var(--muted); }
-.markdown-output-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin-top: 54px; border: 1px solid var(--line); background: var(--line); }
-.markdown-output-types a { display: grid; gap: 8px; min-width: 0; background: var(--ink); padding: 17px; transition: background 150ms ease; }
-.markdown-output-types a:hover { background: var(--panel); }
-.markdown-output-types span { color: var(--paper); font-size: 0.82rem; font-weight: 650; }
-.markdown-output-types code { overflow: hidden; color: var(--orange); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
-.markdown-transform { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.markdown-native-heading a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+.markdown-transform { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 54px; }
 .markdown-transform .doc-code { min-width: 0; margin: 0; }
 
 .install-strip { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); padding-block: 24px; }
@@ -181,7 +177,7 @@ footer > a:last-child { justify-self: end; }
   .hero-actions { align-items: stretch; flex-direction: column; }
   .code-window { box-shadow: 9px 9px 0 var(--line); }
   .markdown-native-heading { gap: 28px; }
-  .markdown-output-types { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 38px; }
+  .markdown-transform { margin-top: 38px; }
   .install-strip { align-items: flex-start; flex-direction: column; }
   .feature-cards article { grid-template-columns: 34px 1fr; }
   .feature-cards p { grid-column: 2; }
@@ -352,6 +348,9 @@ footer > a:last-child { justify-self: end; }
 .syn-filter, .syn-function { color: var(--orange); }
 .syn-string { color: var(--cyan); }
 .syn-number { color: var(--purple); }
+.syn-md-heading { color: var(--paper); font-weight: 700; }
+.syn-md-key { color: var(--paper); font-weight: 650; }
+.syn-md-link { color: var(--purple); }
 
 .doc-note {
   display: grid;

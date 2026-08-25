@@ -99,17 +99,9 @@ export default function Home() {
           <h2 id="markdown-native-title">Markdown is the output, not an afterthought.</h2>
           <div>
             <p>Twig and Liquid are at home in web stacks that render HTML. Knap is built for software that creates Markdown files: notes, imports, clippings, and exports with YAML frontmatter.</p>
-            <p>Its filters produce Markdown primitives directly, so applications do not need to assemble tables, footnotes, links, or blockquotes by hand.</p>
+            <p>Its filters produce Markdown primitives directly—including <a href="/filters/yaml">frontmatter</a>, <a href="/filters/table">tables</a>, <a href="/filters/footnote">footnotes</a>, <a href="/filters/link">links</a>, and <a href="/filters/blockquote">blockquotes</a>—so applications do not need to assemble them by hand.</p>
           </div>
         </header>
-
-        <nav className="markdown-output-types" aria-label="Markdown output filters">
-          <a href="/filters/yaml"><span>Frontmatter</span><code>| yaml</code></a>
-          <a href="/filters/table"><span>Tables</span><code>| table</code></a>
-          <a href="/filters/footnote"><span>Footnotes</span><code>| footnote</code></a>
-          <a href="/filters/link"><span>Links</span><code>| link</code></a>
-          <a href="/filters/blockquote"><span>Blockquotes</span><code>| blockquote</code></a>
-        </nav>
 
         <div className="markdown-transform">
           <CodeBlock label="note.md" code={markdownTemplate} />
