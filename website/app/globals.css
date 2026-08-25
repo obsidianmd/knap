@@ -108,7 +108,7 @@ a { color: inherit; text-decoration: none; }
 .code-line:hover { background: var(--line); }
 .line-number { color: var(--faint); user-select: none; }
 .tok-punctuation { color: var(--muted); }
-.tok-language { color: var(--magenta); }
+.tok-language { color: var(--muted); }
 .tok-keyword { color: var(--green); }
 .tok-variable { color: var(--blue); }
 .tok-filter { color: var(--orange); }
@@ -321,7 +321,7 @@ footer > a:last-child { justify-self: end; }
 .doc-code-line:hover { background: var(--line); }
 .doc-line-number { color: var(--faint); user-select: none; }
 .syn-punctuation { color: var(--muted); }
-.syn-language { color: var(--magenta); }
+.syn-language { color: var(--muted); }
 .syn-keyword { color: var(--green); }
 .syn-import { color: var(--red); }
 .syn-constant { color: var(--yellow); }

@@ -85,7 +85,7 @@ export function DocShell({
 function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
   if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-language';
   if (/^['"`]/.test(token)) return 'syn-string';
-  if (/^\|\s*[a-z_]+$/i.test(token)) return 'syn-filter';
+  if (token === '|') return 'syn-punctuation';
   if (/^\d/.test(token)) return 'syn-number';
   if (language === 'ts' && /^(import|from)$/.test(token)) return 'syn-import';
   if (/^(true|false|null|undefined)$/.test(token)) return 'syn-constant';
@@ -97,10 +97,23 @@ function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
 }
 
 function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
-  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\|\s*[a-z_]+|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*)/g;
-  return line.split(pattern).filter(Boolean).map((token, index) => (
-    <span className={tokenClass(token, language)} key={index}>{token}</span>
-  ));
+  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\||\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*)/g;
+  let expectsFilter = false;
+
+  return line.split(pattern).filter(Boolean).map((token, index) => {
+    let className = tokenClass(token, language);
+
+    if (token === '|' && language === 'knap') {
+      expectsFilter = true;
+    } else if (expectsFilter && /^\s+$/.test(token)) {
+      // Keep waiting through whitespace between the pipe and filter name.
+    } else if (expectsFilter) {
+      className = 'syn-filter';
+      expectsFilter = false;
+    }
+
+    return <span className={className} key={index}>{token}</span>;
+  });
 }
 
 export function CodeBlock({
