@@ -422,9 +422,8 @@ footer > a:last-child { justify-self: end; }
 .filter-example-card > header { display: flex; gap: 14px; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: 11px; }
 .filter-example-card > header span { color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.64rem; }
 .filter-example-card h3 { margin: 0; color: var(--paper); font-size: 1rem; }
-.example-grid { min-width: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.example-grid { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .example-grid .doc-code { min-width: 0; margin: 14px 0 0; }
-.example-grid .doc-code:last-child { grid-column: 1 / -1; }
 .behavior-list { display: grid; gap: 11px; margin: 0; padding-left: 1.25rem; }
 .behavior-list li::marker { color: var(--accent); }
 .related-filters { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
@@ -470,8 +469,6 @@ footer > a:last-child { justify-self: end; }
   .filter-directory-group > header { grid-template-columns: 1fr; gap: 5px; }
   .filter-row { grid-template-columns: 120px 1fr 18px; }
   .filter-row .filter-example { display: none; }
-  .example-grid { grid-template-columns: 1fr; }
-  .example-grid .doc-code:last-child { grid-column: auto; }
   .api-list article { grid-template-columns: 1fr; gap: 10px; }
 }
 
