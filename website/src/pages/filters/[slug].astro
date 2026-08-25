@@ -11,10 +11,17 @@ const { filter } = Astro.props;
 const index = filterDocs.findIndex((item) => item.slug === filter.slug);
 const previous = filterDocs[index - 1];
 const next = filterDocs[index + 1];
+const slugifyHeading = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const exampleHeadings = filter.examples.flatMap((item) =>
+  filter.examples.length === 1 && item.title === 'Basic usage'
+    ? []
+    : [{ depth: 3, slug: slugifyHeading(item.title), text: item.title }]
+);
 const headings = [
   { depth: 2, slug: 'syntax', text: 'Syntax' },
   ...(filter.parameters?.length || filter.notes?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
   { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
+  ...exampleHeadings,
   ...(filter.related?.length ? [{ depth: 2, slug: 'related', text: 'Related filters' }] : []),
 ];
 ---
@@ -35,7 +42,7 @@ const headings = [
     <div class="filter-examples">
       {filter.examples.map((item) => (
         <article class:list={['filter-example-card', filter.examples.length === 1 && item.title === 'Basic usage' && 'filter-example-card-untitled']}>
-          {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3>{item.title}</h3></header>}
+          {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3 id={slugifyHeading(item.title)}>{item.title}</h3></header>}
           <div class="example-grid">
             <CodeBlock language="json" label="Input" code={JSON.stringify(item.variables, null, 2)} />
             <CodeBlock label="Template" code={item.template} />
