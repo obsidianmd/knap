@@ -35,7 +35,7 @@ const example = (
 ): FilterExample => ({ title, variables, template, expected });
 
 const docs: FilterDoc[] = [
-  { slug: 'date', name: 'date', category: 'Dates and time', summary: 'Format a date with Day.js format tokens.', syntax: ['date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'], parameters: ['The first parameter is the output format.', 'An optional second parameter describes the input format.'], related: ['date_modify', 'duration'], examples: [example({ published: '2024-12-01' }, '{{ published | date:"MMMM D, YYYY" }}', 'December 1, 2024')] },
+  { slug: 'date', name: 'date', category: 'Dates and time', summary: 'Format a date.', syntax: ['date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'], parameters: ['The first parameter is the output format.', 'An optional second parameter describes the input format.'], notes: ['Format strings use Day.js tokens.'], related: ['date_modify', 'duration'], examples: [example({ published: '2024-12-01' }, '{{ published | date:"MMMM D, YYYY" }}', 'December 1, 2024')] },
   { slug: 'date-modify', name: 'date_modify', category: 'Dates and time', summary: 'Add or subtract a date interval.', syntax: ['date_modify:"+1 day"'], parameters: ['Use a signed amount followed by year, month, week, day, hour, minute, or second.'], related: ['date'], examples: [example({ published: '2024-12-01' }, '{{ published | date_modify:"+5 days" }}', '2024-12-06')] },
   { slug: 'duration', name: 'duration', category: 'Dates and time', summary: 'Format seconds or an ISO 8601 duration.', syntax: ['duration', 'duration:"H:mm:ss"'], parameters: ['The optional format supports H, HH, mm, and ss tokens.'], related: ['date'], examples: [example({ seconds: 3665 }, '{{ seconds | duration:"H:mm:ss" }}', '1:01:05')] },
 
@@ -113,9 +113,9 @@ const docs: FilterDoc[] = [
     ],
   },
   {
-    slug: 'wikilink', name: 'wikilink', category: 'Markdown', summary: 'Create Obsidian wikilinks from strings, arrays, or objects.', syntax: ['wikilink', 'wikilink:"Alias"'],
+    slug: 'wikilink', name: 'wikilink', category: 'Markdown', summary: 'Create wikilinks from strings, arrays, or objects.', syntax: ['wikilink', 'wikilink:"Alias"'],
     parameters: ['The optional parameter sets an alias for string and array inputs.'],
-    notes: ['For object inputs, keys are note names and values are aliases.'], related: ['link'],
+    notes: ['Output uses Obsidian-compatible [[target|alias]] syntax. Wikilinks are also commonly called internal links.', 'For object inputs, keys are note names and values are aliases.'], related: ['link'],
     examples: [
       example({ page: 'Project Atlas' }, '{{ page | wikilink:"Atlas" }}', '[[Project Atlas|Atlas]]', 'String with alias'),
       example({ pages: ['Project Atlas', 'Daily Notes'] }, '{{ pages | wikilink }}', '["[[Project Atlas]]","[[Daily Notes]]"]', 'Array input'),
