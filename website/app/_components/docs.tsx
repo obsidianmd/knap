@@ -13,7 +13,7 @@ const guideLinks: Array<{ href: string; label: string; key: DocRoute }> = [
 export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
   return (
     <nav className={`site-header${inverse ? ' site-header-inverse' : ''}`} aria-label="Main navigation">
-      <a className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></a>
+      <a className="wordmark" href="/" aria-label="Knap home">Knap</a>
       <div className="site-header-links">
         <a href="/logic">Logic</a>
         <a href="/filters">Filters</a>

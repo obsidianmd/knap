@@ -18,7 +18,7 @@ export default function Home() {
     <main>
       <section className="hero-shell">
         <nav className="topbar" aria-label="Main navigation">
-          <a className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></a>
+          <a className="wordmark" href="/" aria-label="Knap home">Knap</a>
           <div className="nav-links">
             <a href="/logic">Logic</a>
             <a href="/filters">Filters</a>
@@ -113,7 +113,7 @@ export default function Home() {
       </section>
 
       <footer>
-        <a className="wordmark footer-mark" href="/">Knap<span>.md</span></a>
+        <a className="wordmark footer-mark" href="/">Knap</a>
         <p>Open source under the MIT license.</p>
         <a href="https://github.com/obsidianmd/knap">GitHub ↗</a>
       </footer>

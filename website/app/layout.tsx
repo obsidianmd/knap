@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     description: 'Variables, logic, loops, and filters for applications that create Markdown.',
     type: 'website',
     url: 'https://knap.md',
-    images: [{ url: '/og-flexoki.png', width: 1200, height: 630, alt: 'Knap — A template engine for Markdown' }],
+    images: [{ url: '/og-knap.png', width: 1200, height: 630, alt: 'Knap — A template engine for Markdown' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Knap — A template engine for Markdown',
     description: 'Variables, logic, loops, and filters for applications that create Markdown.',
-    images: ['/og-flexoki.png'],
+    images: ['/og-knap.png'],
   },
 };
 
