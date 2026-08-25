@@ -112,6 +112,17 @@ function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
       expectsFilter = false;
     }
 
+    const quoted = className === 'syn-string' ? token.match(/^(['"`])([\s\S]*)\1$/) : null;
+    if (quoted) {
+      return (
+        <span key={index}>
+          <span className="syn-punctuation">{quoted[1]}</span>
+          <span className="syn-string">{quoted[2]}</span>
+          <span className="syn-punctuation">{quoted[1]}</span>
+        </span>
+      );
+    }
+
     return <span className={className} key={index}>{token}</span>;
   });
 }
