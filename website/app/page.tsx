@@ -21,7 +21,7 @@ export default function Home() {
 
         <div className="hero-grid">
           <div className="hero-copy">
-            <h1>Turn structured data into notes worth keeping.</h1>
+            <h1>The templating language for Markdown.</h1>
             <p className="lede">Knap brings variables, logic, loops, and a focused filter library to Markdown—without evaluating arbitrary JavaScript.</p>
             <div className="hero-actions">
               <a className="button button-primary" href="/logic">Read the language guide</a>
