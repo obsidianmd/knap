@@ -327,7 +327,7 @@ footer > a:last-child { justify-self: end; }
 .syn-import { color: var(--red); }
 .syn-constant { color: var(--yellow); }
 .syn-variable { color: var(--blue); }
-.syn-filter { color: var(--orange); }
+.syn-filter, .syn-function { color: var(--orange); }
 .syn-string { color: var(--cyan); }
 .syn-number { color: var(--purple); }
 
@@ -400,7 +400,7 @@ footer > a:last-child { justify-self: end; }
 .filter-breadcrumb a { color: var(--accent); }
 .filter-breadcrumb code { color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; }
 .syntax-stack { display: grid; overflow: hidden; gap: 1px; border-radius: 12px; background: var(--line); }
-.syntax-stack > code { display: block; background: var(--panel); color: var(--orange); padding: 13px 16px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.78rem; }
+.syntax-stack > code { display: block; overflow-x: auto; background: var(--panel); color: var(--paper); padding: 13px 16px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.78rem; white-space: nowrap; }
 .filter-alias-note { margin-top: 18px !important; color: var(--muted); font-size: 0.84rem; }
 .filter-alias-note code + code { margin-left: 6px; }
 .filter-example-card { margin-top: 38px; }

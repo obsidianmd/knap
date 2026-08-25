@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { CodeBlock, DocShell, Note } from '../../_components/docs';
+import { CodeBlock, DocShell, HighlightedCode, Note } from '../../_components/docs';
 import { allFilterSlugs, filterDocs, filterDocsByName, filterDocsBySlug } from '@/lib/filter-docs';
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -36,7 +36,7 @@ export default async function FilterPage({ params }: PageProps) {
 
       <section id="syntax" className="doc-section">
         <h2>Syntax</h2>
-        <div className="syntax-stack">{filter.syntax.map((syntax) => <code key={syntax}>{`{{ value | ${syntax} }}`}</code>)}</div>
+        <div className="syntax-stack">{filter.syntax.map((syntax) => <HighlightedCode code={`{{ value | ${syntax} }}`} key={syntax} />)}</div>
         {filter.aliases?.length ? <p className="filter-alias-note">Also available as {filter.aliases.map((alias) => <code key={alias}>{alias}</code>)}.</p> : null}
       </section>
 

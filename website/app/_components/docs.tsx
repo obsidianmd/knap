@@ -84,7 +84,7 @@ export function DocShell({
 
 function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
   if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-language';
-  if (/^(\.|\[|\])$/.test(token)) return 'syn-punctuation';
+  if (/^(===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|])$/.test(token)) return 'syn-punctuation';
   if (/^['"`]/.test(token)) return 'syn-string';
   if (token === '|') return 'syn-punctuation';
   if (/^\d/.test(token)) return 'syn-number';
@@ -98,11 +98,12 @@ function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
 }
 
 function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
-  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\||\.|\[|\]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
+  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   let expectsFilter = false;
   let inKnapExpression = false;
+  const tokens = line.split(pattern).filter(Boolean);
 
-  return line.split(pattern).filter(Boolean).map((token, index) => {
+  return tokens.map((token, index) => {
     let className = tokenClass(token, language);
 
     if (language === 'knap') {
@@ -124,6 +125,11 @@ function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
       expectsFilter = false;
     }
 
+    if (language === 'ts' && className === 'syn-variable') {
+      const nextToken = tokens.slice(index + 1).find((candidate) => !/^\s+$/.test(candidate));
+      if (nextToken === '(') className = 'syn-function';
+    }
+
     const quoted = className === 'syn-string' ? token.match(/^(['"`])([\s\S]*)\1$/) : null;
     if (quoted) {
       return (
@@ -137,6 +143,10 @@ function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
 
     return <span className={className} key={index}>{token}</span>;
   });
+}
+
+export function HighlightedCode({ code, language = 'knap' }: { code: string; language?: 'knap' | 'ts' | 'shell' }) {
+  return <code>{highlightLine(code, language)}</code>;
 }
 
 export function CodeBlock({
