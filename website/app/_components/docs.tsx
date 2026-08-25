@@ -227,13 +227,13 @@ export function CodeBlock({
   const normalizedCode = code.replace(/^\n|\n$/g, '');
   const lines = normalizedCode.split('\n');
   return (
-    <figure className="doc-code">
-      <figcaption>
-        {label ? <span>{label}</span> : null}
-        <span className="doc-code-actions">
-          <CodeCopyButton code={normalizedCode} />
-        </span>
-      </figcaption>
+    <figure className={`doc-code${label ? '' : ' doc-code-unlabeled'}`}>
+      {label ? (
+        <figcaption>
+          <span>{label}</span>
+          <span className="doc-code-actions"><CodeCopyButton code={normalizedCode} /></span>
+        </figcaption>
+      ) : <CodeCopyButton code={normalizedCode} />}
       <pre><code>{lines.map((line, index) => (
         <span className="doc-code-line" key={index}>
           <span className="doc-line-number">{index + 1}</span>
