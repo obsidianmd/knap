@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import { FilterSearch } from './_components/filter-search';
+import { SiteHeader } from './_components/docs';
 
 const templateLines = [
   [["# ", "plain"], ["{{", "language"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "language"]],
@@ -17,17 +17,7 @@ export default function Home() {
   return (
     <main>
       <section className="hero-shell">
-        <nav className="topbar" aria-label="Main navigation">
-          <a className="wordmark" href="/" aria-label="Knap home">Knap</a>
-          <div className="nav-links">
-            <a href="/logic">Logic</a>
-            <a href="/filters">Filters</a>
-            <a href="/variables">Variables</a>
-            <a href="/api">API</a>
-            <FilterSearch />
-            <a className="nav-github" href="https://github.com/obsidianmd/knap">GitHub ↗</a>
-          </div>
-        </nav>
+        <SiteHeader />
 
         <div className="hero-grid">
           <div className="hero-copy">
