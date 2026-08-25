@@ -219,15 +219,17 @@ export function CodeBlock({
   code,
   language = 'knap',
   label,
+  showLineNumbers = false,
 }: {
   code: string;
   language?: CodeLanguage;
   label?: string;
+  showLineNumbers?: boolean;
 }) {
   const normalizedCode = code.replace(/^\n|\n$/g, '');
   const lines = normalizedCode.split('\n');
   return (
-    <figure className={`doc-code${label ? '' : ' doc-code-unlabeled'}`}>
+    <figure className={`doc-code${label ? '' : ' doc-code-unlabeled'}${showLineNumbers ? ' doc-code-numbered' : ''}`}>
       {label ? (
         <figcaption>
           <span>{label}</span>
@@ -236,7 +238,7 @@ export function CodeBlock({
       ) : <CodeCopyButton code={normalizedCode} />}
       <pre><code>{lines.map((line, index) => (
         <span className="doc-code-line" key={index}>
-          <span className="doc-line-number">{index + 1}</span>
+          {showLineNumbers ? <span className="doc-line-number">{index + 1}</span> : null}
           <span>{highlightLine(line, language)}</span>
         </span>
       ))}</code></pre>

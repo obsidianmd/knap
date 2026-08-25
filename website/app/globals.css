@@ -331,7 +331,8 @@ footer > a:last-child { justify-self: end; }
 .doc-code-copy[data-copied] { color: var(--green); }
 .doc-code pre { margin: 0; overflow-x: auto; padding-block: 18px; color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; line-height: 1.72; }
 .doc-code-unlabeled > .doc-code-copy { position: absolute; z-index: 1; top: 8px; right: 10px; }
-.doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: 42px 1fr; padding-inline: 10px 20px; }
+.doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: minmax(0, 1fr); padding-inline: 20px; }
+.doc-code-numbered .doc-code-line { grid-template-columns: 42px minmax(0, 1fr); padding-left: 10px; }
 .doc-code-unlabeled .doc-code-line { padding-right: 52px; }
 .doc-code-line:hover { background: var(--line); }
 .doc-line-number { color: var(--faint); user-select: none; }

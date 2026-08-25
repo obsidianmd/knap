@@ -109,8 +109,8 @@ export default function Home() {
         </header>
 
         <div className="markdown-transform">
-          <CodeBlock label="Knap template" code={markdownTemplate} />
-          <CodeBlock language="md" label="note.md" code={markdownOutput} />
+          <CodeBlock label="Knap template" code={markdownTemplate} showLineNumbers />
+          <CodeBlock language="md" label="note.md" code={markdownOutput} showLineNumbers />
         </div>
       </section>
 
