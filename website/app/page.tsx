@@ -82,7 +82,7 @@ export default function Home() {
           <div className="code-window" aria-label="Knap template example">
             <div className="code-window-bar">
               <span>reading-note.md</span>
-              <span className="code-window-actions"><span className="code-language">KNAP TEMPLATE</span><CodeCopyButton code={heroTemplate} /></span>
+              <span className="code-window-actions"><CodeCopyButton code={heroTemplate} /></span>
             </div>
             <pre><code>{templateLines.map((line, lineIndex) => (
               <span className="code-line" key={lineIndex}>
@@ -109,8 +109,8 @@ export default function Home() {
         </header>
 
         <div className="markdown-transform">
-          <CodeBlock label="note.md" code={markdownTemplate} />
-          <CodeBlock language="md" label="Rendered Markdown" code={markdownOutput} />
+          <CodeBlock label="Knap template" code={markdownTemplate} />
+          <CodeBlock language="md" label="note.md" code={markdownOutput} />
         </div>
       </section>
 

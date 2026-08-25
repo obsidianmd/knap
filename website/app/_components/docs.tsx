@@ -6,13 +6,6 @@ import { FilterSearch } from './filter-search';
 type DocRoute = 'variables' | 'logic' | 'filters' | 'api';
 type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md';
 
-const codeLanguageLabels: Record<CodeLanguage, string> = {
-  knap: 'Knap template',
-  ts: 'TS',
-  shell: 'Shell',
-  md: 'MD',
-};
-
 const guideLinks: Array<{ href: string; label: string; key: DocRoute }> = [
   { href: '/variables', label: 'Variables', key: 'variables' },
   { href: '/logic', label: 'Logic', key: 'logic' },
@@ -236,9 +229,8 @@ export function CodeBlock({
   return (
     <figure className="doc-code">
       <figcaption>
-        <span>{label}</span>
+        {label ? <span>{label}</span> : null}
         <span className="doc-code-actions">
-          <span className="doc-code-language">{codeLanguageLabels[language]}</span>
           <CodeCopyButton code={normalizedCode} />
         </span>
       </figcaption>
