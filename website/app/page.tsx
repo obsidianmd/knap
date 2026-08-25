@@ -2,15 +2,15 @@
 import { FilterSearch } from './_components/filter-search';
 
 const templateLines = [
-  [["# ", "plain"], ["{{", "punctuation"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "punctuation"]],
+  [["# ", "plain"], ["{{", "language"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "language"]],
   [],
-  [["{%", "punctuation"], [" if ", "keyword"], ["author", "variable"], [" %}", "punctuation"]],
-  [["By ", "plain"], ["{{", "punctuation"], [" author.name ", "variable"], ["}}", "punctuation"]],
-  [["{%", "punctuation"], [" endif ", "keyword"], ["%}", "punctuation"]],
+  [["{%", "language"], [" if ", "keyword"], ["author", "variable"], [" %}", "language"]],
+  [["By ", "plain"], ["{{", "language"], [" author.name ", "variable"], ["}}", "language"]],
+  [["{%", "language"], [" endif ", "keyword"], ["%}", "language"]],
   [],
-  [["{%", "punctuation"], [" for ", "keyword"], ["tag", "variable"], [" in ", "keyword"], ["tags", "variable"], [" %}", "punctuation"]],
-  [["- ", "plain"], ["{{", "punctuation"], [" tag ", "variable"], ["|", "punctuation"], [" lower ", "filter"], ["}}", "punctuation"]],
-  [["{%", "punctuation"], [" endfor ", "keyword"], ["%}", "punctuation"]],
+  [["{%", "language"], [" for ", "keyword"], ["tag", "variable"], [" in ", "keyword"], ["tags", "variable"], [" %}", "language"]],
+  [["- ", "plain"], ["{{", "language"], [" tag ", "variable"], ["|", "punctuation"], [" lower ", "filter"], ["}}", "language"]],
+  [["{%", "language"], [" endfor ", "keyword"], ["%}", "language"]],
 ] as const;
 
 export default function Home() {
