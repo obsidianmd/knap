@@ -1,5 +1,55 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import { SiteHeader } from './_components/docs';
+import { CodeBlock, SiteHeader } from './_components/docs';
+import { CodeCopyButton } from './_components/code-copy-button';
+
+const heroTemplate = `# {{ title | trim | title }}
+
+{% if author %}
+By {{ author.name }}
+{% endif %}
+
+{% for tag in tags %}
+- {{ tag | lower }}
+{% endfor %}`;
+
+const markdownTemplate = `---
+title: {{ title | yaml }}
+source: {{ url | yaml }}
+---
+
+# {{ title }}
+
+{{ summary | blockquote }}
+
+## Contributors
+
+{{ people | table }}
+
+{{ url | link:"Read the source" }}
+
+{{ notes | footnote }}`;
+
+const markdownOutput = `---
+title: "Knap: Markdown templates"
+source: "https://knap.md"
+---
+
+# Knap: Markdown templates
+
+> A small language for Markdown-producing apps.
+
+## Contributors
+
+| name | role |
+| - | - |
+| Ada | Writer |
+| Lin | Editor |
+
+[Read the source](https://knap.md)
+
+[^1]: Data stays application-owned.
+
+[^2]: Output stays plain Markdown.`;
 
 const templateLines = [
   [["# ", "plain"], ["{{", "language"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "language"]],
@@ -22,7 +72,7 @@ export default function Home() {
         <div className="hero-grid">
           <div className="hero-copy">
             <h1>The templating language for Markdown.</h1>
-            <p className="lede">Knap brings variables, logic, loops, and a focused filter library to Markdown—without evaluating arbitrary JavaScript.</p>
+            <p className="lede">Knap turns application data into Markdown files with YAML frontmatter, using variables, logic, loops, and a focused filter library.</p>
             <div className="hero-actions">
               <a className="button button-primary" href="/logic">Read the language guide</a>
               <a className="button button-secondary" href="/api">Add Knap to a project</a>
@@ -30,7 +80,10 @@ export default function Home() {
           </div>
 
           <div className="code-window" aria-label="Knap template example">
-            <div className="code-window-bar"><span>reading-note.md</span><span className="code-language">KNAP</span></div>
+            <div className="code-window-bar">
+              <span>reading-note.md</span>
+              <span className="code-window-actions"><span className="code-language">KNAP TEMPLATE</span><CodeCopyButton code={heroTemplate} /></span>
+            </div>
             <pre><code>{templateLines.map((line, lineIndex) => (
               <span className="code-line" key={lineIndex}>
                 <span className="line-number">{lineIndex + 1}</span>
@@ -38,6 +91,29 @@ export default function Home() {
               </span>
             ))}</code></pre>
           </div>
+        </div>
+      </section>
+
+      <section className="markdown-native" aria-labelledby="markdown-native-title">
+        <header className="markdown-native-heading">
+          <h2 id="markdown-native-title">Markdown is the output, not an afterthought.</h2>
+          <div>
+            <p>Twig and Liquid are at home in web stacks that render HTML. Knap is built for software that creates Markdown files: notes, imports, clippings, and exports with YAML frontmatter.</p>
+            <p>Its filters produce Markdown primitives directly, so applications do not need to assemble tables, footnotes, links, or blockquotes by hand.</p>
+          </div>
+        </header>
+
+        <nav className="markdown-output-types" aria-label="Markdown output filters">
+          <a href="/filters/yaml"><span>Frontmatter</span><code>| yaml</code></a>
+          <a href="/filters/table"><span>Tables</span><code>| table</code></a>
+          <a href="/filters/footnote"><span>Footnotes</span><code>| footnote</code></a>
+          <a href="/filters/link"><span>Links</span><code>| link</code></a>
+          <a href="/filters/blockquote"><span>Blockquotes</span><code>| blockquote</code></a>
+        </nav>
+
+        <div className="markdown-transform">
+          <CodeBlock label="note.md" code={markdownTemplate} />
+          <CodeBlock language="md" label="Rendered Markdown" code={markdownOutput} />
         </div>
       </section>
 
