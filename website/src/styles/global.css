@@ -288,7 +288,27 @@ footer > a:last-child { justify-self: end; }
   font-size: min(var(--docs-title-size), var(--docs-title-fit));
   white-space: nowrap;
 }
-.docs-title > p:last-child { max-width: 650px; margin: 30px 0 0; color: var(--body); font-size: 1.15rem; line-height: 1.6; }
+.docs-title > p { max-width: 650px; margin: 30px 0 0; color: var(--body); font-size: 1.15rem; line-height: 1.6; }
+.docs-title-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.docs-title-action {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line-hover);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--body);
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.docs-title-action:hover { background: var(--panel); color: var(--paper); }
+.docs-title-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.docs-title-action:disabled { cursor: wait; }
+.docs-title-action[data-copied] { color: var(--green); }
+.docs-title-action[data-copy-error] { color: var(--red); }
 .doc-section { scroll-margin-top: 32px; margin-bottom: 82px; }
 .doc-section > h2 {
   margin: 0 0 20px;

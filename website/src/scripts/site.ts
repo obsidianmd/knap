@@ -82,6 +82,47 @@ document.addEventListener('click', async (event) => {
   }
 });
 
+document.addEventListener('click', async (event) => {
+  const button = (event.target as Element).closest<HTMLButtonElement>('[data-copy-markdown]');
+  const markdownPath = button?.dataset.copyMarkdown;
+  if (!button || !markdownPath) return;
+
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const markdown = fetch(markdownPath, { headers: { Accept: 'text/markdown' } }).then(async (response) => {
+      if (!response.ok) throw new Error(`Unable to fetch ${markdownPath}`);
+      return response.text();
+    });
+    if ('ClipboardItem' in window && navigator.clipboard.write) {
+      const item = new ClipboardItem({ 'text/plain': markdown.then((value) => new Blob([value], { type: 'text/plain' })) });
+      await navigator.clipboard.write([item]);
+    } else {
+      await navigator.clipboard.writeText(await markdown);
+    }
+    button.dataset.copied = '';
+    button.innerHTML = `${checkIcon}<span>Copied</span>`;
+    const previous = copyTimers.get(button);
+    if (previous) window.clearTimeout(previous);
+    copyTimers.set(button, window.setTimeout(() => {
+      delete button.dataset.copied;
+      button.innerHTML = `${copyIcon}<span>Copy Markdown</span>`;
+    }, 2000));
+  } catch {
+    button.dataset.copyError = '';
+    button.innerHTML = `${copyIcon}<span>Copy failed</span>`;
+    const previous = copyTimers.get(button);
+    if (previous) window.clearTimeout(previous);
+    copyTimers.set(button, window.setTimeout(() => {
+      delete button.dataset.copyError;
+      button.innerHTML = `${copyIcon}<span>Copy Markdown</span>`;
+    }, 2000));
+  } finally {
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+  }
+});
+
 type SearchItem = {
   title: string;
   category: string;
