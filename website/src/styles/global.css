@@ -359,11 +359,12 @@ footer > a:last-child { justify-self: end; }
 .doc-code-copy[data-copied] { color: var(--green); }
 .doc-code pre { margin: 0; overflow-x: auto; padding-block: 18px; color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; line-height: 1.72; }
 .doc-code-unlabeled pre { padding-block: 14px; }
-.doc-code pre, .code-window pre { color-scheme: light; }
+.doc-code pre, .code-window pre { overflow-wrap: anywhere; white-space: pre-wrap; color-scheme: light; }
 .doc-code-unlabeled > .doc-code-copy { position: absolute; z-index: 1; top: 8px; right: 10px; }
 .doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: minmax(0, 1fr); padding-inline: 20px; }
 .doc-code-numbered .doc-code-line { grid-template-columns: 42px minmax(0, 1fr); padding-left: 10px; }
 .doc-code-unlabeled .doc-code-line { padding-right: 52px; }
+.doc-code-source { min-width: 0; }
 .doc-line-number { color: var(--faint); user-select: none; }
 .syn-punctuation { color: var(--muted); }
 .syn-language { color: var(--muted); }
