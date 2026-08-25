@@ -274,13 +274,19 @@ footer > a:last-child { justify-self: end; }
 .sidebar-external { padding-top: 28px; border-top: 1px solid var(--line); }
 .docs-toc { display: grid; gap: 8px; border-left: 1px solid var(--line); padding-left: 18px; }
 
-.docs-title { margin-bottom: 70px; }
+.docs-title { container-type: inline-size; margin-bottom: 70px; }
 .docs-title h1 {
+  --docs-title-size: clamp(3.5rem, 8vw, 6.7rem);
   margin: 0;
   color: var(--paper);
-  font-size: clamp(3.5rem, 8vw, 6.7rem);
+  font-size: var(--docs-title-size);
   line-height: 0.9;
   letter-spacing: -0.07em;
+}
+.docs-title h1.docs-title-fit {
+  font-size: var(--docs-title-size);
+  font-size: min(var(--docs-title-size), var(--docs-title-fit));
+  white-space: nowrap;
 }
 .docs-title > p:last-child { max-width: 650px; margin: 30px 0 0; color: var(--body); font-size: 1.15rem; line-height: 1.6; }
 .doc-section { scroll-margin-top: 32px; margin-bottom: 82px; }
@@ -539,7 +545,7 @@ footer > a:last-child { justify-self: end; }
   .sidebar-group { min-width: max-content; display: flex; align-items: center; gap: 14px; margin: 0; }
   .sidebar-group p, .sidebar-external { display: none; }
   .docs-title { margin-bottom: 58px; }
-  .docs-title h1 { font-size: clamp(3.5rem, 20vw, 5.8rem); }
+  .docs-title h1 { --docs-title-size: clamp(3.5rem, 20vw, 5.8rem); }
   .doc-note { grid-template-columns: 1fr; gap: 7px; }
   .type-grid { grid-template-columns: repeat(2, 1fr); }
   .filter-list article { grid-template-columns: 120px 1fr; }

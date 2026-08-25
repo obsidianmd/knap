@@ -10,9 +10,10 @@ interface Props {
   description: string;
   headings?: Heading[];
   markdownPath: string;
+  fitTitle?: boolean;
 }
 
-const { current, title, description, headings = [], markdownPath } = Astro.props;
+const { current, title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
 const toc = headings.filter((heading) => heading.depth === 2);
 const guideLinks = [
   { href: '/variables', label: 'Variables', key: 'variables' },
@@ -35,7 +36,7 @@ const guideLinks = [
       </aside>
 
       <article class="docs-content">
-        <header class="docs-title"><h1>{title}</h1><p>{description}</p></header>
+        <header class="docs-title"><h1 class:list={{ 'docs-title-fit': fitTitle }} style={fitTitle ? `--docs-title-fit: ${205 / title.length}cqw` : undefined}>{title}</h1><p>{description}</p></header>
         <div class="markdown-doc"><slot /></div>
         <footer class="docs-footer"><span>Knap is open source under the MIT license.</span><FooterNav /><span><a href={markdownPath}>Markdown</a> · <a href="https://github.com/obsidianmd/knap">View source ↗</a></span></footer>
       </article>
