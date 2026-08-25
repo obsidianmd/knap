@@ -13,27 +13,15 @@ interface Props {
   fitTitle?: boolean;
 }
 
-const { current, title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
+const { title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
-const guideLinks = [
-  { href: '/variables', label: 'Variables', key: 'variables' },
-  { href: '/logic', label: 'Logic', key: 'logic' },
-  { href: '/filters', label: 'Filters', key: 'filters' },
-];
 ---
 
 <BaseLayout title={title} description={description} markdownPath={markdownPath}>
   <main class="docs-page">
     <SiteHeader />
     <div class="docs-layout">
-      <aside class="docs-sidebar" aria-label="Documentation navigation">
-        <div class="sidebar-group">
-          <p>Guide</p>
-          {guideLinks.map((link) => <a href={link.href} aria-current={current === link.key ? 'page' : undefined}>{link.label}</a>)}
-        </div>
-        <div class="sidebar-group"><p>Reference</p><a href="/api" aria-current={current === 'api' ? 'page' : undefined}>API</a></div>
-        <div class="sidebar-group sidebar-external"><p>Project</p><a href="https://github.com/obsidianmd/knap">GitHub ↗</a><a href="https://www.npmjs.com/package/knap">npm ↗</a></div>
-      </aside>
+      <aside class="docs-toc" aria-label="On this page"><p>On this page</p>{toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}</aside>
 
       <article class="docs-content">
         <header class="docs-title">
@@ -54,7 +42,6 @@ const guideLinks = [
         <footer class="docs-footer"><span>Knap is open source under the MIT license.</span><FooterNav /><span><a href={markdownPath}>Markdown</a> · <a href="https://github.com/obsidianmd/knap">View source ↗</a></span></footer>
       </article>
 
-      <aside class="docs-toc" aria-label="On this page"><p>On this page</p>{toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}</aside>
     </div>
   </main>
 </BaseLayout>

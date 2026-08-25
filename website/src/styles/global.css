@@ -266,9 +266,8 @@ footer > a:last-child { justify-self: end; }
   margin-inline: auto;
   padding-block: 64px 80px;
 }
-.docs-sidebar, .docs-toc { position: sticky; top: 36px; align-self: start; }
-.sidebar-group { display: grid; gap: 7px; margin-bottom: 30px; }
-.sidebar-group p, .docs-toc p {
+.docs-toc { position: sticky; top: 36px; align-self: start; }
+.docs-toc p {
   margin: 0 0 8px;
   color: var(--faint);
   font-family: "SFMono-Regular", Consolas, monospace;
@@ -277,10 +276,8 @@ footer > a:last-child { justify-self: end; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.sidebar-group a, .docs-toc a { color: var(--muted); font-size: 0.8rem; }
-.sidebar-group a:hover, .docs-toc a:hover { color: var(--paper); }
-.sidebar-group a[aria-current="page"] { color: var(--accent); }
-.sidebar-external { padding-top: 28px; border-top: 1px solid var(--line); }
+.docs-toc a { color: var(--muted); font-size: 0.8rem; }
+.docs-toc a:hover { color: var(--paper); }
 .docs-toc { display: grid; gap: 8px; border-left: 1px solid var(--line); padding-left: 18px; }
 .docs-toc a[data-depth="3"] { padding-left: 12px; font-size: 0.74rem; }
 
@@ -560,7 +557,6 @@ footer > a:last-child { justify-self: end; }
 
 @media (max-width: 1180px) {
   .docs-layout { grid-template-columns: 145px minmax(0, 720px); justify-content: center; }
-  .docs-toc { display: none; }
 }
 
 @media (max-width: 760px) {
@@ -569,9 +565,7 @@ footer > a:last-child { justify-self: end; }
   .site-header-links { display: grid; grid-template-columns: repeat(2, auto); gap: 5px 18px; }
   .filter-search-trigger { justify-content: space-between; }
   .docs-layout { display: block; padding-top: 44px; }
-  .docs-sidebar { position: static; display: flex; gap: 24px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-bottom: 50px; padding-bottom: 17px; }
-  .sidebar-group { min-width: max-content; display: flex; align-items: center; gap: 14px; margin: 0; }
-  .sidebar-group p, .sidebar-external { display: none; }
+  .docs-toc { display: none; }
   .docs-title { margin-bottom: 58px; }
   .docs-title h1 { --docs-title-size: clamp(3.5rem, 20vw, 5.8rem); }
   .doc-note { grid-template-columns: 1fr; gap: 7px; }
