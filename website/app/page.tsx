@@ -94,6 +94,11 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="install-strip" aria-label="Installation">
+        <div><span className="install-label">Install</span><code>pnpm add knap</code></div>
+        <a href="/api#quick-start">Quick start →</a>
+      </section>
+
       <section className="markdown-native" aria-labelledby="markdown-native-title">
         <header className="markdown-native-heading">
           <h2 id="markdown-native-title">Markdown is the output, not an afterthought.</h2>
@@ -107,11 +112,6 @@ export default function Home() {
           <CodeBlock label="note.md" code={markdownTemplate} />
           <CodeBlock language="md" label="Rendered Markdown" code={markdownOutput} />
         </div>
-      </section>
-
-      <section className="install-strip" aria-label="Installation">
-        <div><span className="install-label">Install</span><code>pnpm add knap</code></div>
-        <a href="/api#quick-start">Quick start →</a>
       </section>
 
       <section className="feature-grid" aria-labelledby="why-knap">
