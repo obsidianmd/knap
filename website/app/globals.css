@@ -292,14 +292,31 @@ footer > a:last-child { justify-self: end; }
 .doc-code { margin: 28px 0; overflow: hidden; border-radius: 12px; background: var(--panel); }
 .doc-code figcaption {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  min-height: 45px;
   border-bottom: 1px solid var(--line);
-  padding: 10px 14px;
+  padding: 8px 10px 8px 14px;
   color: var(--muted);
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 0.66rem;
 }
-.doc-code figcaption span:last-child { color: var(--accent); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; }
+.doc-code-actions { display: flex; align-items: center; gap: 9px; margin-left: auto; }
+.doc-code-language { color: var(--accent); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.doc-code-copy {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.doc-code-copy:hover { background: var(--line); color: var(--paper); }
+.doc-code-copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.doc-code-copy[data-copied] { color: var(--accent); }
 .doc-code pre { margin: 0; overflow-x: auto; padding-block: 18px; color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; line-height: 1.72; }
 .doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: 42px 1fr; padding-inline: 10px 20px; }
 .doc-code-line:hover { background: var(--line); }

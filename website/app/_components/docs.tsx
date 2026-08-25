@@ -1,9 +1,17 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { ReactNode } from 'react';
+import { CodeCopyButton } from './code-copy-button';
 import { FilterSearch } from './filter-search';
 
 type DocRoute = 'variables' | 'logic' | 'filters' | 'api';
 type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md';
+
+const codeLanguageLabels: Record<CodeLanguage, string> = {
+  knap: 'Knap template',
+  ts: 'TS',
+  shell: 'Shell',
+  md: 'MD',
+};
 
 const guideLinks: Array<{ href: string; label: string; key: DocRoute }> = [
   { href: '/variables', label: 'Variables', key: 'variables' },
@@ -157,10 +165,17 @@ export function CodeBlock({
   language?: CodeLanguage;
   label?: string;
 }) {
-  const lines = code.replace(/^\n|\n$/g, '').split('\n');
+  const normalizedCode = code.replace(/^\n|\n$/g, '');
+  const lines = normalizedCode.split('\n');
   return (
     <figure className="doc-code">
-      {label ? <figcaption><span>{label}</span><span>{language.toUpperCase()}</span></figcaption> : null}
+      <figcaption>
+        <span>{label}</span>
+        <span className="doc-code-actions">
+          <span className="doc-code-language">{codeLanguageLabels[language]}</span>
+          <CodeCopyButton code={normalizedCode} />
+        </span>
+      </figcaption>
       <pre><code>{lines.map((line, index) => (
         <span className="doc-code-line" key={index}>
           <span className="doc-line-number">{index + 1}</span>
