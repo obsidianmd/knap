@@ -33,4 +33,9 @@ describe('fragment_link filter', () => {
 		const result = fragment_link('["first","second"]', 'https://example.com');
 		expect(result).toHaveLength(2);
 	});
+
+	test('removes quotes around a source URL from the template renderer', () => {
+		const result = fragment_link('["text"]', '"https://example.com"');
+		expect(result[0]).toContain('(https://example.com#:~:text=text)');
+	});
 });
