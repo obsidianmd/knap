@@ -1,54 +1,5 @@
-import { highlightCode, type CodeLanguage } from '../lib/highlight';
-
 const copyIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
 const checkIcon = '<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
-
-function createCopyButton() {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'doc-code-copy';
-  button.dataset.copyCode = '';
-  button.title = 'Copy code';
-  button.setAttribute('aria-label', 'Copy code');
-  button.innerHTML = copyIcon;
-  return button;
-}
-
-function enhanceMarkdownCode() {
-  document.querySelectorAll<HTMLElement>('.markdown-doc pre').forEach((pre) => {
-    if (pre.closest('[data-code-block]')) return;
-    const code = pre.querySelector<HTMLElement>('code');
-    if (!code) return;
-
-    const raw = code.textContent?.replace(/\n$/, '') ?? '';
-    const classLanguage = [...code.classList].find((name) => name.startsWith('language-'))?.slice(9);
-    const language = (classLanguage === 'typescript' ? 'ts' : classLanguage === 'markdown' ? 'md' : classLanguage ?? 'knap') as CodeLanguage;
-    const label = code.dataset.label;
-    code.dataset.language = language;
-    code.innerHTML = highlightCode(raw, language);
-
-    const figure = document.createElement('figure');
-    figure.className = `doc-code${label ? '' : ' doc-code-unlabeled'}`;
-    figure.dataset.codeBlock = '';
-
-    if (label) {
-      const caption = document.createElement('figcaption');
-      const title = document.createElement('span');
-      const actions = document.createElement('span');
-      title.textContent = label;
-      actions.className = 'doc-code-actions';
-      actions.appendChild(createCopyButton());
-      caption.appendChild(title);
-      caption.appendChild(actions);
-      figure.appendChild(caption);
-    } else {
-      figure.appendChild(createCopyButton());
-    }
-
-    pre.replaceWith(figure);
-    figure.appendChild(pre);
-  });
-}
 
 const copyTimers = new WeakMap<HTMLButtonElement, number>();
 
@@ -132,7 +83,7 @@ type SearchItem = {
   syntax?: string[];
 };
 
-const escape = (value: string) => value.replace(/[&<>"']/g, (character) => ({
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 }[character] ?? character));
 
@@ -151,10 +102,10 @@ function setupSearch() {
 
   const render = () => {
     if (!results.length) {
-      resultsElement.innerHTML = `<p class="command-empty">No documentation matches “${escape(input.value)}”.</p>`;
+      resultsElement.innerHTML = `<p class="command-empty">No documentation matches “${escapeHtml(input.value)}”.</p>`;
       return;
     }
-    resultsElement.innerHTML = results.map((item, index) => `<a class="${index === activeIndex ? 'is-active' : ''}" href="${escape(item.href)}" role="option" aria-selected="${index === activeIndex}" data-result-index="${index}"><span><code>${escape(item.title)}</code><small>${escape(item.category)}</small></span><p>${escape(item.summary)}</p><strong aria-hidden="true">↵</strong></a>`).join('');
+    resultsElement.innerHTML = results.map((item, index) => `<a class="${index === activeIndex ? 'is-active' : ''}" href="${escapeHtml(item.href)}" role="option" aria-selected="${index === activeIndex}" data-result-index="${index}"><span><code>${escapeHtml(item.title)}</code><small>${escapeHtml(item.category)}</small></span><p>${escapeHtml(item.summary)}</p><strong aria-hidden="true">↵</strong></a>`).join('');
   };
 
   const update = () => {
@@ -217,6 +168,5 @@ function setupFilterDirectoryView() {
   show(viewFromUrl());
 }
 
-enhanceMarkdownCode();
 setupSearch();
 setupFilterDirectoryView();
