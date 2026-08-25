@@ -84,6 +84,7 @@ export function DocShell({
 
 function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
   if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-language';
+  if (/^(\.|\[|\])$/.test(token)) return 'syn-punctuation';
   if (/^['"`]/.test(token)) return 'syn-string';
   if (token === '|') return 'syn-punctuation';
   if (/^\d/.test(token)) return 'syn-number';
@@ -97,7 +98,7 @@ function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
 }
 
 function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
-  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\||\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*)/g;
+  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\||\.|\[|\]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   let expectsFilter = false;
   let inKnapExpression = false;
 
