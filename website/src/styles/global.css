@@ -412,7 +412,7 @@ footer > a:last-child { justify-self: end; }
 }
 .filter-row:hover { background: var(--panel); }
 .filter-row > div { display: grid; gap: 3px; }
-.filter-row > div > code { border: 0; background: transparent; color: var(--paper); padding: 0; font-size: 0.78rem; }
+.filter-row > div > code { width: fit-content; border: 0; background: transparent; color: var(--paper); padding: 0; font-size: 0.78rem; }
 .filter-row small { color: var(--muted); font-size: 0.58rem; }
 .filter-row p { margin: 0; color: var(--body); font-size: 0.82rem; }
 .filter-row .filter-example { overflow: hidden; border: 0; background: transparent; color: var(--orange); padding: 0; font-size: 0.67rem; text-overflow: ellipsis; white-space: nowrap; }
