@@ -94,7 +94,6 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.85;
 }
 .code-line { display: grid; min-height: 1.85em; grid-template-columns: 42px 1fr; padding-inline: 14px 24px; }
-.code-line:hover { background: var(--line); }
 .line-number { color: var(--faint); user-select: none; }
 .tok-punctuation { color: var(--muted); }
 .tok-language { color: var(--muted); }
@@ -334,7 +333,6 @@ footer > a:last-child { justify-self: end; }
 .doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: minmax(0, 1fr); padding-inline: 20px; }
 .doc-code-numbered .doc-code-line { grid-template-columns: 42px minmax(0, 1fr); padding-left: 10px; }
 .doc-code-unlabeled .doc-code-line { padding-right: 52px; }
-.doc-code-line:hover { background: var(--line); }
 .doc-line-number { color: var(--faint); user-select: none; }
 .syn-punctuation { color: var(--muted); }
 .syn-language { color: var(--muted); }
