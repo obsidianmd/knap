@@ -193,7 +193,7 @@ footer > a:last-child { justify-self: end; }
   color: var(--paper);
 }
 .site-header-links { display: flex; gap: 26px; font-size: 0.82rem; font-weight: 650; }
-.site-header-links a { color: var(--muted); transition: color 150ms ease; }
+.site-header-links a { color: var(--body); transition: color 150ms ease; }
 .site-header-links a:hover { color: var(--paper); }
 .filter-search-trigger {
   display: inline-flex;
@@ -208,6 +208,7 @@ footer > a:last-child { justify-self: end; }
   cursor: pointer;
 }
 .filter-search-trigger:hover { border-color: var(--muted); color: var(--paper); }
+.site-header .filter-search-trigger { color: var(--body); }
 .filter-search-trigger kbd, .command-palette kbd { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.62rem; }
 .filter-search-trigger kbd { color: var(--accent); }
 .command-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; align-items: start; justify-items: center; background: rgb(16 15 15 / 82%); padding: min(14vh, 120px) 16px 32px; backdrop-filter: blur(4px); }
