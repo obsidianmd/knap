@@ -28,6 +28,7 @@ body {
   background: var(--ink);
   color: var(--body);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: calc(0.9375rem + 0.25vw);
   line-height: 1.6;
   text-rendering: optimizeLegibility;
 }
