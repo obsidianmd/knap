@@ -20,13 +20,14 @@ export function filterMarkdown(filter: FilterDoc) {
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
   if (filter.aliases?.length) lines.push(`Also available as ${filter.aliases.map((alias) => `\`${alias}\``).join(', ')}.`, '');
 
-  lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
-  filter.examples.forEach((item, index) => {
-    lines.push(`### ${String(index + 1).padStart(2, '0')} · ${item.title}`, '', fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
-  });
-
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
   if (behavior.length) lines.push('## Behavior', '', ...behavior.map((note) => `- ${note}`), '');
+
+  lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
+  filter.examples.forEach((item) => {
+    lines.push(`### ${item.title}`, '', fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
+  });
+
   if (filter.related?.length) lines.push('## Related filters', '', ...filter.related.map((name) => `- [${name}](/filters/${name.replaceAll('_', '-')})`), '');
   return `${lines.join('\n').trim()}\n`;
 }

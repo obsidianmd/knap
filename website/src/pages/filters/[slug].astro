@@ -13,8 +13,8 @@ const previous = filterDocs[index - 1];
 const next = filterDocs[index + 1];
 const headings = [
   { depth: 2, slug: 'syntax', text: 'Syntax' },
-  { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
   ...(filter.parameters?.length || filter.notes?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
+  { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
   ...(filter.related?.length ? [{ depth: 2, slug: 'related', text: 'Related filters' }] : []),
 ];
 ---
@@ -29,12 +29,14 @@ const headings = [
     {filter.aliases?.length && <p class="filter-alias-note">Also available as {filter.aliases.map((alias) => <code>{alias}</code>)}.</p>}
   </section>
 
+  {(filter.parameters?.length || filter.notes?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li>{note}</li>)}</ul></section>}
+
   <section id="examples" class="doc-section">
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
     <div class="filter-examples">
-      {filter.examples.map((item, exampleIndex) => (
+      {filter.examples.map((item) => (
         <article class="filter-example-card">
-          <header><span>{String(exampleIndex + 1).padStart(2, '0')}</span><h3>{item.title}</h3></header>
+          <header><h3>{item.title}</h3></header>
           <div class="example-grid">
             <CodeBlock language="json" label="Input" code={JSON.stringify(item.variables, null, 2)} />
             <CodeBlock label="Template" code={item.template} />
@@ -44,8 +46,6 @@ const headings = [
       ))}
     </div>
   </section>
-
-  {(filter.parameters?.length || filter.notes?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li>{note}</li>)}</ul></section>}
 
   {filter.related?.length && <section id="related" class="doc-section"><h2>Related filters</h2><div class="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related && <a href={`/filters/${related.slug}`}><code>{name}</code><span>{related.summary}</span></a>; })}</div></section>}
 
