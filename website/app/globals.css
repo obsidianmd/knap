@@ -137,7 +137,6 @@ a { color: inherit; text-decoration: none; }
 .used-by-card:hover { background: var(--panel); padding-inline: 14px; }
 .used-by-index { align-self: start; color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.68rem; }
 .used-by-copy { display: grid; gap: 8px; }
-.used-by-copy p { margin: 0; color: var(--cyan); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .used-by-copy h3 { margin: 0; color: var(--paper); font-size: 1.65rem; letter-spacing: -0.035em; }
 .used-by-copy > span { max-width: 590px; color: var(--muted); font-size: 0.86rem; }
 .used-by-example { display: grid; gap: 9px; border-left: 1px solid var(--line); padding-left: 24px; }

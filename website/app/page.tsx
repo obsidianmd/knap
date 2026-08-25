@@ -79,8 +79,7 @@ export default function Home() {
           <a href="https://obsidian.md/clipper" className="used-by-card">
             <span className="used-by-index">01</span>
             <div className="used-by-copy">
-              <p>Obsidian · Browser extension</p>
-              <h3>Web Clipper</h3>
+              <h3>Obsidian Web Clipper</h3>
               <span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span>
             </div>
             <div className="used-by-example">
@@ -93,8 +92,7 @@ export default function Home() {
           <a href="https://community.obsidian.md/plugins/obsidian-importer" className="used-by-card">
             <span className="used-by-index">02</span>
             <div className="used-by-copy">
-              <p>Obsidian · Community plugin</p>
-              <h3>Importer</h3>
+              <h3>Obsidian Importer</h3>
               <span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span>
             </div>
             <div className="used-by-example">
