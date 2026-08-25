@@ -395,6 +395,28 @@ footer > a:last-child { justify-self: end; }
 .compact-filter-list { margin-bottom: 28px; }
 
 .filter-directory { margin-top: 28px; }
+.filter-view-switch {
+  width: fit-content;
+  display: flex;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--panel);
+  padding: 3px;
+}
+.filter-view-switch button {
+  min-height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--body);
+  padding: 7px 13px;
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+.filter-view-switch button:hover { color: var(--paper); }
+.filter-view-switch button[aria-pressed="true"] { background: var(--accent); color: var(--ink); }
+.filter-view-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .filter-directory-group { margin-top: 54px; }
 .filter-directory-group > header { display: grid; grid-template-columns: 150px 1fr; gap: 20px; align-items: baseline; }
 .filter-directory-group h3 { margin: 0; color: var(--paper); font-size: 0.96rem; }
