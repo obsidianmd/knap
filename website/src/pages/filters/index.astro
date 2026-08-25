@@ -1,0 +1,18 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { compiledContent, frontmatter, getHeadings } from '../../content/docs/filters.md';
+import { filterDocs, filterGroups } from '../../../lib/filter-docs';
+
+const escape = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character] ?? character);
+const byName = new Map(filterDocs.map((filter) => [filter.name, filter]));
+const directory = `<div class="filter-directory">${filterGroups.map((group) => {
+  const filters = group.filters.map((name) => byName.get(name)).filter(Boolean);
+  return `<section class="filter-directory-group"><header><h3>${escape(group.label)}</h3><p>${escape(group.intro)}</p></header><div class="filter-list">${filters.map((filter) => filter ? `<a class="filter-row" href="/filters/${filter.slug}"><div><code>${escape(filter.name)}</code>${filter.aliases?.length ? `<small>alias: ${escape(filter.aliases.join(', '))}</small>` : ''}</div><p>${escape(filter.summary)}</p><code class="filter-example">${escape(filter.syntax[0])}</code><span aria-hidden="true">→</span></a>` : '').join('')}</div></section>`;
+}).join('')}</div>`;
+const content = (await compiledContent()).replace('<!-- FILTER_DIRECTORY -->', directory);
+const headings = getHeadings();
+---
+
+<DocsLayout current="filters" title={frontmatter.title} description={frontmatter.description} headings={headings} markdownPath="/filters.md">
+  <Fragment set:html={content} />
+</DocsLayout>

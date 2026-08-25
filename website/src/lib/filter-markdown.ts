@@ -1,0 +1,32 @@
+import type { FilterDoc } from '../../lib/filter-docs';
+
+const fence = (language: string, code: string, title?: string) => `\`\`\`${language}${title ? ` title="${title}"` : ''}\n${code}\n\`\`\``;
+
+export function filterMarkdown(filter: FilterDoc) {
+  const lines = [
+    '---',
+    `title: ${filter.name}`,
+    `description: ${JSON.stringify(filter.summary)}`,
+    '---',
+    '',
+    `# ${filter.name}`,
+    '',
+    filter.summary,
+    '',
+  ];
+
+  if (filter.environment === 'html') lines.push('> **HTML preset**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
+
+  lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
+  if (filter.aliases?.length) lines.push(`Also available as ${filter.aliases.map((alias) => `\`${alias}\``).join(', ')}.`, '');
+
+  lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
+  filter.examples.forEach((item, index) => {
+    lines.push(`### ${String(index + 1).padStart(2, '0')} · ${item.title}`, '', fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
+  });
+
+  const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
+  if (behavior.length) lines.push('## Behavior', '', ...behavior.map((note) => `- ${note}`), '');
+  if (filter.related?.length) lines.push('## Related filters', '', ...filter.related.map((name) => `- [${name}](/filters/${name.replaceAll('_', '-')})`), '');
+  return `${lines.join('\n').trim()}\n`;
+}

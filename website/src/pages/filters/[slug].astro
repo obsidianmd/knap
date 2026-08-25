@@ -1,0 +1,56 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { filterDocs, filterDocsByName } from '../../../lib/filter-docs';
+
+export function getStaticPaths() {
+  return filterDocs.map((filter) => ({ params: { slug: filter.slug }, props: { filter } }));
+}
+
+const { filter } = Astro.props;
+const index = filterDocs.findIndex((item) => item.slug === filter.slug);
+const previous = filterDocs[index - 1];
+const next = filterDocs[index + 1];
+const headings = [
+  { depth: 2, slug: 'syntax', text: 'Syntax' },
+  { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
+  ...(filter.parameters?.length || filter.notes?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
+  ...(filter.related?.length ? [{ depth: 2, slug: 'related', text: 'Related filters' }] : []),
+];
+---
+
+<DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`}>
+  <nav class="filter-breadcrumb" aria-label="Breadcrumb"><a href="/filters">Filters</a><span>/</span><code>{filter.name}</code></nav>
+  {filter.environment === 'html' && <aside class="doc-note"><strong>HTML preset</strong><div>This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</div></aside>}
+
+  <section id="syntax" class="doc-section">
+    <h2>Syntax</h2>
+    <CodeBlock code={filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')} />
+    {filter.aliases?.length && <p class="filter-alias-note">Also available as {filter.aliases.map((alias) => <code>{alias}</code>)}.</p>}
+  </section>
+
+  <section id="examples" class="doc-section">
+    <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
+    <div class="filter-examples">
+      {filter.examples.map((item, exampleIndex) => (
+        <article class="filter-example-card">
+          <header><span>{String(exampleIndex + 1).padStart(2, '0')}</span><h3>{item.title}</h3></header>
+          <div class="example-grid">
+            <CodeBlock language="json" label="Input" code={JSON.stringify(item.variables, null, 2)} />
+            <CodeBlock label="Template" code={item.template} />
+            <CodeBlock language="md" label="Output" code={item.expected} />
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {(filter.parameters?.length || filter.notes?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li>{note}</li>)}</ul></section>}
+
+  {filter.related?.length && <section id="related" class="doc-section"><h2>Related filters</h2><div class="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related && <a href={`/filters/${related.slug}`}><code>{name}</code><span>{related.summary}</span></a>; })}</div></section>}
+
+  <nav class="filter-pagination" aria-label="Filter pages">
+    {previous ? <a href={`/filters/${previous.slug}`}><small>Previous</small><span>← {previous.name}</span></a> : <span></span>}
+    {next ? <a href={`/filters/${next.slug}`}><small>Next</small><span>{next.name} →</span></a> : <span></span>}
+  </nav>
+</DocsLayout>

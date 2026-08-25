@@ -1,0 +1,9 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import { Content, frontmatter, getHeadings } from '../content/docs/api.md';
+const headings = getHeadings();
+---
+
+<DocsLayout current="api" title={frontmatter.title} description={frontmatter.description} headings={headings} markdownPath="/api.md">
+  <Content />
+</DocsLayout>

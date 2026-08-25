@@ -1,0 +1,156 @@
+import { highlightCode, type CodeLanguage } from '../lib/highlight';
+
+const copyIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
+const checkIcon = '<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
+
+function createCopyButton() {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'doc-code-copy';
+  button.dataset.copyCode = '';
+  button.title = 'Copy code';
+  button.setAttribute('aria-label', 'Copy code');
+  button.innerHTML = copyIcon;
+  return button;
+}
+
+function enhanceMarkdownCode() {
+  document.querySelectorAll<HTMLElement>('.markdown-doc pre').forEach((pre) => {
+    if (pre.closest('[data-code-block]')) return;
+    const code = pre.querySelector<HTMLElement>('code');
+    if (!code) return;
+
+    const raw = code.textContent?.replace(/\n$/, '') ?? '';
+    const classLanguage = [...code.classList].find((name) => name.startsWith('language-'))?.slice(9);
+    const language = (classLanguage === 'typescript' ? 'ts' : classLanguage === 'markdown' ? 'md' : classLanguage ?? 'knap') as CodeLanguage;
+    const label = code.dataset.label;
+    code.dataset.language = language;
+    code.innerHTML = highlightCode(raw, language);
+
+    const figure = document.createElement('figure');
+    figure.className = `doc-code${label ? '' : ' doc-code-unlabeled'}`;
+    figure.dataset.codeBlock = '';
+
+    if (label) {
+      const caption = document.createElement('figcaption');
+      const title = document.createElement('span');
+      const actions = document.createElement('span');
+      title.textContent = label;
+      actions.className = 'doc-code-actions';
+      actions.appendChild(createCopyButton());
+      caption.appendChild(title);
+      caption.appendChild(actions);
+      figure.appendChild(caption);
+    } else {
+      figure.appendChild(createCopyButton());
+    }
+
+    pre.replaceWith(figure);
+    figure.appendChild(pre);
+  });
+}
+
+const copyTimers = new WeakMap<HTMLButtonElement, number>();
+
+function codeText(button: HTMLButtonElement) {
+  const block = button.closest('[data-code-block], .code-window');
+  if (!block) return '';
+  const sourceLines = block.querySelectorAll<HTMLElement>('.doc-code-source, .code-source');
+  if (sourceLines.length) return [...sourceLines].map((line) => line.textContent ?? '').join('\n');
+  return block.querySelector('code')?.textContent ?? '';
+}
+
+document.addEventListener('click', async (event) => {
+  const button = (event.target as Element).closest<HTMLButtonElement>('[data-copy-code]');
+  if (!button) return;
+  try {
+    await navigator.clipboard.writeText(codeText(button));
+    button.dataset.copied = '';
+    button.title = 'Copied';
+    button.setAttribute('aria-label', 'Copied');
+    button.innerHTML = checkIcon;
+    const previous = copyTimers.get(button);
+    if (previous) window.clearTimeout(previous);
+    copyTimers.set(button, window.setTimeout(() => {
+      delete button.dataset.copied;
+      button.title = 'Copy code';
+      button.setAttribute('aria-label', 'Copy code');
+      button.innerHTML = copyIcon;
+    }, 2000));
+  } catch {
+    delete button.dataset.copied;
+  }
+});
+
+type SearchItem = {
+  title: string;
+  category: string;
+  summary: string;
+  href: string;
+  aliases?: string[];
+  syntax?: string[];
+};
+
+const escape = (value: string) => value.replace(/[&<>"']/g, (character) => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+}[character] ?? character));
+
+function setupSearch() {
+  const trigger = document.querySelector<HTMLButtonElement>('[data-search-trigger]');
+  const backdrop = document.querySelector<HTMLElement>('[data-search-backdrop]');
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const resultsElement = document.querySelector<HTMLElement>('[data-search-results]');
+  const closeButton = document.querySelector<HTMLButtonElement>('[data-search-close]');
+  const data = document.querySelector<HTMLScriptElement>('#search-index')?.textContent;
+  if (!trigger || !backdrop || !input || !resultsElement || !data) return;
+
+  const items = JSON.parse(data) as SearchItem[];
+  let results = items.slice(0, 12);
+  let activeIndex = 0;
+
+  const render = () => {
+    if (!results.length) {
+      resultsElement.innerHTML = `<p class="command-empty">No documentation matches “${escape(input.value)}”.</p>`;
+      return;
+    }
+    resultsElement.innerHTML = results.map((item, index) => `<a class="${index === activeIndex ? 'is-active' : ''}" href="${escape(item.href)}" role="option" aria-selected="${index === activeIndex}" data-result-index="${index}"><span><code>${escape(item.title)}</code><small>${escape(item.category)}</small></span><p>${escape(item.summary)}</p><strong aria-hidden="true">↵</strong></a>`).join('');
+  };
+
+  const update = () => {
+    const query = input.value.trim().toLowerCase();
+    results = items.filter((item) => [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)).slice(0, 12);
+    activeIndex = 0;
+    render();
+  };
+
+  const open = () => {
+    input.value = '';
+    update();
+    backdrop.hidden = false;
+    requestAnimationFrame(() => input.focus());
+  };
+  const close = () => { backdrop.hidden = true; };
+
+  trigger.addEventListener('click', open);
+  closeButton?.addEventListener('click', close);
+  backdrop.addEventListener('mousedown', (event) => { if (event.target === backdrop) close(); });
+  input.addEventListener('input', update);
+  resultsElement.addEventListener('mousemove', (event) => {
+    const result = (event.target as Element).closest<HTMLElement>('[data-result-index]');
+    if (!result) return;
+    activeIndex = Number(result.dataset.resultIndex);
+    render();
+  });
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown') { event.preventDefault(); activeIndex = Math.min(activeIndex + 1, results.length - 1); render(); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); render(); }
+    if (event.key === 'Enter' && results[activeIndex]) { event.preventDefault(); window.location.assign(results[activeIndex].href); }
+  });
+  window.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); open(); }
+    if (event.key === 'Escape') close();
+  });
+}
+
+enhanceMarkdownCode();
+setupSearch();

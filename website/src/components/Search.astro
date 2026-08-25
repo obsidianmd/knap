@@ -1,0 +1,34 @@
+---
+import { filterDocs } from '../../lib/filter-docs';
+
+const pages = [
+  { title: 'Variables', category: 'Guide', summary: 'Supply, resolve, access, and assign values in Knap templates.', href: '/variables' },
+  { title: 'Logic', category: 'Guide', summary: 'Include content conditionally, choose fallback values, and repeat Markdown over arrays.', href: '/logic' },
+  { title: 'Filters', category: 'Guide', summary: 'Transform values before Knap writes them.', href: '/filters' },
+  { title: 'API', category: 'Reference', summary: 'Install, configure, validate, and render Knap templates.', href: '/api' },
+  ...filterDocs.map((filter) => ({
+    title: filter.name,
+    category: filter.category,
+    summary: filter.summary,
+    href: `/filters/${filter.slug}`,
+    aliases: filter.aliases ?? [],
+    syntax: filter.syntax,
+  })),
+];
+---
+
+<button class="filter-search-trigger" type="button" aria-haspopup="dialog" data-search-trigger>
+  <span>Search</span><kbd>⌘K</kbd>
+</button>
+<div class="command-backdrop" data-search-backdrop hidden>
+  <section class="command-palette" role="dialog" aria-modal="true" aria-label="Search Knap">
+    <header>
+      <span aria-hidden="true">⌕</span>
+      <input type="search" placeholder="Search documentation…" aria-label="Search documentation" aria-controls="search-results" data-search-input />
+      <button type="button" aria-label="Close search" data-search-close>Esc</button>
+    </header>
+    <div class="command-results" id="search-results" role="listbox" data-search-results></div>
+    <footer><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span><span>{filterDocs.length} filters</span></footer>
+  </section>
+</div>
+<script id="search-index" type="application/json" set:html={JSON.stringify(pages)} is:inline />

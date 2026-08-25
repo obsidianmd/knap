@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  markdownPath?: string;
+}
+
+const {
+  title,
+  description = 'Knap is a safe, flexible templating language for turning structured data into Markdown.',
+  markdownPath,
+} = Astro.props;
+const pageTitle = title ? `${title} · Knap` : 'Knap · The templating language for Markdown';
+const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+const canonical = new URL(canonicalPath, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} title={`${title ?? 'Knap'} as Markdown`} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <title>{pageTitle}</title>
+  </head>
+  <body><slot /></body>
+</html>
+
+<script>
+  import '../scripts/site';
+</script>

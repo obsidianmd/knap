@@ -1,0 +1,21 @@
+---
+import CopyButton from './CopyButton.astro';
+import { highlightCode, type CodeLanguage } from '../lib/highlight';
+
+interface Props {
+  code: string;
+  language?: CodeLanguage;
+  label?: string;
+  showLineNumbers?: boolean;
+}
+
+const { code, language = 'knap', label, showLineNumbers = false } = Astro.props;
+const normalizedCode = code.replace(/^\n|\n$/g, '');
+---
+
+<figure class:list={['doc-code', !label && 'doc-code-unlabeled', showLineNumbers && 'doc-code-numbered']} data-code-block>
+  {label ? (
+    <figcaption><span>{label}</span><span class="doc-code-actions"><CopyButton /></span></figcaption>
+  ) : <CopyButton />}
+  <pre><code class={`language-${language}`} data-language={language} set:html={highlightCode(normalizedCode, language, showLineNumbers)} /></pre>
+</figure>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+
+interface Heading { depth: number; slug: string; text: string }
+interface Props {
+  current: 'variables' | 'logic' | 'filters' | 'api';
+  title: string;
+  description: string;
+  headings?: Heading[];
+  markdownPath: string;
+}
+
+const { current, title, description, headings = [], markdownPath } = Astro.props;
+const toc = headings.filter((heading) => heading.depth === 2);
+const guideLinks = [
+  { href: '/variables', label: 'Variables', key: 'variables' },
+  { href: '/logic', label: 'Logic', key: 'logic' },
+  { href: '/filters', label: 'Filters', key: 'filters' },
+];
+---
+
+<BaseLayout title={title} description={description} markdownPath={markdownPath}>
+  <main class="docs-page">
+    <SiteHeader />
+    <div class="docs-layout">
+      <aside class="docs-sidebar" aria-label="Documentation navigation">
+        <div class="sidebar-group">
+          <p>Guide</p>
+          {guideLinks.map((link) => <a href={link.href} aria-current={current === link.key ? 'page' : undefined}>{link.label}</a>)}
+        </div>
+        <div class="sidebar-group"><p>Reference</p><a href="/api" aria-current={current === 'api' ? 'page' : undefined}>API</a></div>
+        <div class="sidebar-group sidebar-external"><p>Project</p><a href="https://github.com/obsidianmd/knap">GitHub ↗</a><a href="https://www.npmjs.com/package/knap">npm ↗</a></div>
+      </aside>
+
+      <article class="docs-content">
+        <header class="docs-title"><h1>{title}</h1><p>{description}</p></header>
+        <div class="markdown-doc"><slot /></div>
+        <footer class="docs-footer"><span>Knap is open source under the MIT license.</span><span><a href={markdownPath}>Markdown</a> · <a href="https://github.com/obsidianmd/knap">View source ↗</a></span></footer>
+      </article>
+
+      <aside class="docs-toc" aria-label="On this page"><p>On this page</p>{toc.map((item) => <a href={`#${item.slug}`}>{item.text}</a>)}</aside>
+    </div>
+  </main>
+</BaseLayout>

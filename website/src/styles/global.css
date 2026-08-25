@@ -1,5 +1,3 @@
-@import 'tailwindcss';
-
 :root {
   --ink: #100f0f;
   --panel: #1c1b1a;
@@ -23,6 +21,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { background: var(--ink); scroll-behavior: smooth; }
 body {
   margin: 0;
@@ -103,12 +102,10 @@ a { color: inherit; text-decoration: none; }
 .tok-string { color: var(--cyan); }
 .tok-plain { color: var(--paper); }
 
-.markdown-native { padding-block: clamp(92px, 12vw, 150px); }
 .markdown-native-heading {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
   gap: clamp(50px, 9vw, 120px);
-  border-top: 1px solid var(--line);
   padding-top: 38px;
 }
 .markdown-native-heading h2 { max-width: 560px; margin: 0; color: var(--paper); font-size: clamp(2.2rem, 4.5vw, 4rem); line-height: 1.02; letter-spacing: -0.055em; }
@@ -212,6 +209,7 @@ footer > a:last-child { justify-self: end; }
   align-items: center;
   gap: 8px;
   border: 1px solid var(--line);
+  border-radius: 999px;
   background: transparent;
   color: var(--muted);
   padding: 4px 7px;
@@ -293,10 +291,10 @@ footer > a:last-child { justify-self: end; }
 .doc-section > p + p { margin-top: -5px; }
 .doc-section a { color: var(--accent); border-bottom: 1px solid var(--accent); }
 .doc-section :not(pre) > code, .doc-note code, .api-list code {
-  border: 1px solid var(--line);
   background: var(--panel);
   color: var(--paper);
-  padding: 0.12em 0.38em;
+  padding: 0.12em 0.24em;
+  border-radius: 0.38em;
   font-family: "SFMono-Regular", Consolas, monospace;
   font-size: 0.84em;
 }
@@ -329,6 +327,7 @@ footer > a:last-child { justify-self: end; }
 .doc-code-copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .doc-code-copy[data-copied] { color: var(--green); }
 .doc-code pre { margin: 0; overflow-x: auto; padding-block: 18px; color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.82rem; line-height: 1.72; }
+.doc-code-unlabeled pre { padding-block: 14px; }
 .doc-code-unlabeled > .doc-code-copy { position: absolute; z-index: 1; top: 8px; right: 10px; }
 .doc-code-line { display: grid; min-height: 1.72em; grid-template-columns: minmax(0, 1fr); padding-inline: 20px; }
 .doc-code-numbered .doc-code-line { grid-template-columns: 42px minmax(0, 1fr); padding-left: 10px; }
@@ -445,6 +444,57 @@ footer > a:last-child { justify-self: end; }
 
 .docs-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 110px; border-top: 1px solid var(--line); padding-top: 24px; color: var(--muted); font-size: 0.76rem; }
 .docs-footer a { color: var(--paper); }
+
+.markdown-doc > h2 {
+  scroll-margin-top: 32px;
+  margin: 82px 0 20px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--line);
+  color: var(--paper);
+  font-size: 1.55rem;
+  letter-spacing: -0.025em;
+}
+.markdown-doc > h2:first-child { margin-top: 0; }
+.markdown-doc > h3 { margin: 36px 0 12px; color: var(--paper); font-size: 1rem; }
+.markdown-doc > p { margin: 0 0 18px; }
+.markdown-doc > p + p { margin-top: -5px; }
+.markdown-doc a { color: var(--accent); border-bottom: 1px solid var(--accent); }
+.markdown-doc :not(pre) > code {
+  border-radius: 0.38em;
+  background: var(--panel);
+  color: var(--paper);
+  padding: 0.12em 0.24em;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.84em;
+}
+.markdown-doc > ul, .markdown-doc > ol { margin: 20px 0 26px; padding-left: 1.25rem; }
+.markdown-doc li { margin-block: 7px; }
+.markdown-doc li::marker { color: var(--accent); }
+.markdown-doc > blockquote {
+  display: grid;
+  gap: 6px;
+  margin: 28px 0;
+  border-left: 3px solid var(--accent);
+  background: var(--panel);
+  padding: 18px 20px;
+  color: var(--body);
+  font-size: 0.88rem;
+}
+.markdown-doc > blockquote p { margin: 0; }
+.markdown-doc > blockquote strong { color: var(--paper); }
+.markdown-doc > table {
+  width: 100%;
+  margin: 26px 0;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.markdown-doc > table th, .markdown-doc > table td { border-bottom: 1px solid var(--line); padding: 13px 14px; text-align: left; vertical-align: top; }
+.markdown-doc > table th { color: var(--muted); font-size: 0.66rem; letter-spacing: 0.09em; text-transform: uppercase; }
+.markdown-doc > table td:first-child { color: var(--paper); }
+.markdown-doc > .doc-code { margin-block: 28px; }
+.not-found { width: min(calc(100% - 48px), 720px); margin: 12vh auto; }
+.not-found > p { margin: 0 0 20px; color: var(--accent); font-family: "SFMono-Regular", Consolas, monospace; }
+.not-found h1 { margin: 0 0 36px; color: var(--paper); font-size: clamp(3rem, 8vw, 6rem); line-height: 0.95; letter-spacing: -0.06em; }
 
 @media (max-width: 1180px) {
   .docs-layout { grid-template-columns: 145px minmax(0, 720px); justify-content: center; }

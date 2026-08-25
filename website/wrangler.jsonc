@@ -1,9 +1,11 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "knap",
-  "main": "vinext/server/app-router-entry",
   "compatibility_date": "2026-08-25",
-  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
   "routes": [
     {
       "pattern": "knap.md",
