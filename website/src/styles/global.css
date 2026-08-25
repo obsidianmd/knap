@@ -385,7 +385,7 @@ footer > a:last-child { justify-self: end; }
 .syn-string { color: var(--syntax-cyan); }
 .syn-number { color: var(--syntax-purple); }
 .syn-md-heading { color: var(--paper); font-weight: 700; }
-.syn-md-key { color: var(--paper); font-weight: 650; }
+.syn-yaml-key { color: var(--syntax-blue); font-weight: 650; }
 .syn-md-link { color: var(--syntax-purple); }
 
 .doc-note {

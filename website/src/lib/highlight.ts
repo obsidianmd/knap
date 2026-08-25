@@ -50,10 +50,11 @@ function highlightMarkdownLine(line: string) {
   const yaml = line.match(/^([A-Za-z][\w-]*)(:)(\s*)(.*)$/);
   if (yaml) {
     const quoted = yaml[4].match(/^(["'])(.*)\1$/);
-    const value = quoted
-      ? `${span('syn-punctuation', quoted[1])}${escapeHtml(quoted[2])}${span('syn-punctuation', quoted[1])}`
-      : highlightMarkdownInline(yaml[4]);
-    return `${span('syn-md-key', yaml[1])}${span('syn-punctuation', yaml[2])}${escapeHtml(yaml[3])}${value}`;
+    let value = span('syn-string', yaml[4]);
+    if (quoted) value = `${span('syn-punctuation', quoted[1])}${span('syn-string', quoted[2])}${span('syn-punctuation', quoted[1])}`;
+    else if (/^(?:true|false|null|~)$/.test(yaml[4])) value = span('syn-constant', yaml[4]);
+    else if (/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(yaml[4])) value = span('syn-number', yaml[4]);
+    return `${span('syn-yaml-key', yaml[1])}${span('syn-punctuation', yaml[2])}${escapeHtml(yaml[3])}${value}`;
   }
 
   if (/^\s*\|.*\|\s*$/.test(line)) {
