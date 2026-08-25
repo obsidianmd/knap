@@ -49,7 +49,7 @@ export default async function FilterPage({ params }: PageProps) {
               <div className="example-grid">
                 <CodeBlock language="ts" label="Input" code={JSON.stringify(item.variables, null, 2)} />
                 <CodeBlock label="Template" code={item.template} />
-                <CodeBlock label="Output" code={item.expected} />
+                <CodeBlock language="md" label="Output" code={item.expected} />
               </div>
             </article>
           ))}

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { FilterSearch } from './filter-search';
 
 type DocRoute = 'variables' | 'logic' | 'filters' | 'api';
+type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md';
 
 const guideLinks: Array<{ href: string; label: string; key: DocRoute }> = [
   { href: '/variables', label: 'Variables', key: 'variables' },
@@ -82,7 +83,7 @@ export function DocShell({
   );
 }
 
-function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
+function tokenClass(token: string, language: CodeLanguage) {
   if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-language';
   if (/^(===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|])$/.test(token)) return 'syn-punctuation';
   if (/^['"`]/.test(token)) return 'syn-string';
@@ -97,7 +98,9 @@ function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
   return undefined;
 }
 
-function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
+function highlightLine(line: string, language: CodeLanguage) {
+  if (language === 'md') return line;
+
   const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   let expectsFilter = false;
   let inKnapExpression = false;
@@ -145,7 +148,7 @@ function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
   });
 }
 
-export function HighlightedCode({ code, language = 'knap' }: { code: string; language?: 'knap' | 'ts' | 'shell' }) {
+export function HighlightedCode({ code, language = 'knap' }: { code: string; language?: CodeLanguage }) {
   return <code>{highlightLine(code, language)}</code>;
 }
 
@@ -155,7 +158,7 @@ export function CodeBlock({
   label,
 }: {
   code: string;
-  language?: 'knap' | 'ts' | 'shell';
+  language?: CodeLanguage;
   label?: string;
 }) {
   const lines = code.replace(/^\n|\n$/g, '').split('\n');
