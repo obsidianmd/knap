@@ -31,7 +31,6 @@ export default function Home() {
 
         <div className="hero-grid">
           <div className="hero-copy">
-            <p className="eyebrow">A template engine for Markdown</p>
             <h1>Turn structured data into notes worth keeping.</h1>
             <p className="lede">Knap brings variables, logic, loops, and a focused filter library to Markdown—without evaluating arbitrary JavaScript.</p>
             <div className="hero-actions">
@@ -71,7 +70,6 @@ export default function Home() {
       <section className="used-by" aria-labelledby="used-by-knap">
         <header className="used-by-heading">
           <div>
-            <p className="eyebrow">Used in production</p>
             <h2 id="used-by-knap">Tools powered by Knap.</h2>
           </div>
           <p>Knap is the shared template language behind tools that turn web pages and imported data into durable Markdown.</p>

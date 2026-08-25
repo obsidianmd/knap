@@ -17,7 +17,7 @@ const toc = [
 
 export default function ApiPage() {
   return (
-    <DocShell current="api" eyebrow="Reference" title="API" description="Create an immutable engine-scoped filter registry, then parse, validate, or render templates against application-owned data." toc={toc}>
+    <DocShell current="api" title="API" description="Create an immutable engine-scoped filter registry, then parse, validate, or render templates against application-owned data." toc={toc}>
       <section id="install" className="doc-section">
         <h2>Install</h2>
         <CodeBlock language="shell" label="Terminal" code="pnpm add knap" />

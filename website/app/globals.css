@@ -54,14 +54,6 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   padding-block: clamp(80px, 12vw, 146px) 90px;
 }
-.eyebrow {
-  margin: 0 0 22px;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
 .hero-copy h1 {
   max-width: 710px;
   margin: 0;
@@ -123,7 +115,6 @@ a { color: inherit; text-decoration: none; }
 .install-strip a { color: var(--acid); font-size: 0.88rem; font-weight: 650; }
 
 .feature-grid { display: grid; grid-template-columns: 0.72fr 1.3fr; gap: clamp(60px, 10vw, 140px); padding-block: clamp(92px, 12vw, 150px); }
-.section-heading .eyebrow { color: var(--acid); }
 .section-heading h2 { margin: 0; color: var(--paper); font-size: clamp(2rem, 4.2vw, 3.9rem); line-height: 1.04; letter-spacing: -0.055em; }
 .feature-cards { border-top: 1px solid var(--line); }
 .feature-cards article { display: grid; grid-template-columns: 48px 0.65fr 1fr; gap: 26px; align-items: baseline; border-bottom: 1px solid var(--line); padding-block: 27px; }
@@ -133,7 +124,6 @@ a { color: inherit; text-decoration: none; }
 
 .used-by { margin-bottom: 110px; }
 .used-by-heading { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(50px, 9vw, 120px); align-items: end; border-top: 1px solid var(--line); padding-block: 38px 52px; }
-.used-by-heading .eyebrow { margin-bottom: 16px; color: var(--acid); }
 .used-by-heading h2 { max-width: 560px; margin: 0; color: var(--paper); font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.04; letter-spacing: -0.055em; }
 .used-by-heading > p { max-width: 520px; margin: 0; color: var(--muted); font-size: 0.96rem; }
 .used-by-list { border-top: 1px solid var(--line); }
@@ -281,7 +271,6 @@ footer > a:last-child { justify-self: end; }
 .docs-toc { display: grid; gap: 8px; border-left: 1px solid var(--line); padding-left: 18px; }
 
 .docs-title { margin-bottom: 70px; }
-.docs-title .eyebrow { margin-bottom: 24px; color: var(--acid); }
 .docs-title h1 {
   margin: 0;
   color: var(--paper);

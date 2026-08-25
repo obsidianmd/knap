@@ -28,14 +28,12 @@ export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
 
 export function DocShell({
   current,
-  eyebrow,
   title,
   description,
   toc,
   children,
 }: {
   current: DocRoute;
-  eyebrow?: string;
   title: string;
   description: string;
   toc: Array<{ href: string; label: string }>;
@@ -65,7 +63,6 @@ export function DocShell({
 
         <article className="docs-content">
           <header className="docs-title">
-            {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
             <h1>{title}</h1>
             <p>{description}</p>
           </header>

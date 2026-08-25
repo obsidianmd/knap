@@ -17,7 +17,7 @@ const toc = [
 
 export default function VariablesPage() {
   return (
-    <DocShell current="variables" eyebrow="Language guide · 01" title="Variables" description="Variables are the bridge between your application data and a Knap template. The host supplies the values; the template decides how to present them." toc={toc}>
+    <DocShell current="variables" title="Variables" description="Variables are the bridge between your application data and a Knap template. The host supplies the values; the template decides how to present them." toc={toc}>
       <section id="output" className="doc-section">
         <h2>Output a value</h2>
         <p>Wrap a variable name in double braces. Whitespace inside the braces is optional.</p>

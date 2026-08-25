@@ -12,7 +12,7 @@ const toc = [
 
 export default function FiltersPage() {
   return (
-    <DocShell current="filters" eyebrow="Language guide · 03" title="Filters" description="Filters transform values before Knap writes them. Browse the complete library, then open any filter for tested input, template, and output examples." toc={toc}>
+    <DocShell current="filters" title="Filters" description="Filters transform values before Knap writes them. Browse the complete library, then open any filter for tested input, template, and output examples." toc={toc}>
       <section id="use" className="doc-section">
         <h2>Use filters</h2>
         <p>Add a filter after a pipe. Parameters follow the filter name after a colon, and chains run from left to right.</p>
