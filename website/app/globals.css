@@ -383,8 +383,6 @@ footer > a:last-child { justify-self: end; }
 .filter-breadcrumb { display: flex; gap: 9px; align-items: center; margin: -46px 0 52px; color: var(--muted); font-size: 0.76rem; }
 .filter-breadcrumb a { color: var(--accent); }
 .filter-breadcrumb code { color: var(--paper); font-family: "SFMono-Regular", Consolas, monospace; }
-.syntax-stack { display: grid; overflow: hidden; gap: 1px; border-radius: 12px; background: var(--line); }
-.syntax-stack > code { display: block; overflow-x: auto; background: var(--panel); color: var(--paper); padding: 13px 16px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.78rem; white-space: nowrap; }
 .filter-alias-note { margin-top: 18px !important; color: var(--muted); font-size: 0.84rem; }
 .filter-alias-note code + code { margin-left: 6px; }
 .filter-example-card { margin-top: 38px; }

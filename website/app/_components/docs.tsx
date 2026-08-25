@@ -148,10 +148,6 @@ function highlightLine(line: string, language: CodeLanguage) {
   });
 }
 
-export function HighlightedCode({ code, language = 'knap' }: { code: string; language?: CodeLanguage }) {
-  return <code>{highlightLine(code, language)}</code>;
-}
-
 export function CodeBlock({
   code,
   language = 'knap',
