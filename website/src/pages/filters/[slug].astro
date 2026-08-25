@@ -20,7 +20,6 @@ const headings = [
 ---
 
 <DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`} fitTitle>
-  <nav class="filter-breadcrumb" aria-label="Breadcrumb"><a href="/filters">Filters</a><span>/</span><code>{filter.name}</code></nav>
   {filter.environment === 'html' && <aside class="doc-note"><strong>HTML preset</strong><div>This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</div></aside>}
 
   <section id="syntax" class="doc-section">
