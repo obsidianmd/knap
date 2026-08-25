@@ -28,7 +28,7 @@ body {
 a { color: inherit; text-decoration: none; }
 
 .hero-shell { min-height: 720px; background: var(--acid); color: var(--ink); }
-.topbar, .hero-grid, .install-strip, .feature-grid, .path-grid, footer {
+.topbar, .hero-grid, .install-strip, .feature-grid, .used-by, .path-grid, footer {
   width: min(calc(100% - 48px), var(--content));
   margin-inline: auto;
 }
@@ -131,6 +131,24 @@ a { color: inherit; text-decoration: none; }
 .feature-cards h3 { margin: 0; color: var(--paper); font-size: 1rem; }
 .feature-cards p { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
+.used-by { margin-bottom: 110px; }
+.used-by-heading { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(50px, 9vw, 120px); align-items: end; border-top: 1px solid var(--line); padding-block: 38px 52px; }
+.used-by-heading .eyebrow { margin-bottom: 16px; color: var(--acid); }
+.used-by-heading h2 { max-width: 560px; margin: 0; color: var(--paper); font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.04; letter-spacing: -0.055em; }
+.used-by-heading > p { max-width: 520px; margin: 0; color: var(--muted); font-size: 0.96rem; }
+.used-by-list { border-top: 1px solid var(--line); }
+.used-by-card { display: grid; grid-template-columns: 46px minmax(0, 1fr) 250px 24px; gap: 28px; align-items: center; border-bottom: 1px solid var(--line); padding-block: 30px; transition: background 150ms ease, padding 150ms ease; }
+.used-by-card:hover { background: rgb(198 212 76 / 5%); padding-inline: 14px; }
+.used-by-index { align-self: start; color: var(--muted); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.68rem; }
+.used-by-copy { display: grid; gap: 8px; }
+.used-by-copy p { margin: 0; color: var(--acid); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.used-by-copy h3 { margin: 0; color: var(--paper); font-size: 1.65rem; letter-spacing: -0.035em; }
+.used-by-copy > span { max-width: 590px; color: var(--muted); font-size: 0.86rem; }
+.used-by-example { display: grid; gap: 9px; border-left: 1px solid var(--line); padding-left: 24px; }
+.used-by-example small { color: var(--muted); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.used-by-example code { color: var(--orange); font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.72rem; }
+.used-by-card > strong { color: var(--acid); font-size: 1rem; font-weight: 500; }
+
 .path-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-right: 0; margin-bottom: 100px; }
 .path-grid a { display: grid; min-height: 190px; border-right: 1px solid var(--line); padding: 25px; transition: background 150ms ease, color 150ms ease; }
 .path-grid a:hover { background: var(--acid); color: var(--ink); }
@@ -150,10 +168,11 @@ footer > a:last-child { justify-self: end; }
   .hero-grid { padding-block: 72px 84px; }
   .code-window { width: min(100%, 620px); }
   .feature-grid { gap: 58px; }
+  .used-by-card { grid-template-columns: 38px minmax(0, 1fr) 210px 20px; gap: 20px; }
 }
 
 @media (max-width: 680px) {
-  .topbar, .hero-grid, .install-strip, .feature-grid, .path-grid, footer { width: min(calc(100% - 32px), var(--content)); }
+  .topbar, .hero-grid, .install-strip, .feature-grid, .used-by, .path-grid, footer { width: min(calc(100% - 32px), var(--content)); }
   .topbar { align-items: flex-start; padding-block: 20px; }
   .nav-links { display: grid; grid-template-columns: repeat(2, auto); gap: 6px 18px; }
   .nav-links .nav-github { border: 0; padding: 0; }
@@ -163,6 +182,11 @@ footer > a:last-child { justify-self: end; }
   .install-strip { align-items: flex-start; flex-direction: column; }
   .feature-cards article { grid-template-columns: 34px 1fr; }
   .feature-cards p { grid-column: 2; }
+  .used-by { margin-bottom: 80px; }
+  .used-by-heading { grid-template-columns: 1fr; gap: 20px; padding-block: 30px 38px; }
+  .used-by-card { grid-template-columns: 28px minmax(0, 1fr) 18px; gap: 14px; align-items: start; }
+  .used-by-example { grid-column: 2; border-left: 0; padding: 8px 0 0; }
+  .used-by-card > strong { grid-column: 3; grid-row: 1 / 3; }
   .path-grid { grid-template-columns: 1fr; border-bottom: 0; }
   .path-grid a { min-height: 150px; border-bottom: 1px solid var(--line); }
   footer { grid-template-columns: 1fr auto; }

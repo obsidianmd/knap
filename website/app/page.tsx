@@ -69,6 +69,46 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="used-by" aria-labelledby="used-by-knap">
+        <header className="used-by-heading">
+          <div>
+            <p className="eyebrow">Used in production</p>
+            <h2 id="used-by-knap">Tools powered by Knap.</h2>
+          </div>
+          <p>Knap is the shared template language behind tools that turn web pages and imported data into durable Markdown.</p>
+        </header>
+
+        <div className="used-by-list">
+          <a href="https://obsidian.md/clipper" className="used-by-card">
+            <span className="used-by-index">01</span>
+            <div className="used-by-copy">
+              <p>Obsidian · Browser extension</p>
+              <h3>Web Clipper</h3>
+              <span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span>
+            </div>
+            <div className="used-by-example">
+              <small>Template → Markdown</small>
+              <code>{'{{ content | markdown }}'}</code>
+            </div>
+            <strong aria-hidden="true">↗</strong>
+          </a>
+
+          <a href="https://community.obsidian.md/plugins/obsidian-importer" className="used-by-card">
+            <span className="used-by-index">02</span>
+            <div className="used-by-copy">
+              <p>Obsidian · Community plugin</p>
+              <h3>Importer</h3>
+              <span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span>
+            </div>
+            <div className="used-by-example">
+              <small>Fields → Notes</small>
+              <code>{'{{ title | safe_name }}'}</code>
+            </div>
+            <strong aria-hidden="true">↗</strong>
+          </a>
+        </div>
+      </section>
+
       <section className="path-grid" aria-label="Documentation paths">
         <a href="/variables"><span>Start with</span><strong>Variables</strong><small>{'{{ title }}'} →</small></a>
         <a href="/logic"><span>Then add</span><strong>Logic</strong><small>{'{% if author %}'} →</small></a>
