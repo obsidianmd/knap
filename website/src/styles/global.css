@@ -452,6 +452,7 @@ footer > a:last-child { justify-self: end; }
 .filter-alias-note { margin-top: 18px !important; color: var(--muted); font-size: 0.84rem; }
 .filter-alias-note code + code { margin-left: 6px; }
 .filter-example-card { margin-top: 38px; }
+.filter-example-card-untitled { margin-top: 0; }
 .filter-example-card > header { border-bottom: 1px solid var(--line); padding-bottom: 11px; }
 .filter-example-card h3 { margin: 0; color: var(--paper); font-size: 1rem; }
 .example-grid { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }

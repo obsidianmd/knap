@@ -25,7 +25,8 @@ export function filterMarkdown(filter: FilterDoc) {
 
   lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
   filter.examples.forEach((item) => {
-    lines.push(`### ${item.title}`, '', fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
+    if (!(filter.examples.length === 1 && item.title === 'Basic usage')) lines.push(`### ${item.title}`, '');
+    lines.push(fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
   });
 
   if (filter.related?.length) lines.push('## Related filters', '', ...filter.related.map((name) => `- [${name}](/filters/${name.replaceAll('_', '-')})`), '');

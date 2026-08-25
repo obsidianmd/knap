@@ -35,8 +35,8 @@ const headings = [
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
     <div class="filter-examples">
       {filter.examples.map((item) => (
-        <article class="filter-example-card">
-          <header><h3>{item.title}</h3></header>
+        <article class:list={['filter-example-card', filter.examples.length === 1 && item.title === 'Basic usage' && 'filter-example-card-untitled']}>
+          {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3>{item.title}</h3></header>}
           <div class="example-grid">
             <CodeBlock language="json" label="Input" code={JSON.stringify(item.variables, null, 2)} />
             <CodeBlock label="Template" code={item.template} />
