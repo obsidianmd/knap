@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import type { FilterDoc, FilterGroup } from '@/lib/filter-docs';
-import Link from 'next/link';
 
 export function FilterDirectory({ groups, filters }: { groups: FilterGroup[]; filters: FilterDoc[] }) {
   const [query, setQuery] = useState('');
@@ -27,12 +26,12 @@ export function FilterDirectory({ groups, filters }: { groups: FilterGroup[]; fi
             <header><h3>{group.label}</h3><p>{group.intro}</p></header>
             <div className="filter-list">
               {visible.map((filter) => (
-                <Link className="filter-row" href={`/filters/${filter.slug}`} key={filter.name}>
+                <a className="filter-row" href={`/filters/${filter.slug}`} key={filter.name}>
                   <div><code>{filter.name}</code>{filter.aliases?.length ? <small>alias: {filter.aliases.join(', ')}</small> : null}</div>
                   <p>{filter.summary}</p>
                   <code className="filter-example">{filter.syntax[0]}</code>
                   <span aria-hidden="true">→</span>
-                </Link>
+                </a>
               ))}
             </div>
           </section>

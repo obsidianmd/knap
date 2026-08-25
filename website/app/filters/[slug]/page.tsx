@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { CodeBlock, DocShell, Note } from '../../_components/docs';
 import { allFilterSlugs, filterDocs, filterDocsByName, filterDocsBySlug } from '@/lib/filter-docs';
 
@@ -31,7 +31,7 @@ export default async function FilterPage({ params }: PageProps) {
 
   return (
     <DocShell current="filters" eyebrow={`${filter.category} · Filter reference`} title={filter.name} description={filter.summary} toc={toc}>
-      <nav className="filter-breadcrumb" aria-label="Breadcrumb"><Link href="/filters">Filters</Link><span>/</span><code>{filter.name}</code></nav>
+      <nav className="filter-breadcrumb" aria-label="Breadcrumb"><a href="/filters">Filters</a><span>/</span><code>{filter.name}</code></nav>
       {filter.environment === 'html' ? <Note title="HTML preset"><p>This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</p></Note> : null}
 
       <section id="syntax" className="doc-section">
@@ -61,13 +61,13 @@ export default async function FilterPage({ params }: PageProps) {
       {filter.related?.length ? (
         <section id="related" className="doc-section">
           <h2>Related filters</h2>
-          <div className="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related ? <Link href={`/filters/${related.slug}`} key={name}><code>{name}</code><span>{related.summary}</span></Link> : null; })}</div>
+          <div className="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related ? <a href={`/filters/${related.slug}`} key={name}><code>{name}</code><span>{related.summary}</span></a> : null; })}</div>
         </section>
       ) : null}
 
       <nav className="filter-pagination" aria-label="Filter pages">
-        {previous ? <Link href={`/filters/${previous.slug}`}><small>Previous</small><span>← {previous.name}</span></Link> : <span />}
-        {next ? <Link href={`/filters/${next.slug}`}><small>Next</small><span>{next.name} →</span></Link> : <span />}
+        {previous ? <a href={`/filters/${previous.slug}`}><small>Previous</small><span>← {previous.name}</span></a> : <span />}
+        {next ? <a href={`/filters/${next.slug}`}><small>Next</small><span>{next.name} →</span></a> : <span />}
       </nav>
     </DocShell>
   );

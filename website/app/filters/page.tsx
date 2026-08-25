@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import { CodeBlock, DocShell, Note } from '../_components/docs';
 import { filterDocs, filterGroups } from '@/lib/filter-docs';
 import { FilterDirectory } from './filter-directory';
-import Link from 'next/link';
 
 const toc = [
   { href: '#use', label: 'Use filters' },
@@ -28,7 +28,7 @@ export default function FiltersPage() {
 
       <section id="html-preset" className="doc-section">
         <h2>Opt into the HTML preset</h2>
-        <p><Link href="/filters/html-to-json"><code>html_to_json</code></Link> and <Link href="/filters/remove-html"><code>remove_html</code></Link> require browser-compatible DOM globals, so they are exported separately from <code>knap/html</code>.</p>
+        <p><a href="/filters/html-to-json"><code>html_to_json</code></a> and <a href="/filters/remove-html"><code>remove_html</code></a> require browser-compatible DOM globals, so they are exported separately from <code>knap/html</code>.</p>
         <CodeBlock language="ts" label="engine.ts" code={`import { createEngine, standardFilters } from 'knap';
 import { htmlFilters } from 'knap/html';
 

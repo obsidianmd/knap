@@ -1,4 +1,4 @@
-import Link from 'next/link';
+/* eslint-disable @next/next/no-html-link-for-pages */
 
 const templateLines = [
   [["# ", "plain"], ["{{", "punctuation"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "punctuation"]],
@@ -17,12 +17,12 @@ export default function Home() {
     <main>
       <section className="hero-shell">
         <nav className="topbar" aria-label="Main navigation">
-          <Link className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></Link>
+          <a className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></a>
           <div className="nav-links">
-            <Link href="/logic">Logic</Link>
-            <Link href="/filters">Filters</Link>
-            <Link href="/variables">Variables</Link>
-            <Link href="/api">API</Link>
+            <a href="/logic">Logic</a>
+            <a href="/filters">Filters</a>
+            <a href="/variables">Variables</a>
+            <a href="/api">API</a>
             <a className="nav-github" href="https://github.com/obsidianmd/knap">GitHub ↗</a>
           </div>
         </nav>
@@ -33,8 +33,8 @@ export default function Home() {
             <h1>Turn structured data into notes worth keeping.</h1>
             <p className="lede">Knap brings variables, logic, loops, and a focused filter library to Markdown—without evaluating arbitrary JavaScript.</p>
             <div className="hero-actions">
-              <Link className="button button-primary" href="/logic">Read the language guide</Link>
-              <Link className="button button-secondary" href="/api">Add Knap to a project</Link>
+              <a className="button button-primary" href="/logic">Read the language guide</a>
+              <a className="button button-secondary" href="/api">Add Knap to a project</a>
             </div>
           </div>
 
@@ -52,7 +52,7 @@ export default function Home() {
 
       <section className="install-strip" aria-label="Installation">
         <div><span className="install-label">Install</span><code>pnpm add knap</code></div>
-        <Link href="/api#quick-start">Quick start →</Link>
+        <a href="/api#quick-start">Quick start →</a>
       </section>
 
       <section className="feature-grid" aria-labelledby="why-knap">
@@ -68,13 +68,13 @@ export default function Home() {
       </section>
 
       <section className="path-grid" aria-label="Documentation paths">
-        <Link href="/variables"><span>Start with</span><strong>Variables</strong><small>{'{{ title }}'} →</small></Link>
-        <Link href="/logic"><span>Then add</span><strong>Logic</strong><small>{'{% if author %}'} →</small></Link>
-        <Link href="/filters"><span>Shape with</span><strong>Filters</strong><small>{'| trim | title'} →</small></Link>
+        <a href="/variables"><span>Start with</span><strong>Variables</strong><small>{'{{ title }}'} →</small></a>
+        <a href="/logic"><span>Then add</span><strong>Logic</strong><small>{'{% if author %}'} →</small></a>
+        <a href="/filters"><span>Shape with</span><strong>Filters</strong><small>{'| trim | title'} →</small></a>
       </section>
 
       <footer>
-        <Link className="wordmark footer-mark" href="/">Knap<span>.md</span></Link>
+        <a className="wordmark footer-mark" href="/">Knap<span>.md</span></a>
         <p>Open source under the MIT license.</p>
         <a href="https://github.com/obsidianmd/knap">GitHub ↗</a>
       </footer>

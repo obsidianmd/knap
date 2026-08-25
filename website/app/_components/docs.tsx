@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 
 type DocRoute = 'variables' | 'logic' | 'filters' | 'api';
 
@@ -12,12 +12,12 @@ const guideLinks: Array<{ href: string; label: string; key: DocRoute }> = [
 export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
   return (
     <nav className={`site-header${inverse ? ' site-header-inverse' : ''}`} aria-label="Main navigation">
-      <Link className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></Link>
+      <a className="wordmark" href="/" aria-label="Knap home">Knap<span>.md</span></a>
       <div className="site-header-links">
-        <Link href="/logic">Logic</Link>
-        <Link href="/filters">Filters</Link>
-        <Link href="/variables">Variables</Link>
-        <Link href="/api">API</Link>
+        <a href="/logic">Logic</a>
+        <a href="/filters">Filters</a>
+        <a href="/variables">Variables</a>
+        <a href="/api">API</a>
         <a href="https://github.com/obsidianmd/knap">GitHub ↗</a>
       </div>
     </nav>
@@ -47,12 +47,12 @@ export function DocShell({
           <div className="sidebar-group">
             <p>Guide</p>
             {guideLinks.map((link) => (
-              <Link key={link.key} href={link.href} aria-current={current === link.key ? 'page' : undefined}>{link.label}</Link>
+              <a key={link.key} href={link.href} aria-current={current === link.key ? 'page' : undefined}>{link.label}</a>
             ))}
           </div>
           <div className="sidebar-group">
             <p>Reference</p>
-            <Link href="/api" aria-current={current === 'api' ? 'page' : undefined}>API</Link>
+            <a href="/api" aria-current={current === 'api' ? 'page' : undefined}>API</a>
           </div>
           <div className="sidebar-group sidebar-external">
             <p>Project</p>
