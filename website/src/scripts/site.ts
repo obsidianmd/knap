@@ -127,7 +127,7 @@ function setupSearch() {
     input.value = '';
     update();
     backdrop.hidden = false;
-    requestAnimationFrame(() => input.focus());
+    input.focus({ preventScroll: true });
   };
   const close = () => { backdrop.hidden = true; };
 
