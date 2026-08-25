@@ -73,7 +73,7 @@ a { color: inherit; text-decoration: none; }
 .button-primary { border-color: var(--accent); background: var(--accent); color: var(--ink); }
 .button-secondary:hover { background: var(--panel); }
 
-.code-window { min-width: 0; overflow: hidden; border-radius: 12px; background: var(--panel); color: var(--paper); box-shadow: 18px 18px 0 var(--line); }
+.code-window { min-width: 0; overflow: hidden; border-radius: 12px; background: var(--panel); color: var(--paper); }
 .code-window-bar {
   display: flex;
   align-items: center;
@@ -100,6 +100,7 @@ a { color: inherit; text-decoration: none; }
 .tok-keyword { color: var(--green); }
 .tok-variable { color: var(--blue); }
 .tok-filter { color: var(--orange); }
+.tok-string { color: var(--cyan); }
 .tok-plain { color: var(--paper); }
 
 .markdown-native { padding-block: clamp(92px, 12vw, 150px); }
@@ -171,7 +172,6 @@ footer > a:last-child { justify-self: end; }
   .hero-grid, .markdown-native, .install-strip, .feature-grid, .used-by, .path-grid, footer { width: min(calc(100% - 32px), var(--content)); }
   .hero-copy h1 { font-size: clamp(2.9rem, 14vw, 4.4rem); }
   .hero-actions { align-items: stretch; flex-direction: column; }
-  .code-window { box-shadow: 9px 9px 0 var(--line); }
   .markdown-native-heading { gap: 28px; }
   .markdown-transform { margin-top: 38px; }
   .install-strip { align-items: flex-start; flex-direction: column; }

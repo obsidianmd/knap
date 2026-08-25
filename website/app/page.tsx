@@ -2,15 +2,20 @@
 import { CodeBlock, SiteHeader } from './_components/docs';
 import { CodeCopyButton } from './_components/code-copy-button';
 
-const heroTemplate = `# {{ title | trim | title }}
+const heroTemplate = `---
+title: {{ title | yaml }}
+source: {{ url | yaml }}
+---
 
-{% if author %}
-By {{ author.name }}
-{% endif %}
+# {{ title }}
 
-{% for tag in tags %}
-- {{ tag | lower }}
-{% endfor %}`;
+{{ summary | blockquote }}
+
+## Highlights
+
+{{ highlights | list }}
+
+{{ url | link:"Read the source" }}`;
 
 const markdownTemplate = `---
 title: {{ title | yaml }}
@@ -52,15 +57,20 @@ source: "https://knap.md"
 [^2]: Output stays plain Markdown.`;
 
 const templateLines = [
-  [["# ", "plain"], ["{{", "language"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "language"]],
+  [["---", "punctuation"]],
+  [["title", "plain"], [": ", "punctuation"], ["{{", "language"], [" title ", "variable"], ["|", "punctuation"], [" yaml ", "filter"], ["}}", "language"]],
+  [["source", "plain"], [": ", "punctuation"], ["{{", "language"], [" url ", "variable"], ["|", "punctuation"], [" yaml ", "filter"], ["}}", "language"]],
+  [["---", "punctuation"]],
   [],
-  [["{%", "language"], [" if ", "keyword"], ["author", "variable"], [" %}", "language"]],
-  [["By ", "plain"], ["{{", "language"], [" author.name ", "variable"], ["}}", "language"]],
-  [["{%", "language"], [" endif ", "keyword"], ["%}", "language"]],
+  [["# ", "punctuation"], ["{{", "language"], [" title ", "variable"], ["}}", "language"]],
   [],
-  [["{%", "language"], [" for ", "keyword"], ["tag", "variable"], [" in ", "keyword"], ["tags", "variable"], [" %}", "language"]],
-  [["- ", "plain"], ["{{", "language"], [" tag ", "variable"], ["|", "punctuation"], [" lower ", "filter"], ["}}", "language"]],
-  [["{%", "language"], [" endfor ", "keyword"], ["%}", "language"]],
+  [["{{", "language"], [" summary ", "variable"], ["|", "punctuation"], [" blockquote ", "filter"], ["}}", "language"]],
+  [],
+  [["## ", "punctuation"], ["Highlights", "plain"]],
+  [],
+  [["{{", "language"], [" highlights ", "variable"], ["|", "punctuation"], [" list ", "filter"], ["}}", "language"]],
+  [],
+  [["{{", "language"], [" url ", "variable"], ["|", "punctuation"], [" link", "filter"], [":", "punctuation"], ["\"", "punctuation"], ["Read the source", "string"], ["\" ", "punctuation"], ["}}", "language"]],
 ] as const;
 
 export default function Home() {
