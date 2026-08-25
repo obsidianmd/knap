@@ -27,7 +27,7 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 
-.hero-shell { min-height: 720px; background: var(--acid); color: var(--ink); }
+.hero-shell { min-height: 720px; background: var(--ink); color: var(--paper); }
 .topbar, .hero-grid, .install-strip, .feature-grid, .used-by, .path-grid, footer {
   width: min(calc(100% - 48px), var(--content));
   margin-inline: auto;
@@ -38,14 +38,14 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   gap: 32px;
-  border-bottom: 1px solid rgb(16 15 15 / 24%);
+  border-bottom: 1px solid var(--line);
 }
 .wordmark { font-size: 1.55rem; font-weight: 760; letter-spacing: -0.045em; }
 .wordmark span { opacity: 0.48; }
-.nav-links { display: flex; align-items: center; gap: 28px; font-size: 0.85rem; font-weight: 650; }
+.nav-links { display: flex; align-items: center; gap: 28px; color: var(--body); font-size: 0.85rem; font-weight: 650; }
 .nav-links a { border-bottom: 1px solid transparent; }
-.nav-links a:hover { border-bottom-color: currentColor; }
-.nav-links .nav-github { border: 1px solid rgb(16 15 15 / 35%); padding: 7px 11px; }
+.nav-links a:hover { border-bottom-color: currentColor; color: var(--paper); }
+.nav-links .nav-github { border: 1px solid var(--line); padding: 7px 11px; }
 
 .hero-grid {
   display: grid;
@@ -62,24 +62,24 @@ a { color: inherit; text-decoration: none; }
   line-height: 0.96;
   letter-spacing: -0.066em;
 }
-.lede { max-width: 620px; margin: 32px 0 0; font-size: clamp(1.04rem, 1.6vw, 1.25rem); line-height: 1.55; }
+.lede { max-width: 620px; margin: 32px 0 0; color: var(--body); font-size: clamp(1.04rem, 1.6vw, 1.25rem); line-height: 1.55; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 38px; }
 .button {
   display: inline-flex;
   min-height: 48px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--ink);
+  border: 1px solid #575653;
   padding: 10px 16px;
   font-size: 0.88rem;
   font-weight: 700;
   transition: transform 150ms ease, background 150ms ease, color 150ms ease;
 }
 .button:hover { transform: translateY(-2px); }
-.button-primary { background: var(--ink); color: var(--paper); }
-.button-secondary:hover { background: rgb(16 15 15 / 8%); }
+.button-primary { border-color: var(--acid); background: var(--acid); color: var(--ink); }
+.button-secondary:hover { background: var(--panel); }
 
-.code-window { min-width: 0; border: 1px solid #000; background: var(--panel); color: var(--paper); box-shadow: 18px 18px 0 rgb(16 15 15 / 16%); }
+.code-window { min-width: 0; border: 1px solid var(--line); background: var(--panel); color: var(--paper); box-shadow: 18px 18px 0 rgb(198 212 76 / 9%); }
 .code-window-bar {
   display: flex;
   align-items: center;
@@ -219,9 +219,9 @@ footer > a:last-child { justify-self: end; }
 .filter-search-trigger:hover { border-color: var(--muted); color: var(--paper); }
 .filter-search-trigger kbd, .command-palette kbd { font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.62rem; }
 .filter-search-trigger kbd { color: var(--acid); }
-.topbar .filter-search-trigger { border-color: rgb(16 15 15 / 35%); color: rgb(16 15 15 / 68%); }
-.topbar .filter-search-trigger:hover { border-color: var(--ink); color: var(--ink); }
-.topbar .filter-search-trigger kbd { color: var(--ink); }
+.topbar .filter-search-trigger { border-color: var(--line); color: var(--body); }
+.topbar .filter-search-trigger:hover { border-color: var(--muted); color: var(--paper); }
+.topbar .filter-search-trigger kbd { color: var(--acid); }
 .command-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; align-items: start; justify-items: center; background: rgb(0 0 0 / 72%); padding: min(14vh, 120px) 16px 32px; backdrop-filter: blur(4px); }
 .command-palette { width: min(100%, 680px); overflow: hidden; border: 1px solid #575653; background: var(--ink); color: var(--body); box-shadow: 0 24px 80px rgb(0 0 0 / 55%); }
 .command-palette > header { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding: 13px 14px; }
