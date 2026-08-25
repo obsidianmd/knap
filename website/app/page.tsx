@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
+import { FilterSearch } from './_components/filter-search';
 
 const templateLines = [
   [["# ", "plain"], ["{{", "punctuation"], [" title ", "variable"], ["|", "punctuation"], [" trim ", "filter"], ["|", "punctuation"], [" title ", "filter"], ["}}", "punctuation"]],
@@ -23,6 +24,7 @@ export default function Home() {
             <a href="/filters">Filters</a>
             <a href="/variables">Variables</a>
             <a href="/api">API</a>
+            <FilterSearch />
             <a className="nav-github" href="https://github.com/obsidianmd/knap">GitHub ↗</a>
           </div>
         </nav>

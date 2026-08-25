@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import type { ReactNode } from 'react';
+import { FilterSearch } from './filter-search';
 
 type DocRoute = 'variables' | 'logic' | 'filters' | 'api';
 
@@ -18,6 +19,7 @@ export function SiteHeader({ inverse = false }: { inverse?: boolean }) {
         <a href="/filters">Filters</a>
         <a href="/variables">Variables</a>
         <a href="/api">API</a>
+        <FilterSearch />
         <a href="https://github.com/obsidianmd/knap">GitHub ↗</a>
       </div>
     </nav>

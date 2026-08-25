@@ -1,26 +1,12 @@
-'use client';
-
-import { useMemo, useState } from 'react';
 import type { FilterDoc, FilterGroup } from '@/lib/filter-docs';
 
 export function FilterDirectory({ groups, filters }: { groups: FilterGroup[]; filters: FilterDoc[] }) {
-  const [query, setQuery] = useState('');
-  const byName = useMemo(() => new Map(filters.map((filter) => [filter.name, filter])), [filters]);
-  const normalizedQuery = query.trim().toLowerCase();
-  const matches = (filter: FilterDoc) => !normalizedQuery || [filter.name, ...(filter.aliases ?? []), filter.category, filter.summary].join(' ').toLowerCase().includes(normalizedQuery);
-  const visibleCount = filters.filter(matches).length;
+  const byName = new Map(filters.map((filter) => [filter.name, filter]));
 
   return (
     <div className="filter-directory">
-      <label className="filter-search">
-        <span>Search filters</span>
-        <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try date, array, Markdown…" />
-        <small>{visibleCount} {visibleCount === 1 ? 'filter' : 'filters'}</small>
-      </label>
-
       {groups.map((group) => {
-        const visible = group.filters.map((name) => byName.get(name)).filter((filter): filter is FilterDoc => Boolean(filter && matches(filter)));
-        if (visible.length === 0) return null;
+        const visible = group.filters.map((name) => byName.get(name)).filter((filter): filter is FilterDoc => Boolean(filter));
         return (
           <section className="filter-directory-group" key={group.id}>
             <header><h3>{group.label}</h3><p>{group.intro}</p></header>
@@ -37,7 +23,6 @@ export function FilterDirectory({ groups, filters }: { groups: FilterGroup[]; fi
           </section>
         );
       })}
-      {visibleCount === 0 ? <p className="filter-empty">No filters match “{query}”.</p> : null}
     </div>
   );
 }

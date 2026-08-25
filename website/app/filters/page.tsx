@@ -22,7 +22,7 @@ export default function FiltersPage() {
 
       <section id="directory" className="doc-section filter-section">
         <h2>Filter directory</h2>
-        <p>Search by filter name, alias, category, or behavior. Every page includes at least one copyable example.</p>
+        <p>Open search from the header or press <code>⌘K</code> to find a filter by name, alias, category, or behavior. Every page includes at least one copyable example.</p>
         <FilterDirectory groups={filterGroups} filters={filterDocs} />
       </section>
 
