@@ -460,7 +460,7 @@ footer > a:last-child { justify-self: end; }
 .filter-directory-group .filter-list { margin-top: 14px; }
 .filter-row {
   display: grid;
-  grid-template-columns: 150px 1fr 140px 18px;
+  grid-template-columns: 150px 1fr 18px;
   gap: 20px;
   align-items: baseline;
   border-bottom: 1px solid var(--line) !important;
@@ -472,8 +472,7 @@ footer > a:last-child { justify-self: end; }
 .filter-row > div { display: grid; gap: 3px; }
 .filter-row > div > code { width: fit-content; border: 0; background: transparent; color: var(--paper); padding: 0; font-size: 0.78rem; }
 .filter-row small { color: var(--muted); font-size: 0.58rem; }
-.filter-row p { margin: 0; color: var(--body); font-size: 0.82rem; }
-.filter-row .filter-example { overflow: hidden; border: 0; background: transparent; color: var(--orange); padding: 0; font-size: 0.67rem; text-overflow: ellipsis; white-space: nowrap; }
+.filter-row p { margin: 0; color: var(--body); font-size: 1rem; }
 .filter-row > span { color: var(--accent); }
 
 .filter-breadcrumb { display: flex; gap: 9px; align-items: center; margin: -46px 0 52px; color: var(--muted); font-size: 0.76rem; }
@@ -583,7 +582,6 @@ footer > a:last-child { justify-self: end; }
   .filter-list article > :last-child { grid-column: 2; }
   .filter-directory-group > header { grid-template-columns: 1fr; gap: 5px; }
   .filter-row { grid-template-columns: 120px 1fr 18px; }
-  .filter-row .filter-example { display: none; }
   .api-list article { grid-template-columns: 1fr; gap: 10px; }
 }
 

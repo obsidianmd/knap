@@ -5,7 +5,7 @@ import { filterDocs, filterGroups } from '../../../lib/filter-docs';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character] ?? character);
 const byName = new Map(filterDocs.map((filter) => [filter.name, filter]));
-const renderFilterRow = (filter: (typeof filterDocs)[number]) => `<a class="filter-row" href="/filters/${filter.slug}"><div><code>${escape(filter.name)}</code>${filter.aliases?.length ? `<small>alias: ${escape(filter.aliases.join(', '))}</small>` : ''}</div><p>${escape(filter.summary)}</p><code class="filter-example">${escape(filter.syntax[0])}</code><span aria-hidden="true">→</span></a>`;
+const renderFilterRow = (filter: (typeof filterDocs)[number]) => `<a class="filter-row" href="/filters/${filter.slug}"><div><code>${escape(filter.name)}</code>${filter.aliases?.length ? `<small>alias: ${escape(filter.aliases.join(', '))}</small>` : ''}</div><p>${escape(filter.summary)}</p><span aria-hidden="true">→</span></a>`;
 const groupedDirectory = filterGroups.map((group) => {
   const filters = group.filters.map((name) => byName.get(name)).filter(Boolean);
   return `<section class="filter-directory-group"><header><h3>${escape(group.label)}</h3><p>${escape(group.intro)}</p></header><div class="filter-list">${filters.map((filter) => filter ? renderFilterRow(filter) : '').join('')}</div></section>`;
