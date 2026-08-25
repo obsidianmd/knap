@@ -159,9 +159,7 @@ function highlightMarkdownLine(line: string) {
   return highlightMarkdownInline(line, 'markdown');
 }
 
-function highlightLine(line: string, language: CodeLanguage) {
-  if (language === 'md') return highlightMarkdownLine(line);
-
+function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>) {
   const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   let expectsFilter = false;
   let inKnapExpression = false;
@@ -207,6 +205,21 @@ function highlightLine(line: string, language: CodeLanguage) {
 
     return <span className={className} key={index}>{token}</span>;
   });
+}
+
+function highlightKnapLine(line: string) {
+  const segments = line.split(/(\{\{.*?\}\}|\{%.*?%\})/g).filter(Boolean);
+
+  return segments.map((segment, index) => {
+    const isKnapExpression = /^(?:\{\{.*\}\}|\{%.*%\})$/.test(segment);
+    return <span key={index}>{isKnapExpression ? highlightTokenLine(segment, 'knap') : highlightMarkdownLine(segment)}</span>;
+  });
+}
+
+function highlightLine(line: string, language: CodeLanguage) {
+  if (language === 'md') return highlightMarkdownLine(line);
+  if (language === 'knap') return highlightKnapLine(line);
+  return highlightTokenLine(line, language);
 }
 
 export function CodeBlock({
