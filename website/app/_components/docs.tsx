@@ -99,11 +99,22 @@ function tokenClass(token: string, language: 'knap' | 'ts' | 'shell') {
 function highlightLine(line: string, language: 'knap' | 'ts' | 'shell') {
   const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\||\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*)/g;
   let expectsFilter = false;
+  let inKnapExpression = false;
 
   return line.split(pattern).filter(Boolean).map((token, index) => {
     let className = tokenClass(token, language);
 
-    if (token === '|' && language === 'knap') {
+    if (language === 'knap') {
+      if (/^(\{\{|\{%)$/.test(token)) {
+        inKnapExpression = true;
+      } else if (/^(\}\}|%\})$/.test(token)) {
+        inKnapExpression = false;
+      } else if (!inKnapExpression) {
+        className = undefined;
+      }
+    }
+
+    if (token === '|' && language === 'knap' && inKnapExpression) {
       expectsFilter = true;
     } else if (expectsFilter && /^\s+$/.test(token)) {
       // Keep waiting through whitespace between the pipe and filter name.
