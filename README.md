@@ -1,6 +1,6 @@
 # Knap
 
-Knap is a flexible template engine for creating Markdown. It is shared by
+Knap is a flexible template language for creating Markdown. It is shared by
 Obsidian tools, including [Web Clipper](https://github.com/obsidianmd/obsidian-clipper)
 and [Importer](https://github.com/obsidianmd/obsidian-importer).
 
