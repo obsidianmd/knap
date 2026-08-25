@@ -140,10 +140,6 @@ export default function Home() {
               <h3>Obsidian Web Clipper</h3>
               <span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span>
             </div>
-            <div className="used-by-example">
-              <small>Template → Markdown</small>
-              <code>{'{{ content | markdown }}'}</code>
-            </div>
             <strong aria-hidden="true">↗</strong>
           </a>
 
@@ -152,10 +148,6 @@ export default function Home() {
             <div className="used-by-copy">
               <h3>Obsidian Importer</h3>
               <span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span>
-            </div>
-            <div className="used-by-example">
-              <small>Fields → Notes</small>
-              <code>{'{{ title | safe_name }}'}</code>
             </div>
             <strong aria-hidden="true">↗</strong>
           </a>
