@@ -1,16 +1,20 @@
 'use client';
 
-import { Copy } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Copy } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 export function CodeCopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(resetTimer.current), []);
 
   async function copyCode() {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
+      window.clearTimeout(resetTimer.current);
+      resetTimer.current = window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
     }
@@ -25,7 +29,9 @@ export function CodeCopyButton({ code }: { code: string }) {
       title={copied ? 'Copied' : 'Copy code'}
       type="button"
     >
-      <Copy aria-hidden="true" size={14} strokeWidth={1.75} />
+      {copied
+        ? <Check aria-hidden="true" size={15} strokeWidth={2} />
+        : <Copy aria-hidden="true" size={14} strokeWidth={1.75} />}
     </button>
   );
 }
