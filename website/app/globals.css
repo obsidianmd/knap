@@ -326,6 +326,7 @@ footer > a:last-child { justify-self: end; }
 }
 .doc-note strong { color: var(--paper); }
 .doc-note p { margin: 0; }
+.doc-muted-note { color: var(--muted); font-size: 0.88rem; }
 
 .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 28px 0; background: var(--line); border: 1px solid var(--line); }
 .type-grid div { display: grid; gap: 8px; background: var(--ink); padding: 18px; }

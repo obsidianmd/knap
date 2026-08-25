@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-import { CodeBlock, DocShell, Note } from '../_components/docs';
+import { CodeBlock, DocShell } from '../_components/docs';
 import { filterDocs, filterGroups } from '@/lib/filter-docs';
 import { FilterDirectory } from './filter-directory';
 
@@ -17,7 +17,7 @@ export default function FiltersPage() {
         <h2>Use filters</h2>
         <p>Add a filter after a pipe. Parameters follow the filter name after a colon, and chains run from left to right.</p>
         <CodeBlock label="template.md" code={'{{ title | trim | upper }}\n{{ published | date:"YYYY-MM-DD" }}\n{{ tags | unique | join:", " }}'} />
-        <Note title="Explicit registry"><p>Only filters registered on the engine are available. Unknown names and invalid parameters appear as structured diagnostics from <code>validate()</code> and <code>render()</code>.</p></Note>
+        <p className="doc-muted-note">Only filters registered on the engine are available. Unknown names and invalid parameters appear as structured diagnostics from <code>validate()</code> and <code>render()</code>.</p>
       </section>
 
       <section id="directory" className="doc-section filter-section">
