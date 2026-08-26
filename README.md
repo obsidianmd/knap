@@ -154,7 +154,7 @@ Parameters follow a filter name after a colon, and filters can be chained with
 | `replace_tags` | Replace selected HTML tag names. |
 | `reverse`, `unique` | Reverse or deduplicate array-like data. |
 | `safe_name` | Sanitize text for use as a file name. |
-| `strip_md`, `stripmd` | Remove Markdown formatting. |
+| `strip_md` | Remove Markdown formatting. |
 | `table` | Format structured data as a Markdown table. |
 | `template` | Apply a small value-substitution template to structured data. |
 | `trim` | Remove surrounding whitespace. |
