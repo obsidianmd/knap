@@ -21,6 +21,7 @@
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@types/node": "22.19.19",
+    "sass": "1.103.1",
     "typescript": "5.9.3",
     "wrangler": "4.92.0"
   },
