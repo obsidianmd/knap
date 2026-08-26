@@ -6,59 +6,36 @@ import FooterNav from '../components/FooterNav.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import { highlightCode } from '../lib/highlight';
 
-const heroTemplate = `---
-title: {{ title | yaml }}
-source: {{ url | yaml }}
+const movieTemplate = `---
+year: {{ year }}
+director: {{ directors | wikilink }}
+genre: {{ genres }}
 ---
 
 # {{ title }}
 
-{{ summary | blockquote }}
+{{ plot | blockquote }}
 
-## Highlights
+## Cast
 
-{{ highlights | list }}
-
-{{ url | link:"Read the source" }}`;
-
-const markdownTemplate = `---
-title: {{ title | yaml }}
-source: {{ url | yaml }}
----
-
-# {{ title }}
-
-{{ summary | blockquote }}
-
-## Contributors
-
-{{ people | table }}
-
-{{ url | link:"Read the source" }}
-
-{{ notes | footnote }}`;
+{{ cast | list }}`;
 
 const markdownOutput = `---
-title: "Knap: Markdown templates"
-source: "https://knap.md"
+year: 1999
+director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
+genre: ["Action","Science fiction"]
 ---
 
-# Knap: Markdown templates
+# The Matrix
 
-> A small language for Markdown-producing apps.
+> A hacker discovers that reality is a simulation and joins a rebellion against its machines.
 
-## Contributors
+## Cast
 
-| name | role |
-| - | - |
-| Ada | Writer |
-| Lin | Editor |
-
-[Read the source](https://knap.md)
-
-[^1]: Data stays application-owned.
-
-[^2]: Output stays plain Markdown.`;
+- Keanu Reeves
+- Laurence Fishburne
+- Carrie-Anne Moss
+- Hugo Weaving`;
 ---
 
 <BaseLayout markdownPath="/index.md">
@@ -77,7 +54,7 @@ source: "https://knap.md"
 
         <div class="code-window doc-code-numbered" aria-label="Knap template example">
           <div class="code-window-bar"><span>template.md</span><span class="code-window-actions"><CopyButton /></span></div>
-          <pre><code class="language-knap" data-language="knap" set:html={highlightCode(heroTemplate, 'knap', true)} /></pre>
+          <pre><code class="language-knap" data-language="knap" set:html={highlightCode(movieTemplate, 'knap', true)} /></pre>
         </div>
       </div>
     </section>
@@ -96,7 +73,7 @@ source: "https://knap.md"
         </div>
       </header>
       <div class="markdown-transform">
-        <CodeBlock label="Knap template" code={markdownTemplate} showLineNumbers />
+        <CodeBlock label="Knap template" code={movieTemplate} showLineNumbers />
         <CodeBlock language="md" label="note.md" code={markdownOutput} showLineNumbers />
       </div>
     </section>

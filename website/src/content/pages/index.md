@@ -9,19 +9,18 @@ Knap turns application data into Markdown files with YAML frontmatter, using var
 
 ```knap title="template.md"
 ---
-title: {{ title | yaml }}
-source: {{ url | yaml }}
+year: {{ year }}
+director: {{ directors | wikilink }}
+genre: {{ genres }}
 ---
 
 # {{ title }}
 
-{{ summary | blockquote }}
+{{ plot | blockquote }}
 
-## Highlights
+## Cast
 
-{{ highlights | list }}
-
-{{ url | link:"Read the source" }}
+{{ cast | list }}
 ```
 
 ## Quick start
