@@ -7,7 +7,7 @@ description: The templating language for Markdown.
 
 Knap turns application data into Markdown files with YAML frontmatter, using variables, logic, loops, and a focused filter library.
 
-```knap title="reading-note.md"
+```knap title="template.md"
 ---
 title: {{ title | yaml }}
 source: {{ url | yaml }}
