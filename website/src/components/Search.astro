@@ -28,7 +28,6 @@ const pages = [
       <button type="button" aria-label="Close search" data-search-close>Esc</button>
     </header>
     <div class="command-results" id="search-results" role="listbox" data-search-results></div>
-    <footer><span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span><span><kbd>↵</kbd> Open</span><span>{filterDocs.length} filters</span></footer>
   </section>
 </div>
 <script id="search-index" type="application/json" set:html={JSON.stringify(pages)} is:inline />
