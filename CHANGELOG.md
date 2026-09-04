@@ -2,6 +2,10 @@
 
 All notable changes to Knap will be documented in this file.
 
+## 0.2.3
+
+- Fix parsing of `nth` offset expressions such as `n+3`.
+
 ## 0.2.2
 
 - Add the `yaml` standard filter for formatting YAML-safe scalar values.
