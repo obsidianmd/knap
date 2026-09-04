@@ -62,6 +62,7 @@ export type TokenType =
 	| 'dot'               // .
 	| 'star'              // *
 	| 'slash'             // /
+	| 'plus'              // +
 	| 'arrow'             // =>
 	| 'dollar'            // $
 
@@ -533,6 +534,10 @@ function tokenizeExpression(state: TokenizerState, mode: 'variable' | 'tag'): vo
 			return;
 		case '/':
 			state.tokens.push({ type: 'slash', value: '/', line: startLine, column: startColumn });
+			advanceChar(state);
+			return;
+		case '+':
+			state.tokens.push({ type: 'plus', value: '+', line: startLine, column: startColumn });
 			advanceChar(state);
 			return;
 		case '{':

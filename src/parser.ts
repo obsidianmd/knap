@@ -816,6 +816,24 @@ function parseFilterArgument(state: ParserState): Expression | null {
 	// For unquoted values (numbers, identifiers), check for colon-separated continuation
 	// e.g., nth:1,2,3,5,7:7 where "7:7" is a range
 
+	// Handle identifier+number patterns like "n+3" for the nth filter.
+	if (first.type === 'identifier' && check(state, 'plus')) {
+		const savedPos = state.pos;
+		advance(state);
+		if (check(state, 'number')) {
+			const numberToken = advance(state);
+			const combined = `${first.name}+${numberToken.value}`;
+			return {
+				type: 'literal',
+				value: combined,
+				raw: combined,
+				line: first.line,
+				column: first.column,
+			};
+		}
+		state.pos = savedPos;
+	}
+
 	// Handle number+identifier patterns like "2n" for nth filter
 	// The tokenizer splits "2n" into number "2" and identifier "n"
 	if (first.type === 'literal' && startToken.type === 'number' && check(state, 'identifier')) {

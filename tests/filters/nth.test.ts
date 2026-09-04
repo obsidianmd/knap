@@ -76,6 +76,17 @@ describe('nth param validation', () => {
 		expect((filterExpr.args[0] as LiteralExpression).value).toBe('2n');
 	});
 
+	test('parses n+3 pattern as single arg', () => {
+		const result = parse('{{items|nth:n+3}}');
+		expect(result.errors).toHaveLength(0);
+
+		const varNode = result.ast[0] as VariableNode;
+		const filterExpr = varNode.expression as FilterExpression;
+		expect(filterExpr.name).toBe('nth');
+		expect(filterExpr.args).toHaveLength(1);
+		expect((filterExpr.args[0] as LiteralExpression).value).toBe('n+3');
+	});
+
 	test('parses group pattern as two args', () => {
 		const result = parse('{{items|nth:2,3:4}}');
 		expect(result.errors).toHaveLength(0);
@@ -90,6 +101,13 @@ describe('nth param validation', () => {
 
 	test('validates nth:2n without errors', () => {
 		const result = parse('{{items|nth:2n}}');
+		expect(result.errors).toHaveLength(0);
+		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
+		expect(filterWarnings).toHaveLength(0);
+	});
+
+	test('validates nth:n+3 without errors', () => {
+		const result = parse('{{items|nth:n+3}}');
 		expect(result.errors).toHaveLength(0);
 		const filterWarnings = validateFilters(result.ast, standardFilterMetadata);
 		expect(filterWarnings).toHaveLength(0);
@@ -119,6 +137,23 @@ describe('nth filter via renderer', () => {
 		expect(result.errors).toHaveLength(0);
 		const parsed = JSON.parse(result.output);
 		expect(parsed).toEqual(['b', 'd', 'f']);
+	});
+
+	test('nth:n+3 gets the third and following elements through template', async () => {
+		const result = await engine.render('{{msg|nth:n+3}}', {
+			variables: { msg: '["a","b","c","d","e"]' },
+		});
+		expect(result.errors).toHaveLength(0);
+		const parsed = JSON.parse(result.output);
+		expect(parsed).toEqual(['c', 'd', 'e']);
+	});
+
+	test('supports an nth offset after another filter', async () => {
+		const result = await engine.render('{{author|split:" "|nth:n+1}}', {
+			variables: { author: 'Ada Lovelace' },
+		});
+		expect(result.errors).toHaveLength(0);
+		expect(JSON.parse(result.output)).toEqual(['Ada', 'Lovelace']);
 	});
 
 	test('nth:2,3:4 gets positions 2,3 from each group of 4 through template', async () => {

@@ -258,6 +258,12 @@ describe('Tokenizer', () => {
 			expect(result.errors).toHaveLength(0);
 			expect(containsTokenTypes(result.tokens, ['colon', 'number'])).toBe(true);
 		});
+
+		test('tokenizes plus in an nth offset argument', () => {
+			const result = tokenize('{{items|nth:n+3}}');
+			expect(result.errors).toHaveLength(0);
+			expect(containsTokenTypes(result.tokens, ['identifier', 'plus', 'number'])).toBe(true);
+		});
 	});
 
 	describe('Position Tracking', () => {
