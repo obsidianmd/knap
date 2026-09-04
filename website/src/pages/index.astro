@@ -18,12 +18,12 @@ genre: {{ genres }}
 
 ## Cast
 
-{{ cast | list }}`;
+{{ cast | slice:0,4 | table }}`;
 
 const markdownOutput = `---
 year: 1999
 director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
-genre: ["Action","Science fiction"]
+genre: ["Action","Sci-fi"]
 ---
 
 # The Matrix
@@ -32,10 +32,12 @@ genre: ["Action","Science fiction"]
 
 ## Cast
 
-- Keanu Reeves
-- Laurence Fishburne
-- Carrie-Anne Moss
-- Hugo Weaving`;
+| Actor | Role |
+| - | - |
+| Keanu Reeves | Neo |
+| Laurence Fishburne | Morpheus |
+| Carrie-Anne Moss | Trinity |
+| Hugo Weaving | Agent Smith |`;
 ---
 
 <BaseLayout markdownPath="/index.md">
@@ -45,7 +47,7 @@ genre: ["Action","Science fiction"]
       <div class="hero-grid">
         <div class="hero-copy">
           <h1>The templating language for Markdown.</h1>
-          <p class="lede">Knap turns application data into Markdown files with YAML frontmatter, using variables, logic, loops, and a focused filter library.</p>
+          <p class="lede">Knap lets you create reusable templates that turn data into structured Markdown documents.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="/logic">Read the language guide</a>
             <a class="button button-secondary" href="/api">Add Knap to a project</a>
@@ -66,14 +68,13 @@ genre: ["Action","Science fiction"]
 
     <section class="markdown-native" aria-labelledby="markdown-native-title">
       <header class="markdown-native-heading">
-        <h2 id="markdown-native-title">Markdown is the output, not an afterthought.</h2>
+        <h2 id="markdown-native-title">Parse&nbsp;it. Knap&nbsp;it. Quick, format it.</h2>
         <div>
-          <p>Twig and Liquid are at home in web stacks that render HTML. Knap is built for software that creates Markdown files: notes, imports, clippings, and exports with YAML frontmatter.</p>
-          <p>Its filters produce Markdown primitives directly—including <a href="/filters/yaml">frontmatter</a>, <a href="/filters/table">tables</a>, <a href="/filters/footnote">footnotes</a>, <a href="/filters/link">links</a>, and <a href="/filters/blockquote">blockquotes</a>—so applications do not need to assemble them by hand.</p>
+          <p>Knap is a simple language designed to generate Markdown in a repeatably. Knap filters help manipulate app data to generate <a href="/filters/table">tables</a>, <a href="/filters/link">links</a>, <a href="/filters/list">lists</a>, <a href="/filters/footnote">footnotes</a>, <a href="/filters/blockquote">blockquotes</a>, and <a href="/filters">more</a>.</p>
         </div>
       </header>
       <div class="markdown-transform">
-        <CodeBlock label="Knap template" code={movieTemplate} showLineNumbers />
+        <CodeBlock label="template.md" code={movieTemplate} showLineNumbers />
         <CodeBlock language="md" label="note.md" code={markdownOutput} showLineNumbers />
       </div>
     </section>
@@ -82,7 +83,7 @@ genre: ["Action","Science fiction"]
       <div class="section-heading"><h2 id="why-knap">Made for applications that create Markdown.</h2></div>
       <div class="feature-cards">
         <article><span class="feature-index">01</span><h3>Safe by design</h3><p>An AST interpreter handles templates. Knap does not use eval or execute arbitrary JavaScript.</p></article>
-        <article><span class="feature-index">02</span><h3>Application-owned</h3><p>Your app supplies variables, asynchronous resolvers, and custom filters. Knap stays independent of any host environment.</p></article>
+        <article><span class="feature-index">02</span><h3>Application-owned</h3><p>Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.</p></article>
         <article><span class="feature-index">03</span><h3>Useful diagnostics</h3><p>Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.</p></article>
       </div>
     </section>
@@ -90,8 +91,8 @@ genre: ["Action","Science fiction"]
     <section class="used-by" aria-labelledby="used-by-knap">
       <header class="used-by-heading"><div><h2 id="used-by-knap">Powered by Knap.</h2></div><p>Knap is the shared template language behind tools that turn web pages and imported data into durable Markdown.</p></header>
       <div class="used-by-list">
-        <a href="https://obsidian.md/clipper" class="used-by-card"><span class="used-by-index">01</span><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span></div><strong aria-hidden="true">↗</strong></a>
-        <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card"><span class="used-by-index">02</span><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
+        <a href="https://obsidian.md/clipper" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span></div><strong aria-hidden="true">↗</strong></a>
+        <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
       </div>
     </section>
 

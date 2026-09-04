@@ -2,12 +2,13 @@
 import { filterDocs } from '../../lib/filter-docs';
 
 const pages = [
-  { title: 'Variables', category: 'Guide', summary: 'Supply, resolve, access, and assign values in Knap templates.', href: '/variables' },
-  { title: 'Logic', category: 'Guide', summary: 'Include content conditionally, choose fallback values, and repeat Markdown over arrays.', href: '/logic' },
-  { title: 'Filters', category: 'Guide', summary: 'Transform values before Knap writes them.', href: '/filters' },
-  { title: 'API', category: 'Reference', summary: 'Install, configure, validate, and render Knap templates.', href: '/api' },
+  { title: 'Variables', kind: 'page', category: 'Guide', summary: 'Supply, resolve, access, and assign values in Knap templates.', href: '/variables' },
+  { title: 'Logic', kind: 'page', category: 'Guide', summary: 'Include content conditionally, choose fallback values, and repeat Markdown over arrays.', href: '/logic' },
+  { title: 'Filters', kind: 'page', category: 'Guide', summary: 'Transform values before Knap writes them.', href: '/filters' },
+  { title: 'API', kind: 'page', category: 'Reference', summary: 'Install, configure, validate, and render Knap templates.', href: '/api' },
   ...filterDocs.map((filter) => ({
     title: filter.name,
+    kind: 'filter',
     category: filter.category,
     summary: filter.summary,
     href: `/filters/${filter.slug}`,
@@ -23,9 +24,13 @@ const pages = [
 <div class="command-backdrop" data-search-backdrop hidden>
   <section class="command-palette" role="dialog" aria-modal="true" aria-label="Search Knap">
     <header>
-      <span aria-hidden="true">⌕</span>
+      <span aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+      </span>
       <input type="search" placeholder="Search documentation…" aria-label="Search documentation" aria-controls="search-results" data-search-input />
-      <button type="button" aria-label="Close search" data-search-close>Esc</button>
     </header>
     <div class="command-results" id="search-results" role="listbox" data-search-results></div>
   </section>

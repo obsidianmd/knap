@@ -1,6 +1,6 @@
 ---
 title: Variables
-description: Variables are the bridge between application data and a Knap template.
+description: Variables bridge application data and a Knap template.
 ---
 
 ## Output a value
@@ -13,7 +13,7 @@ Wrap a variable name in double braces. Whitespace inside the braces is optional.
 By {{author}}
 ```
 
-Filters can transform a value before it is written. They run from left to right.
+Use [filters](/filters) to transform a value. Filters can be chained, and run from left to right.
 
 ```knap
 {{ title | trim | title }}
@@ -33,10 +33,9 @@ Knap accepts unknown application values rather than imposing a schema. Templates
 | `object` | Nested structured data |
 | `null` | Missing or empty values |
 
-> **Host-owned data**  
-> Knap does not know what a browser tab, vault, selector, or model is. Applications can expose those concepts as ordinary values or resolve them on demand.
+Knap does not know what a browser tab, vault, selector, or model is. Applications can expose those concepts as ordinary values or resolve them on demand.
 
-## Access nested values
+## Nested values
 
 Use dot notation for nested object properties and bracket notation for array items or keys that are easier to express as strings.
 
@@ -53,6 +52,18 @@ Bracket expressions can also use another variable, which is useful when two arra
 {{ timestamps[loop.index0] }} — {{ line }}
 {% endfor %}
 ```
+
+## Local variables
+
+Use `{% set %}` to name a literal, expression, or filtered value for the rest of the template.
+
+```knap
+{% set slug = title | lower | replace:" ":"-" %}
+File: {{ slug }}.md
+```
+
+Assignments are evaluated in order and can be used by later output, conditions, and loops.
+
 
 ## Use human-readable names
 
@@ -79,14 +90,3 @@ const result = await engine.render('{{ remoteValue | upper }}', {
   },
 });
 ```
-
-## Assign a local variable
-
-Use `{% set %}` to name a literal, expression, or filtered value for the rest of the template.
-
-```knap
-{% set slug = title | lower | replace:" ":"-" %}
-File: {{ slug }}.md
-```
-
-Assignments are evaluated in order and can be used by later output, conditions, and loops.

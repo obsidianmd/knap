@@ -1,6 +1,6 @@
 ---
 title: Filters
-description: Filters transform values before Knap writes them. Browse the complete library, then open any filter for tested input, template, and output examples.
+description: Filters transform variables.
 ---
 
 ## Use filters
@@ -15,9 +15,9 @@ Add a filter after a pipe. Parameters follow the filter name after a colon, and 
 
 Only filters registered on the engine are available. Unknown names and invalid parameters appear as structured diagnostics from `validate()` and `render()`.
 
-## Filter directory
+## Built-in filters
 
-Open search from the header or press `⌘K` to find a filter by name, alias, category, or behavior. Every filter page includes copyable Input, Template, and Output examples.
+Search filters using `⌘K` to find a filter by name, alias, category, or behavior.
 
 <!-- FILTER_DIRECTORY -->
 

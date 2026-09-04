@@ -76,6 +76,7 @@ document.addEventListener('click', async (event) => {
 
 type SearchItem = {
   title: string;
+  kind: 'page' | 'filter';
   category: string;
   summary: string;
   href: string;
@@ -92,7 +93,6 @@ function setupSearch() {
   const backdrop = document.querySelector<HTMLElement>('[data-search-backdrop]');
   const input = document.querySelector<HTMLInputElement>('[data-search-input]');
   const resultsElement = document.querySelector<HTMLElement>('[data-search-results]');
-  const closeButton = document.querySelector<HTMLButtonElement>('[data-search-close]');
   const data = document.querySelector<HTMLScriptElement>('#search-index')?.textContent;
   if (!trigger || !backdrop || !input || !resultsElement || !data) return;
 
@@ -105,7 +105,20 @@ function setupSearch() {
       resultsElement.innerHTML = `<p class="command-empty">No documentation matches “${escapeHtml(input.value)}”.</p>`;
       return;
     }
-    resultsElement.innerHTML = results.map((item, index) => `<a class="${index === activeIndex ? 'is-active' : ''}" href="${escapeHtml(item.href)}" role="option" aria-selected="${index === activeIndex}" data-result-index="${index}"><span><code>${escapeHtml(item.title)}</code><small>${escapeHtml(item.category)}</small></span><p>${escapeHtml(item.summary)}</p><strong aria-hidden="true">↵</strong></a>`).join('');
+    resultsElement.innerHTML = results.map((item, index) => {
+      const title = escapeHtml(item.title);
+      const titleElement = item.kind === 'filter'
+        ? `<code>${title}</code>`
+        : `<span class="command-result-title">${title}</span>`;
+
+      return `
+        <a class="${index === activeIndex ? 'is-active' : ''}" href="${escapeHtml(item.href)}" role="option" aria-selected="${index === activeIndex}" data-result-index="${index}">
+          ${titleElement}
+          <p>${escapeHtml(item.summary)}</p>
+          <span class="command-result-open" aria-hidden="true">↵</span>
+        </a>
+      `;
+    }).join('');
   };
 
   const update = () => {
@@ -124,7 +137,6 @@ function setupSearch() {
   const close = () => { backdrop.hidden = true; };
 
   trigger.addEventListener('click', open);
-  closeButton?.addEventListener('click', close);
   backdrop.addEventListener('mousedown', (event) => { if (event.target === backdrop) close(); });
   input.addEventListener('input', update);
   resultsElement.addEventListener('mousemove', (event) => {
