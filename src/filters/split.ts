@@ -1,4 +1,4 @@
-import { cleanScalarParam } from '../parser-utils';
+import { unquoteParamToken, unwrapParamList } from '../parser-utils';
 
 export const split = (str: string, param?: string): string => {
 	// If no param is provided or param is empty string, split every character
@@ -6,7 +6,9 @@ export const split = (str: string, param?: string): string => {
 		return JSON.stringify(str.split(''));
 	}
 
-	param = cleanScalarParam(param) ?? '';
+	param = param.trim() === ''
+		? param
+		: unquoteParamToken(unwrapParamList(param));
 
 	// If param is a single character, use it directly
 	const separator = param.length === 1 ? param : new RegExp(param);

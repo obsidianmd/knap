@@ -29,11 +29,11 @@ Markdown filters add common syntax without building delimiters into a template.
 {{ attachment | embed }}
 ```
 
-Markdown formatting filters apply recursively to string values in arrays and objects. Object keys and non-string values remain unchanged, so the result can continue through a collection filter such as <code><span class="syn-filter">join</span></code>. JSON text remains text unless it is explicitly parsed.
+Markdown formatting filters recognize typed and serialized arrays and objects, and apply recursively to their string values. Object keys and non-string values remain unchanged, so the result can continue through a collection filter such as <code><span class="syn-filter">join</span></code>.
 
 ```knap title="template.md"
 {{ tags | bold | join:", " }}
-{{ json_text | parse_json | italic | join:", " }}
+{{ json_text | italic | join:", " }}
 ```
 
 ## Built-in filters

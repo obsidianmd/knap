@@ -9,7 +9,7 @@ export const validateCalcParams = (param: string | undefined): ParamValidationRe
 	}
 
 	// Remove outer quotes if present
-	const operation = cleanScalarParam(param) ?? '';
+	const operation = (cleanScalarParam(param) ?? '').trim();
 
 	if (!operation) {
 		return { valid: false, error: 'operation cannot be empty' };
@@ -46,7 +46,7 @@ export const calc = (str: string, param?: string, context?: FilterContext): stri
 		}
 
 		// Remove outer quotes if present
-		const operation = cleanScalarParam(param) ?? '';
+		const operation = (cleanScalarParam(param) ?? '').trim();
 
 		// Parse the operation
 		const operator = operation.slice(0, 2) === '**' ? '**' : operation.charAt(0);

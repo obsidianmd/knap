@@ -1,4 +1,4 @@
-import { cleanParamToken, parseRegexPattern, splitParams, unwrapParamList } from '../parser-utils';
+import { parseRegexPattern, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
 import { errorMessage, reportFilterWarning } from './warnings';
@@ -66,7 +66,7 @@ export const replace = (str: string, param?: string, context?: FilterContext): s
 		const pair = splitReplacementPair(replacement) ??
 			(legacyPair.length >= 2 ? [legacyPair[0], legacyPair.slice(1).join(':')] : null);
 		if (!pair) return acc;
-		let [search, replace] = pair.map(cleanParamToken);
+		let [search, replace] = pair.map(unquoteParamToken);
 
 		// Use an empty string if replace is undefined
 		replace = replace || '';

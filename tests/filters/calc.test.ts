@@ -1,5 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { calc, validateCalcParams } from '../../src/filters/calc';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('calc filter', () => {
 	test('addition', () => {
@@ -38,6 +42,13 @@ describe('calc filter', () => {
 		expect(calc('-5', '+10')).toBe('5');
 	});
 
+	test('trims spaces inside quoted operations', async () => {
+		expect(calc('5', '" +1 "')).toBe('6');
+		await expect(engine.renderOrThrow('{{ value | calc:" +1 " }}', {
+			variables: { value: 5 },
+		})).resolves.toBe('6');
+	});
+
 	test('returns original without params', () => {
 		expect(calc('5')).toBe('5');
 	});
@@ -52,6 +63,7 @@ describe('calc param validation', () => {
 		expect(validateCalcParams('**2').valid).toBe(true);
 		expect(validateCalcParams('^3').valid).toBe(true);
 		expect(validateCalcParams('"+10"').valid).toBe(true);
+		expect(validateCalcParams('" +1 "').valid).toBe(true);
 	});
 
 	test('missing params returns error', () => {

@@ -36,6 +36,11 @@ describe('split filter', () => {
 		expect(parsed).toEqual(['a', 'b', 'c', '']);
 	});
 
+	test('preserves escapes in regex separators', () => {
+		const result = split('a|b a b', '"a\\|b"');
+		expect(JSON.parse(result)).toEqual(['', ' a b']);
+	});
+
 	test('handles no matches', () => {
 		const result = split('hello', ',');
 		const parsed = JSON.parse(result);
@@ -52,5 +57,13 @@ describe('split filter via renderer', () => {
 		// Should split on digits
 		expect(result.output).toContain('abc');
 		expect(result.output).toContain('def');
+	});
+
+	test('preserves regex separator escapes through the template parser', async () => {
+		const template = String.raw`{{msg|split:"a\\|b"}}`;
+		const result = await engine.render(template, {
+			variables: { msg: 'a|b a b' },
+		});
+		expect(result).toEqual({ output: '[""," a b"]', errors: [], warnings: [] });
 	});
 });

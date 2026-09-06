@@ -20,7 +20,7 @@ export const validateDateModifyParams = (param: string | undefined): ParamValida
 		return { valid: false, error: 'requires a modifier (e.g., date_modify:"+1 day", "-2 weeks")' };
 	}
 
-	const cleanParam = cleanScalarParam(param) ?? '';
+	const cleanParam = (cleanScalarParam(param) ?? '').trim();
 
 	const regex = /^([+-])\s*(\d+)\s*(\w+)s?$/;
 	const match = cleanParam.match(regex);
@@ -55,7 +55,7 @@ export const date_modify = (str: string, param?: string, context?: FilterContext
 		return str;
 	}
 
-	param = cleanScalarParam(param) ?? '';
+	param = (cleanScalarParam(param) ?? '').trim();
 
 	// Updated regex to allow for optional spaces and plural units
 	const regex = /^([+-])\s*(\d+)\s*(\w+)s?$/;

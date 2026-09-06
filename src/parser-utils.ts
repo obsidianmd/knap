@@ -124,10 +124,16 @@ export function unwrapParamList(value: string): string {
 	return depth === 0 ? trimmed.slice(1, -1).trim() : trimmed;
 }
 
+export function unquoteParamToken(value: string): string {
+	return value.trim().replace(/^(["'])([\s\S]*)\1$/, '$2');
+}
+
+export function decodeParamEscapes(value: string): string {
+	return value.replace(/\\([\\,:|"'])/g, '$1');
+}
+
 export function cleanParamToken(value: string): string {
-	return value.trim()
-		.replace(/^(["'])([\s\S]*)\1$/, '$2')
-		.replace(/\\([\\,:|"'])/g, '$1');
+	return decodeParamEscapes(unquoteParamToken(value));
 }
 
 export function cleanScalarParam(value: string | undefined): string | undefined {

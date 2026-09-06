@@ -1,5 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { date_modify, validateDateModifyParams } from '../../src/filters/date_modify';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('date_modify filter', () => {
 	test('adds years', () => {
@@ -29,6 +33,13 @@ describe('date_modify filter', () => {
 		expect(result).toContain('2024-12-02');
 	});
 
+	test('trims spaces inside quoted modifiers', async () => {
+		expect(date_modify('2024-12-01', '" +1 day "')).toBe('2024-12-02');
+		await expect(engine.renderOrThrow('{{ value | date_modify:" +1 day " }}', {
+			variables: { value: '2024-12-01' },
+		})).resolves.toBe('2024-12-02');
+	});
+
 	test('returns original without params', () => {
 		const result = date_modify('2024-12-01');
 		expect(result).toContain('2024');
@@ -43,6 +54,7 @@ describe('date_modify param validation', () => {
 		expect(validateDateModifyParams('-1 year').valid).toBe(true);
 		expect(validateDateModifyParams('+5 hours').valid).toBe(true);
 		expect(validateDateModifyParams('"-1 day"').valid).toBe(true);
+		expect(validateDateModifyParams('" +1 day "').valid).toBe(true);
 	});
 
 	test('missing params returns error', () => {
