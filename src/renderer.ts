@@ -25,7 +25,6 @@ import {
 	isLiteralFilterArgument,
 	parse,
 } from './parser';
-import { parseTypedParams } from './parser-utils';
 import { TemplateRuntimeError, type TemplateError } from './errors';
 
 type ApplyFilterFn = (
@@ -524,11 +523,9 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		args.push(argValue);
 	}
 	const rawArguments = args.map((argument, index) => {
-		const expression = expr.args[index];
-		const literal = expression.type === 'literal' ||
-			(expression.type === 'group' && expression.expression.type === 'literal');
-		if (!literal || typeof argument !== 'string') return argument;
-		return isQuotedString(argument) ? parseTypedParams(argument)?.[0] ?? argument : argument;
+		let expression = expr.args[index];
+		while (expression.type === 'group') expression = expression.expression;
+		return expression.type === 'literal' ? expression.unquotedValue ?? argument : argument;
 	});
 
 	const stringValue = valueToString(value);

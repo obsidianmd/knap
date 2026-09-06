@@ -6,6 +6,8 @@
 // - Variable tags: {{ variable|filter }} (preserves whitespace)
 // - Logic tags: {% if condition %}, {% for item in array %}, etc. (trims whitespace)
 
+import { decodeStringEscape } from './parser-utils';
+
 // ============================================================================
 // Token Types
 // ============================================================================
@@ -623,15 +625,7 @@ function tokenizeString(state: TokenizerState): void {
 			// Escape sequence
 			advanceChar(state);
 			const escaped = state.input[state.pos];
-			switch (escaped) {
-				case 'n': value += '\n'; break;
-				case 't': value += '\t'; break;
-				case 'r': value += '\r'; break;
-				case '\\': value += '\\'; break;
-				case '"': value += '"'; break;
-				case "'": value += "'"; break;
-				default: value += escaped;
-			}
+			value += decodeStringEscape(escaped);
 			advanceChar(state);
 			continue;
 		}

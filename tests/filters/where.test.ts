@@ -53,6 +53,27 @@ describe('where filter', () => {
 		)).toBe('string');
 	});
 
+	test.each([
+		{ name: 'literal quotes', literal: `'"Ada"'`, value: '"Ada"', other: 'Ada' },
+		{ name: 'UNC paths', literal: String.raw`"\\\\server\\share"`, value: String.raw`\\server\share`, other: String.raw`\server\share` },
+		{ name: 'newlines', literal: String.raw`"a\nb"`, value: 'a\nb', other: String.raw`a\nb` },
+		{ name: 'tabs', literal: String.raw`"a\tb"`, value: 'a\tb', other: String.raw`a\tb` },
+		{ name: 'carriage returns', literal: String.raw`"a\rb"`, value: 'a\rb', other: String.raw`a\rb` },
+		{ name: 'literal escape sequences', literal: String.raw`"a\\nb"`, value: String.raw`a\nb`, other: 'a\nb' },
+		{ name: 'unknown escapes', literal: String.raw`"a\qb"`, value: 'aqb', other: String.raw`a\qb` },
+	])('decodes $name once in both syntaxes and execution paths', async ({ literal, value, other }) => {
+		const items = [{ value }, { value: other }];
+		const expected = JSON.stringify([{ value }]);
+		for (const parameters of [`("value", ${literal})`, `"value", ${literal}`]) {
+			const chain = `where:${parameters}`;
+			await expect(engine.renderOrThrow(`{{ items | ${chain} }}`, {
+				variables: { items },
+			})).resolves.toBe(expected);
+			expect(applyFiltersWithRegistry(items, chain, standardFilters, { variables: {} }))
+				.toBe(expected);
+		}
+	});
+
 	test('distinguishes missing properties from explicit null', async () => {
 		const items = [{ id: 1, parent: null }, { id: 2 }, { id: 3, parent: 'Ada' }];
 		await expect(engine.renderOrThrow(

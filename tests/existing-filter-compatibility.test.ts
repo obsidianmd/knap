@@ -138,4 +138,41 @@ describe('existing filter compatibility with main', () => {
 			{ variables: {} },
 		)).toBe('{"value":"x","param":"(\\"1\\",1,true,null)","rawArguments":["1",1,true,null]}');
 	});
+
+	test.each([
+		{ arguments: `('"Ada"')`, param: '"Ada"', decoded: '"Ada"' },
+		{ arguments: `'"Ada"'`, param: '""Ada""', decoded: '"Ada"' },
+		{ arguments: String.raw`("\\\\server\\share")`, param: String.raw`"\\server\share"`, decoded: String.raw`\\server\share` },
+		{ arguments: String.raw`"\\\\server\\share"`, param: String.raw`"\\server\share"`, decoded: String.raw`\\server\share` },
+	])('preserves custom-filter strings for $arguments', async ({ arguments: parameters, param, decoded }) => {
+		const inspect = vi.fn(() => '');
+		const customEngine = createEngine({ filters: { inspect } });
+		await customEngine.renderOrThrow(`{{ value | inspect:${parameters} }}`, {
+			variables: { value: 'x' },
+		});
+		expect(inspect).toHaveBeenLastCalledWith('x', param, expect.objectContaining({
+			rawArguments: [decoded],
+		}));
+
+		applyFiltersWithRegistry('x', `inspect:${parameters}`, { inspect }, { variables: {} });
+		expect(inspect).toHaveBeenLastCalledWith('x', parameters, expect.objectContaining({
+			rawArguments: [decoded],
+		}));
+	});
+
+	test('preserves legacy colon pairs in typed arguments through both execution paths', async () => {
+		const inspect = vi.fn(() => '');
+		const customEngine = createEngine({ filters: { inspect } });
+		await customEngine.renderOrThrow('{{ value | inspect:"a":"b" }}', {
+			variables: { value: 'x' },
+		});
+		expect(inspect).toHaveBeenLastCalledWith('x', '"a":"b"', expect.objectContaining({
+			rawArguments: ['"a":"b"'],
+		}));
+
+		applyFiltersWithRegistry('x', 'inspect:"a":"b"', { inspect }, { variables: {} });
+		expect(inspect).toHaveBeenLastCalledWith('x', '"a":"b"', expect.objectContaining({
+			rawArguments: ['"a":"b"'],
+		}));
+	});
 });

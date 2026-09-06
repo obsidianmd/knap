@@ -72,6 +72,8 @@ export interface LiteralExpression extends BaseNode {
 	type: 'literal';
 	value: string | number | boolean | null;
 	raw: string;
+	/** Decoded string before adding quotes for legacy filter parameter serialization. */
+	unquotedValue?: string;
 }
 
 export interface IdentifierExpression extends BaseNode {
@@ -786,6 +788,7 @@ function parseFilterArgument(state: ParserState): Expression | null {
 		// Format string with quotes preserved
 		const formatString = (val: any) => `"${val}"`;
 		let combined = formatString(first.value);
+		let isStringPair = false;
 
 		// Check if followed by :string pattern - chain them together
 		while (check(state, 'colon')) {
@@ -796,6 +799,7 @@ function parseFilterArgument(state: ParserState): Expression | null {
 				const next = parsePrimaryExpression(state);
 				if (next && next.type === 'literal') {
 					combined += ':' + formatString(next.value);
+					isStringPair = true;
 				}
 			} else {
 				// Not a string after colon, restore position
@@ -808,6 +812,7 @@ function parseFilterArgument(state: ParserState): Expression | null {
 			type: 'literal',
 			value: combined,
 			raw: combined,
+			...(!isStringPair ? { unquotedValue: first.value as string } : {}),
 			line: first.line,
 			column: first.column,
 		};

@@ -128,6 +128,16 @@ export function unquoteParamToken(value: string): string {
 	return value.trim().replace(/^(["'])([\s\S]*)\1$/, '$2');
 }
 
+/** Decode the character following a backslash in a string literal. */
+export function decodeStringEscape(character: string): string {
+	switch (character) {
+		case 'n': return '\n';
+		case 't': return '\t';
+		case 'r': return '\r';
+		default: return character;
+	}
+}
+
 export function decodeParamEscapes(value: string): string {
 	return value.replace(/\\([\\,:|"'])/g, '$1');
 }
@@ -164,8 +174,9 @@ export function normalizeParamList(value: string): string[] {
 
 function parseTypedParamToken(value: string): unknown {
 	const token = value.trim();
+	if (splitParamPair(token)[1] !== undefined) return token;
 	if (token.length >= 2 && (token[0] === '"' || token[0] === "'") && token.at(-1) === token[0]) {
-		return decodeParamEscapes(token.slice(1, -1));
+		return token.slice(1, -1).replace(/\\([\s\S])/g, (_, character: string) => decodeStringEscape(character));
 	}
 	if (token === 'true') return true;
 	if (token === 'false') return false;
