@@ -27,7 +27,26 @@ const result = await engine.render(
 );
 ```
 
-Pass an optional generic context when custom filters or resolvers need host data that is not itself a template variable.
+## Variables and resolvers
+
+Pass variables in each render call. Knap accepts unknown application values rather than imposing a schema.
+
+Knap does not know what a browser tab, vault, selector, or model is. Applications can expose those concepts as ordinary values or resolve them on demand.
+
+If a value is not present in the variables object, the host can load it with `resolveVariable`. Local values always take precedence. Pass an optional generic context when custom filters or resolvers need host data that is not itself a template variable.
+
+```ts
+const result = await engine.render('{{ remoteValue | upper }}', {
+  variables: {},
+  context: { documentId: 'example' },
+  resolveVariable: async (name, { context }) => {
+    if (name === 'remoteValue') {
+      return loadValue(context.documentId);
+    }
+    return undefined;
+  },
+});
+```
 
 ## Render results
 

@@ -22,6 +22,7 @@
     color: var(--muted);
     font-size: 0.8125rem;
     line-height: 1.25;
+    transition: color 200ms ease;
 
     &.docs-toc-title {
       font-size: 0.8125rem;
@@ -76,21 +77,21 @@
 .docs-title-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+  margin-left: -8px;
   margin-top: 18px;
 }
 .docs-title-action {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--line-hover);
-  font-weight: 600;
+  border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--body);
-  padding: 7px 12px;
+  color: var(--muted);
+  padding: 6px 8px;
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   cursor: pointer;
 
   &:hover {
@@ -134,7 +135,7 @@
     margin-top: -5px;
   }
   a {
-    color: var(--link-color, var(--accent));
+    color: var(--link-color, var(--paper));
     border-bottom: 1px solid currentColor;
   }
 }
@@ -242,7 +243,7 @@
     margin-top: -5px;
   }
   a {
-    color: var(--link-color, var(--accent));
+    color: var(--link-color, var(--paper));
     border-bottom: 1px solid currentColor;
   }
   :not(pre) > code {

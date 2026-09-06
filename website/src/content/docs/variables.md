@@ -22,7 +22,7 @@ Use [filters](/filters) to transform a value. Filters can be chained, and run fr
 
 ## Value types
 
-Knap accepts unknown application values rather than imposing a schema. Templates commonly work with strings, numbers, booleans, arrays, objects, and nullish values.
+Variables can contain strings, numbers, booleans, arrays, objects, and nullish values.
 
 | Type | Common uses |
 | --- | --- |
@@ -32,8 +32,6 @@ Knap accepts unknown application values rather than imposing a schema. Templates
 | `array` | Tags, authors, sections |
 | `object` | Nested structured data |
 | `null` | Missing or empty values |
-
-Knap does not know what a browser tab, vault, selector, or model is. Applications can expose those concepts as ordinary values or resolve them on demand.
 
 ## Nested values
 
@@ -74,19 +72,4 @@ Variable output supports names with spaces, so imported column headings can rema
 {{ Publication date | date:"YYYY-MM-DD" }}
 ```
 
-## Resolve values asynchronously
-
-If a value is not present in the variables object, the host can load it with `resolveVariable`. Local values always take precedence.
-
-```ts
-const result = await engine.render('{{ remoteValue | upper }}', {
-  variables: {},
-  context: { documentId: 'example' },
-  resolveVariable: async (name, { context }) => {
-    if (name === 'remoteValue') {
-      return loadValue(context.documentId);
-    }
-    return undefined;
-  },
-});
-```
+Your app decides which variables are available. See [Variables and resolvers](/api#variables-and-resolvers) to supply or load them.

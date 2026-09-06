@@ -37,6 +37,10 @@
 * {
   box-sizing: border-box;
 }
+::selection {
+  background: rgb(218 112 44 / 24%);
+  color: var(--syntax-orange);
+}
 [hidden] {
   display: none !important;
 }

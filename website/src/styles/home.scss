@@ -125,21 +125,20 @@
     font-weight: 400;
   }
 
-  &:hover h3 {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
 }
 
 .used-by-copy {
   h3 {
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     font-size: inherit;
-    font-weight: 600;
+    font-weight: 400;
+    line-height: 1.5;
   }
 
   > span {
+    color: var(--muted);
     font-size: inherit;
+    line-height: 1.5;
   }
 }
 
