@@ -30,8 +30,6 @@
 
   a {
     color: var(--link-color, var(--accent));
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
 }
@@ -53,8 +51,6 @@
 
 .used-by-heading a {
   color: var(--paper);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .markdown-transform {

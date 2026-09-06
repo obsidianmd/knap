@@ -1,5 +1,18 @@
+// Keep inline links distinct without making their underline compete with the text.
+:where(.lede, .used-by-heading, .markdown-doc, .doc-section) a {
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: var(--link-decoration-color, var(--faint));
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
 // Color links in body copy, including Markdown-generated paragraphs, lists, and tables.
-@each $section, $color in ("variables": "blue", "filters": "orange", "logic": "green") {
+@each $section, $color, $underline in (
+  ("variables", "blue", #205ea6),
+  ("filters", "orange", #bc5215),
+  ("logic", "green", #66800b)
+) {
   :where(.lede, .markdown-doc :is(p, li, td, th), .doc-section :is(p, li, td, th)) a:is(
     [href="/#{$section}"],
     [href="/#{$section}.html"],
@@ -7,6 +20,7 @@
     [href^="/#{$section}#"],
     [href^="/#{$section}?"]
   ) {
-    --link-color: var(--syntax-#{$color});
+    --link-color: var(--#{$color});
+    --link-decoration-color: #{$underline};
   }
 }
