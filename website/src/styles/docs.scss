@@ -144,7 +144,7 @@
   color: var(--link-color, var(--paper));
   padding: 0.12em 0.24em;
   border-radius: 0.38em;
-  font-family: "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--font-size-small);
 }
 
@@ -186,7 +186,7 @@
   }
   code {
     color: var(--accent);
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: var(--font-size-small);
   }
   span {
@@ -251,7 +251,7 @@
     background: var(--panel);
     color: var(--link-color, var(--paper));
     padding: 0.12em 0.24em;
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: var(--font-size-small);
   }
   > ul, > ol {
@@ -292,7 +292,7 @@
   > p {
     margin: 0 0 20px;
     color: var(--accent);
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
   }
   h1 {
     margin: 0 0 36px;

@@ -64,7 +64,7 @@ Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`.
 
 ## Knap in use
 
-Knap was created for [Obsidian](https://obsidian.md) and is named after [flintknapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.
+Knap was created for [Obsidian](https://obsidian.md) and is named after [knapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.
 
 - [Obsidian Web Clipper](https://obsidian.md/clipper)
 - [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer)

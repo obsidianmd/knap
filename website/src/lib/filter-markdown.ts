@@ -18,8 +18,6 @@ export function filterMarkdown(filter: FilterDoc) {
   if (filter.environment === 'html') lines.push('> **HTML preset**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
 
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
-  if (filter.aliases?.length) lines.push(`Also available as ${filter.aliases.map((alias) => `\`${alias}\``).join(', ')}.`, '');
-
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
   const references = (filter.references ?? []).map((reference) => `[${reference.label}](${reference.href})`);
   if (behavior.length || references.length) lines.push('## Behavior', '', ...behavior.map((note) => `- ${note}`), ...references.map((reference) => `- ${reference}`), '');

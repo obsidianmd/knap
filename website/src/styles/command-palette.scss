@@ -18,7 +18,7 @@
   box-shadow: 0 20px 60px rgb(16 15 15 / 65%);
 
   kbd {
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: var(--font-size-small);
   }
 
@@ -99,7 +99,7 @@
   }
   code {
     color: var(--syntax-orange);
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: var(--font-mono);
     font-size: var(--font-size-small);
     font-weight: 500;
 

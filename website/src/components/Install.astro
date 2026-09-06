@@ -29,7 +29,7 @@ const managers = [
   </div>
   {managers.map(({ name, command }, index) => (
     <div id={`install-${name}`} data-install-panel={name} hidden={index !== 0}>
-      <CodeBlock language="shell" code={command} />
+      <CodeBlock language="shell" code={command} highlight={false} />
     </div>
   ))}
   {note && <p class="install-note">{note}</p>}
