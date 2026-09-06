@@ -84,7 +84,7 @@ const docs: FilterDoc[] = [
       example({ message: 'HELLO world' }, '{{ message | replace:"/hello/i":"hi" }}', 'hi world', 'Case-insensitive match'),
     ],
   },
-  { slug: 'safe-name', name: 'safe_name', category: 'Text', summary: 'Remove characters that are unsafe in file names.', syntax: ['safe_name', 'safe_name:windows'], parameters: ['Optionally choose windows, mac, or linux rules. The default is conservative.'], examples: [example({ title: 'notes/2024: recap?' }, '{{ title | safe_name }}', 'notes2024 recap')] },
+  { slug: 'safe-name', name: 'safe_name', category: 'Text', summary: 'Remove characters that are unsafe in file names.', syntax: ['safe_name', 'safe_name:windows'], parameters: ['Optionally choose `windows`, `mac`, or `linux` rules. The default is conservative.'], examples: [example({ title: 'notes/2024: recap?' }, '{{ title | safe_name }}', 'notes2024 recap')] },
   { slug: 'snake', name: 'snake', category: 'Text', summary: 'Convert text to snake_case.', syntax: ['snake'], related: ['camel', 'kebab', 'pascal'], examples: [example({ title: 'Hello World' }, '{{ title | snake }}', 'hello_world')] },
   { slug: 'title', name: 'title', category: 'Text', summary: 'Convert text to Title Case.', syntax: ['title'], related: ['capitalize', 'lower', 'upper'], examples: [example({ title: 'hello world' }, '{{ title | title }}', 'Hello World')] },
   { slug: 'trim', name: 'trim', category: 'Text', summary: 'Remove whitespace from both ends of a value.', syntax: ['trim'], examples: [example({ title: '  hello world  ' }, '{{ title | trim }}', 'hello world')] },

@@ -1,7 +1,11 @@
 ---
 title: Variables
-description: Variables bridge application data and a Knap template.
+description: Variables are defined by apps and provide the data available to a template.
 ---
+
+Knap defines how variables are used, but not which variables are available. That depends on the app using Knap. If you are looking for a variable such as `{{title}}`, `{{content}}`, or `{{url}}`, see your app's documentation—for example, the [Web Clipper variable reference](https://help.obsidian.md/web-clipper/variables).
+
+This page explains how to reference and work with variables after an app provides them.
 
 ## Output a value
 
@@ -72,4 +76,4 @@ Variable output supports names with spaces, so imported column headings can rema
 {{ Publication date | date:"YYYY-MM-DD" }}
 ```
 
-Your app decides which variables are available. See [Variables and resolvers](/api#variables-and-resolvers) to supply or load them.
+Building an app with Knap? See [Variables and resolvers](/api#variables-and-resolvers) in the API reference.
