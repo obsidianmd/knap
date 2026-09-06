@@ -91,4 +91,11 @@ describe('table filter', () => {
 	test('returns original for non-JSON', () => {
 		expect(table('plain text')).toBe('plain text');
 	});
+
+	test('pretty-prints large tables without exceeding the function argument limit', () => {
+		const rows = Array.from({ length: 200_000 }, () => ['x']);
+		const result = table_pretty(JSON.stringify(rows));
+		expect(result.startsWith('|     |\n| --- |\n')).toBe(true);
+		expect(result.endsWith('| x   |')).toBe(true);
+	});
 });

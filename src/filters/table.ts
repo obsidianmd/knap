@@ -12,6 +12,22 @@ const escapeCell = (cell: string) => cell.replace(/\|/g, '\\|');
 const cellWidth = (cell: string) => Array.from(cell).length;
 const padCell = (cell: string, width: number) => `${cell}${' '.repeat(width - cellWidth(cell))}`;
 
+function widestCell(rows: string[][], column: number, minimum: number): number {
+	let width = minimum;
+	for (const row of rows) {
+		width = Math.max(width, cellWidth(row[column]));
+	}
+	return width;
+}
+
+function widestRow(rows: unknown[][]): number {
+	let width = 0;
+	for (const row of rows) {
+		width = Math.max(width, row.length);
+	}
+	return width;
+}
+
 function renderTable(headers: unknown[], rows: unknown[][], pretty: boolean): string {
 	const columnCount = headers.length;
 	const normalizedHeaders = headers.map(value => escapeCell(String(value)));
@@ -29,11 +45,8 @@ function renderTable(headers: unknown[], rows: unknown[][], pretty: boolean): st
 		].join('\n');
 	}
 
-	const widths = normalizedHeaders.map((header, column) => Math.max(
-		3,
-		cellWidth(header),
-		...normalizedRows.map(row => cellWidth(row[column])),
-	));
+	const widths = normalizedHeaders.map((header, column) =>
+		widestCell(normalizedRows, column, Math.max(3, cellWidth(header))));
 	const formatRow = (row: string[]) =>
 		`| ${row.map((cell, column) => padCell(cell, widths[column])).join(' | ')} |`;
 
@@ -63,7 +76,7 @@ const formatTable = (
 		}
 
 		if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
-			const maxColumns = Math.max(...data.map(row => row.length));
+			const maxColumns = widestRow(data);
 			const headers = customHeaders.length > 0
 				? [...customHeaders, ...Array(Math.max(0, maxColumns - customHeaders.length)).fill('')]
 				: Array(maxColumns).fill('');

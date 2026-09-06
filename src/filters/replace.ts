@@ -35,6 +35,7 @@ export const validateReplaceParams = (param: string | undefined): ParamValidatio
 
 function splitReplacementPair(value: string): [string, string] | null {
 	let quote = '';
+	let inRegex = false;
 	let escaped = false;
 	for (let index = 0; index < value.length; index++) {
 		const character = value[index];
@@ -44,8 +45,12 @@ function splitReplacementPair(value: string): [string, string] | null {
 			escaped = true;
 		} else if (quote) {
 			if (character === quote) quote = '';
+		} else if (inRegex) {
+			if (character === '/') inRegex = false;
 		} else if (character === '"' || character === "'") {
 			quote = character;
+		} else if (character === '/' && value.slice(0, index).trim() === '') {
+			inRegex = true;
 		} else if (character === ':') {
 			return [value.slice(0, index), value.slice(index + 1)];
 		}

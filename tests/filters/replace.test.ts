@@ -39,6 +39,10 @@ describe('replace filter', () => {
 		expect(replace('a|b a b', '"/a\\|b/g":"x"')).toBe('x a b');
 	});
 
+	test('handles colons inside bare regular expressions', () => {
+		expect(replace('a:b a', '/a:b/g:"x"')).toBe('x a');
+	});
+
 	test('decodes replacement escapes once', () => {
 		expect(replace('x', '"x":"\\\\n"')).toBe('\\n');
 	});
@@ -115,6 +119,15 @@ describe('replace filter via renderer', () => {
 		)).toBe('c');
 	});
 
+	test('preserves colons in bare regexes through the synchronous filter path', () => {
+		expect(applyFiltersWithRegistry(
+			'a:b a',
+			'replace:/a:b/g:"x"',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('x a');
+	});
+
 	test('preserves regex escapes through the template parser', async () => {
 		const template = String.raw`{{msg|replace:"/a\\|b/g":"x"}}`;
 		const result = await engine.render(template, {
@@ -136,6 +149,7 @@ describe('replace param validation', () => {
 		expect(validateReplaceParams('"a":"b","c":"d"').valid).toBe(true);
 		expect(validateReplaceParams('"/regex/g":"text"').valid).toBe(true);
 		expect(validateReplaceParams('"text":').valid).toBe(true);
+		expect(validateReplaceParams('/a:b/g:"text"').valid).toBe(true);
 	});
 
 	test('missing params returns error', () => {
