@@ -14,7 +14,22 @@ const filterDirectory = filterGroups.map((group) => [
   ...group.filters.map((name) => byName.get(name)).filter(Boolean).map((filter) => `- [\`${filter!.name}\`](/filters/${filter!.slug}) — ${filter!.summary}`),
 ].join('\n')).join('\n\n');
 
-const documents = { api, filters: filters.replace('<!-- FILTER_DIRECTORY -->', filterDirectory), logic, variables } as const;
+const install = [
+  '## Install',
+  '',
+  '```shell',
+  'npm install knap',
+  '```',
+  '',
+  'Knap is ESM-first, also ships CommonJS entry points, and requires Node.js 20 or later.',
+].join('\n');
+
+const documents = {
+  api: api.replace('<!-- INSTALL -->', install),
+  filters: filters.replace('<!-- FILTER_DIRECTORY -->', filterDirectory),
+  logic,
+  variables,
+} as const;
 
 export function getStaticPaths() {
   return Object.keys(documents).map((page) => ({ params: { page } }));

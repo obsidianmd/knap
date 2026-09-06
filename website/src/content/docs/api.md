@@ -3,13 +3,7 @@ title: API
 description: Add Knap to your app to parse, validate, and render templates.
 ---
 
-## Install
-
-```shell
-pnpm add knap
-```
-
-Knap is ESM-first, also ships CommonJS entry points, and requires Node.js 20 or later.
+<!-- INSTALL -->
 
 ## Quick start
 

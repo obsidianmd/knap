@@ -69,7 +69,7 @@
     font-weight: 400;
 
     &.is-active {
-      background: var(--line-active);
+      background: var(--line-hover);
       color: var(--paper);
     }
   }
@@ -84,6 +84,14 @@
     font-family: "SFMono-Regular", Consolas, monospace;
     font-size: var(--font-size-small);
     font-weight: 500;
+
+    &.command-result-syntax {
+      color: var(--syntax-green);
+
+      &.is-variable {
+        color: var(--syntax-blue);
+      }
+    }
   }
   p {
     margin: 0;

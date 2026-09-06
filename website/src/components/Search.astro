@@ -1,11 +1,33 @@
 ---
 import { filterDocs } from '../../lib/filter-docs';
 
+const syntax = [
+  { title: 'if', kind: 'syntax', category: 'Logic', summary: 'Start a conditional block.', href: '/logic#conditionals' },
+  { title: 'elseif', kind: 'syntax', category: 'Logic', summary: 'Add another conditional branch.', href: '/logic#conditionals' },
+  { title: 'else', kind: 'syntax', category: 'Logic', summary: 'Add a fallback branch.', href: '/logic#conditionals' },
+  { title: 'endif', kind: 'syntax', category: 'Logic', summary: 'Close a conditional block.', href: '/logic#conditionals' },
+  { title: 'contains', kind: 'syntax', category: 'Logic', summary: 'Check a string or array for a value.', href: '/logic#comparison-and-logical-operators' },
+  { title: 'and', kind: 'syntax', category: 'Logic', summary: 'Require both expressions to be true.', href: '/logic#comparison-and-logical-operators' },
+  { title: 'or', kind: 'syntax', category: 'Logic', summary: 'Require either expression to be true.', href: '/logic#comparison-and-logical-operators' },
+  { title: 'not', kind: 'syntax', category: 'Logic', summary: 'Negate an expression.', href: '/logic#comparison-and-logical-operators' },
+  { title: 'Truthiness', kind: 'section', category: 'Logic', summary: 'See which values count as true or false.', href: '/logic#truthiness', syntax: ['true', 'false', 'null', 'undefined'] },
+  { title: 'for', kind: 'syntax', category: 'Logic', summary: 'Start a loop over an array.', href: '/logic#loops' },
+  { title: 'endfor', kind: 'syntax', category: 'Logic', summary: 'Close a loop block.', href: '/logic#loops' },
+  { title: 'loop.index', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Current loop iteration, starting at 1.', href: '/logic#loop-values' },
+  { title: 'loop.index0', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Current loop iteration, starting at 0.', href: '/logic#loop-values' },
+  { title: 'loop.first', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Check whether this is the first loop iteration.', href: '/logic#loop-values' },
+  { title: 'loop.last', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Check whether this is the last loop iteration.', href: '/logic#loop-values' },
+  { title: 'loop.length', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Get the total number of loop items.', href: '/logic#loop-values' },
+  { title: 'item_index', kind: 'syntax', tone: 'variable', category: 'Logic', summary: 'Use the backwards-compatible zero-based loop index.', href: '/logic#loop-values' },
+  { title: 'set', kind: 'syntax', category: 'Variables', summary: 'Assign a local template variable.', href: '/variables#local-variables' },
+];
+
 const pages = [
   { title: 'Variables', kind: 'page', category: 'Guide', summary: 'Supply, resolve, access, and assign values in Knap templates.', href: '/variables' },
   { title: 'Logic', kind: 'page', category: 'Guide', summary: 'Include content conditionally, choose fallback values, and repeat Markdown over arrays.', href: '/logic' },
   { title: 'Filters', kind: 'page', category: 'Guide', summary: 'Transform values before Knap writes them.', href: '/filters' },
   { title: 'API', kind: 'page', category: 'Reference', summary: 'Install, configure, validate, and render Knap templates.', href: '/api' },
+  ...syntax,
   ...filterDocs.map((filter) => ({
     title: filter.name,
     kind: 'filter',

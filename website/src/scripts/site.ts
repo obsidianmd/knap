@@ -76,12 +76,13 @@ document.addEventListener('click', async (event) => {
 
 type SearchItem = {
   title: string;
-  kind: 'page' | 'filter';
+  kind: 'page' | 'filter' | 'section' | 'syntax';
   category: string;
   summary: string;
   href: string;
   aliases?: string[];
   syntax?: string[];
+  tone?: 'variable';
 };
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
@@ -97,7 +98,7 @@ function setupSearch() {
   if (!trigger || !backdrop || !input || !resultsElement || !data) return;
 
   const items = JSON.parse(data) as SearchItem[];
-  let results = items.slice(0, 12);
+  let results = items.filter((item) => item.kind !== 'syntax' && item.kind !== 'section').slice(0, 12);
   let activeIndex = 0;
 
   const render = () => {
@@ -107,8 +108,11 @@ function setupSearch() {
     }
     resultsElement.innerHTML = results.map((item, index) => {
       const title = escapeHtml(item.title);
-      const titleElement = item.kind === 'filter'
-        ? `<code>${title}</code>`
+      const syntaxClass = item.kind === 'syntax'
+        ? ` class="command-result-syntax${item.tone === 'variable' ? ' is-variable' : ''}"`
+        : '';
+      const titleElement = item.kind === 'filter' || item.kind === 'syntax'
+        ? `<code${syntaxClass}>${title}</code>`
         : `<span class="command-result-title">${title}</span>`;
 
       return `
@@ -123,7 +127,11 @@ function setupSearch() {
 
   const update = () => {
     const query = input.value.trim().toLowerCase();
-    results = items.filter((item) => [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)).slice(0, 12);
+    results = items
+      .filter((item) => query
+        ? [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)
+        : item.kind !== 'syntax' && item.kind !== 'section')
+      .slice(0, 12);
     activeIndex = 0;
     render();
   };

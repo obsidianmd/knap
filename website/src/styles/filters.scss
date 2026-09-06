@@ -147,6 +147,9 @@
     margin-top: 0;
   }
 }
+.filter-examples > .filter-example-card:first-child {
+  margin-top: 18px;
+}
 .filter-example-table {
   margin-top: 20px;
   overflow: hidden;
@@ -202,6 +205,10 @@
 
   .filter-row {
     padding-block: 7px;
+
+    &:hover {
+      background: var(--panel);
+    }
   }
 }
 @media (max-width: 760px) {

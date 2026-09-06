@@ -20,8 +20,13 @@
 
   a {
     color: var(--muted);
-    font-size: var(--font-size-small);
+    font-size: 0.8125rem;
     line-height: 1.25;
+
+    &.docs-toc-title {
+      font-size: 0.8125rem;
+      font-weight: 400;
+    }
 
     &.is-read {
       color: var(--faint);
