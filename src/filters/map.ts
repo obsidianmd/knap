@@ -1,4 +1,5 @@
 import type { ParamValidationResult } from '../filters';
+import { splitParamPair, splitParams } from '../parser-utils';
 
 export const validateMapParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -44,10 +45,11 @@ export const map = (str: string, param?: string): string => {
 
 				// Parse the expression to extract property assignments or string literal
 				if (expr.startsWith('{')) {
-					const assignments = expr.match(/\{(.+)\}/)?.[1].split(',') || [];
+					const assignments = splitParams(expr.slice(1, -1));
 
 					assignments.forEach((assignment) => {
-						const [key, value] = assignment.split(':').map(s => s.trim());
+						const [key, value] = splitParamPair(assignment);
+						if (value === undefined) return;
 						// Remove any surrounding quotes from the key
 						const cleanKey = key.replace(/^['"](.+)['"]$/, '$1');
 						// Evaluate the value expression

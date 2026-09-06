@@ -147,6 +147,53 @@ export function cleanScalarParam(value: string | undefined): string | undefined 
 	return unquoted === undefined ? undefined : decodeParamEscapes(unquoted);
 }
 
+/** Normalize a comma-separated argument list without decoding meaningful backslashes. */
+export function normalizeParamList(value: string): string[] {
+	const unwrapped = unwrapParamList(value);
+	const tokens = splitParams(unwrapped);
+	const quotedList = tokens.length === 1 && unquoteParamToken(tokens[0]) !== tokens[0].trim();
+	const listTokens = quotedList ? splitParams(unquoteParamToken(tokens[0])) : tokens;
+	return listTokens.map(token => unquoteParamToken(token).replace(/\\(["'])/g, '$1'));
+}
+
+/** Split once on a colon outside quotes or nested expressions. */
+export function splitParamPair(value: string): [string, string?] {
+	let quote = '';
+	let escaped = false;
+	let parenDepth = 0;
+	let curlyDepth = 0;
+	let bracketDepth = 0;
+
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index];
+		if (escaped) {
+			escaped = false;
+		} else if (character === '\\') {
+			escaped = true;
+		} else if (quote) {
+			if (character === quote) quote = '';
+		} else if (character === '"' || character === "'") {
+			quote = character;
+		} else if (character === '(') {
+			parenDepth++;
+		} else if (character === ')') {
+			parenDepth--;
+		} else if (character === '{') {
+			curlyDepth++;
+		} else if (character === '}') {
+			curlyDepth--;
+		} else if (character === '[') {
+			bracketDepth++;
+		} else if (character === ']') {
+			bracketDepth--;
+		} else if (character === ':' && parenDepth === 0 && curlyDepth === 0 && bracketDepth === 0) {
+			return [value.slice(0, index).trim(), value.slice(index + 1).trim()];
+		}
+	}
+
+	return [value.trim()];
+}
+
 /** Split comma-separated filter parameters while preserving quoted commas. */
 export function splitParams(value: string): string[] {
 	const parts: string[] = [];

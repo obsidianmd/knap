@@ -13,6 +13,12 @@ describe('strip_attr filter', () => {
 		expect(result).not.toContain('class=');
 	});
 
+	test.each(['id, title', '"id, title"', '"id", "title"', '("id", "title")'])
+		('accepts equivalent argument spelling %s', params => {
+			expect(strip_attr('<p class="x" id="y" title="z">text</p>', params))
+				.toBe('<p id="y" title="z">text</p>');
+		});
+
 	test('handles multiple attributes', () => {
 		const result = strip_attr('<a href="url" target="_blank" rel="noopener">Link</a>');
 		expect(result).toBe('<a>Link</a>');

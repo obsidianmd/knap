@@ -58,9 +58,7 @@ source: {{ url }}
 
 ## Ingredients
 
-{% for ingredient in ingredients %}
-- {{ ingredient }}
-{% endfor %}
+{{ ingredients | table:("Ingredient", "Quantity") }}
 
 ## Instructions
 
@@ -77,10 +75,12 @@ source: https://example.com/gochujang-cookies
 
 ## Ingredients
 
-- Unsalted butter
-- Dark brown sugar
-- Gochujang
-- All-purpose flour
+| Ingredient | Quantity |
+| - | - |
+| Unsalted butter | 1/2 cup |
+| Dark brown sugar | 1/4 cup |
+| Gochujang | 1 tablespoon |
+| All-purpose flour | 1 1/2 cups |
 
 ## Instructions
 

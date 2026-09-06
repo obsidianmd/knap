@@ -46,6 +46,54 @@ describe('built-in filter parameter spellings', () => {
 		})).resolves.toContain('| Last, first | Role |');
 	});
 
+	test.each([
+		'{{ value | remove_attr:class,style }}',
+		'{{ value | remove_attr:"class,style" }}',
+		'{{ value | remove_attr:"class","style" }}',
+		'{{ value | remove_attr:("class","style") }}',
+	])('normalizes HTML argument lists as %s', async template => {
+		await expect(engine.renderOrThrow(template, {
+			variables: { value: '<p class="x" style="y" id="z">text</p>' },
+		})).resolves.toBe('<p id="z">text</p>');
+	});
+
+	test.each([
+		'remove_attr:class,style',
+		'remove_attr:"class,style"',
+		'remove_attr:"class","style"',
+		'remove_attr:("class","style")',
+	])('normalizes HTML argument lists as %s through the synchronous helper', filterString => {
+		expect(applyFiltersWithRegistry(
+			'<p class="x" style="y" id="z">text</p>',
+			filterString,
+			standardFilters,
+			{ variables: {} },
+		)).toBe('<p id="z">text</p>');
+	});
+
+	test.each([
+		'{{ value | replace_tags:"strong":"h2" }}',
+		'{{ value | replace_tags:strong:h2 }}',
+		'{{ value | replace_tags:("strong","h2") }}',
+	])('normalizes HTML transformation arguments as %s', async template => {
+		await expect(engine.renderOrThrow(template, {
+			variables: { value: '<strong>text</strong>' },
+		})).resolves.toBe('<h2>text</h2>');
+	});
+
+	test.each([
+		'replace_tags:"strong":"h2"',
+		'replace_tags:strong:h2',
+		'replace_tags:("strong","h2")',
+	])('normalizes HTML transformations as %s through the synchronous helper', filterString => {
+		expect(applyFiltersWithRegistry(
+			'<strong>text</strong>',
+			filterString,
+			standardFilters,
+			{ variables: {} },
+		)).toBe('<h2>text</h2>');
+	});
+
 	test('preserves apostrophes inside double-quoted arguments', async () => {
 		await expect(engine.renderOrThrow('{{ value | callout:("info", "Don\'t panic") }}', {
 			variables: { value: 'Read this' },

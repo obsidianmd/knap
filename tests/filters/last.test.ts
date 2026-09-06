@@ -22,4 +22,8 @@ describe('last filter', () => {
 		// Empty array returns the input string as-is
 		expect(last('[]')).toBe('[]');
 	});
+
+	test('renders a selected null as empty text', () => {
+		expect(last('["x",null]')).toBe('');
+	});
 });

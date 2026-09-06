@@ -16,7 +16,13 @@ export type FilterDoc = {
   syntax: string[];
   parameters?: string[];
   notes?: string[];
-  references?: { label: string; href: string }[];
+  referenceTables?: {
+    title: string;
+    description: string;
+    reference?: { label: string; href: string };
+    columns: string[];
+    rows: string[][];
+  }[];
   environment?: 'standard' | 'html';
   related?: string[];
   examples: FilterExample[];
@@ -42,31 +48,119 @@ const inlineWhitespace = 'Leading and trailing whitespace stays outside inline m
 const docs: FilterDoc[] = [
   {
     slug: 'date', name: 'date', searchTerms: ['date format', 'format date'], category: 'Dates and time', summary: 'Format a date.', syntax: ['date', 'date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'],
-    parameters: ['The first parameter is the output format. It defaults to YYYY-MM-DD.', 'An optional second parameter describes the input format for strict parsing.'],
+    parameters: ['The first parameter is the output format. It defaults to `YYYY-MM-DD`.', 'An optional second parameter describes the input format for strict parsing. The input must match it exactly, including separators and zero padding.'],
     notes: ['Format strings use Day.js tokens. Invalid dates are returned unchanged.'],
-    references: [{ label: 'Day.js format tokens', href: 'https://day.js.org/docs/en/display/format' }], related: ['date_modify', 'duration'],
+    related: ['date_modify', 'duration'],
+    referenceTables: [
+      {
+        title: 'Date formats',
+        description: 'Combine these case-sensitive tokens in the output format. Wrap literal text in square brackets, for example `[Year] YYYY`. Month and weekday names below use English.',
+        reference: { label: 'Day.js date formats', href: 'https://day.js.org/docs/en/display/format' },
+        columns: ['Token', 'Meaning', 'Output'],
+        rows: [
+          ['`YY`', 'Year, last two digits', '24'],
+          ['`YYYY`', 'Year, four digits', '2024'],
+          ['`M`', 'Month number', '1–12'],
+          ['`MM`', 'Month number, padded', '01–12'],
+          ['`MMM`', 'Month abbreviation', 'Jan–Dec'],
+          ['`MMMM`', 'Month name', 'January–December'],
+          ['`D`', 'Day in month', '1–31'],
+          ['`DD`', 'Day in month, padded', '01–31'],
+          ['`d`', 'Weekday number (Sunday is 0)', '0–6'],
+          ['`dd`', 'Weekday, two letters', 'Su–Sa'],
+          ['`ddd`', 'Weekday abbreviation', 'Sun–Sat'],
+          ['`dddd`', 'Weekday name', 'Sunday–Saturday'],
+          ['`H`', 'Hour, 24-hour clock', '0–23'],
+          ['`HH`', 'Hour, 24-hour clock, padded', '00–23'],
+          ['`h`', 'Hour, 12-hour clock', '1–12'],
+          ['`hh`', 'Hour, 12-hour clock, padded', '01–12'],
+          ['`m`', 'Minute', '0–59'],
+          ['`mm`', 'Minute, padded', '00–59'],
+          ['`s`', 'Second', '0–59'],
+          ['`ss`', 'Second, padded', '00–59'],
+          ['`SSS`', 'Milliseconds, padded', '000–999'],
+          ['`Z`', 'UTC offset with colon', '+05:00'],
+          ['`ZZ`', 'UTC offset without colon', '+0500'],
+          ['`A`', 'Meridiem, uppercase', 'AM / PM'],
+          ['`a`', 'Meridiem, lowercase', 'am / pm'],
+        ],
+      },
+      {
+        title: 'Advanced date formats',
+        description: 'These additional Day.js output tokens are included in Knap. Localized presets such as `L` and `LL`, the locale week-year token `gggg`, and named time zones (`z`, `zzz`) require plugins that Knap does not enable.',
+        reference: { label: 'Day.js advanced formats', href: 'https://day.js.org/docs/en/plugin/advanced-format' },
+        columns: ['Token', 'Meaning', 'Output'],
+        rows: [
+          ['`Q`', 'Quarter number', '1–4'],
+          ['`Do`', 'Ordinal day in month', '1st–31st'],
+          ['`k`', 'Hour, midnight as 24', '1–24'],
+          ['`kk`', 'Hour, midnight as 24, padded', '01–24'],
+          ['`X`', 'Unix timestamp in seconds', '1733011200'],
+          ['`x`', 'Unix timestamp in milliseconds', '1733011200000'],
+          ['`w`', 'Week number, locale rules', '1–53'],
+          ['`ww`', 'Week number, locale rules, padded', '01–53'],
+          ['`wo`', 'Ordinal week number, locale rules', '1st–53rd'],
+          ['`W`', 'ISO week number', '1–53'],
+          ['`WW`', 'ISO week number, padded', '01–53'],
+          ['`GGGG`', 'ISO week-numbering year', '2024'],
+        ],
+      },
+    ],
     examples: [
       example({ published: '2024-12-01' }, '{{ published | date:"MMMM D, YYYY" }}', 'December 1, 2024', 'Format a date'),
       example({ published: '12/01/2024' }, '{{ published | date:("YYYY-MM-DD", "MM/DD/YYYY") }}', '2024-12-01', 'Specify the input format'),
+      example({ published: '2024-12-01' }, '{{ published | date:"[Week] WW, GGGG" }}', 'Week 48, 2024', 'ISO week and literal text'),
     ],
   },
   {
     slug: 'date-modify', name: 'date_modify', category: 'Dates and time', summary: 'Add or subtract a date interval.', syntax: ['date_modify:"+1 day"'],
-    parameters: ['Use a signed amount followed by year, month, week, day, hour, minute, or second. Singular and plural units are accepted.'],
-    references: [{ label: 'Day.js date manipulation', href: 'https://day.js.org/docs/en/manipulate/add' }], related: ['date'],
+    parameters: ['Use a signed whole-number amount followed by `year`, `month`, `week`, `day`, `hour`, `minute`, or `second`. Singular and plural units are accepted.'],
+    notes: ['The result uses `YYYY-MM-DD`. Hours, minutes, and seconds can change the date when they cross midnight, but the time is omitted.', 'Chain the `date` filter after `date_modify` to choose another output format.'],
+    related: ['date'],
+    referenceTables: [{
+      title: 'Date modification units',
+      description: 'Use `+` to add or `-` to subtract. These are the Day.js units accepted by Knap; shorthand units, quarters, milliseconds, and decimal amounts are not supported.',
+      reference: { label: 'Day.js date manipulation', href: 'https://day.js.org/docs/en/manipulate/add' },
+      columns: ['Unit', 'Plural', 'Example modifier'],
+      rows: [
+        ['`year`', '`years`', '`+1 year`'],
+        ['`month`', '`months`', '`-2 months`'],
+        ['`week`', '`weeks`', '`+1 week`'],
+        ['`day`', '`days`', '`-3 days`'],
+        ['`hour`', '`hours`', '`+4 hours`'],
+        ['`minute`', '`minutes`', '`-30 minutes`'],
+        ['`second`', '`seconds`', '`+90 seconds`'],
+      ],
+    }],
     examples: [
       example({ published: '2024-12-01' }, '{{ published | date_modify:"+1 year" }}', '2025-12-01', 'Add time'),
       example({ published: '2024-12-01' }, '{{ published | date_modify:"-2 months" }}', '2024-10-01', 'Subtract time'),
+      example({ published: '2024-12-01T22:00:00' }, '{{ published | date_modify:"+4 hours" | date:"MMMM D, YYYY" }}', 'December 2, 2024', 'Cross midnight and format'),
     ],
   },
   {
     slug: 'duration', name: 'duration', category: 'Dates and time', summary: 'Format seconds or an ISO 8601 duration.', syntax: ['duration', 'duration:"H:mm:ss"'],
-    parameters: ['The optional format supports H and HH for hours, m and mm for minutes, and s and ss for seconds.'],
-    notes: ['Without a format, durations of at least one hour use HH:mm:ss; shorter durations use mm:ss.', 'Input may be an ISO 8601 duration or a number of seconds.'], related: ['date'],
+    parameters: ['The optional format supports `H` and `HH` for hours, `m` and `mm` for minutes, and `s` and `ss` for seconds.'],
+    notes: ['Without a format, durations of at least one hour use `HH:mm:ss`; shorter durations use `mm:ss`.', 'Input may be an ISO 8601 duration or a number of seconds.'], related: ['date'],
+    referenceTables: [{
+      title: 'Duration formats',
+      description: 'Knap supports the six tokens below. Hours represent the total duration and can exceed 23; minutes and seconds are the remaining components. Other Day.js duration tokens and square-bracket escaping are not supported.',
+      reference: { label: 'Day.js duration formats', href: 'https://day.js.org/docs/en/durations/format' },
+      columns: ['Token', 'Meaning', 'Output for 3665 seconds'],
+      rows: [
+        ['`H`', 'Total hours', '1'],
+        ['`HH`', 'Total hours, at least two digits', '01'],
+        ['`m`', 'Remaining minutes (0–59)', '1'],
+        ['`mm`', 'Remaining minutes, padded (00–59)', '01'],
+        ['`s`', 'Remaining seconds (0–59)', '5'],
+        ['`ss`', 'Remaining seconds, padded (00–59)', '05'],
+      ],
+    }],
     examples: [
       example({ duration: 'PT1H30M' }, '{{ duration | duration:"HH:mm:ss" }}', '01:30:00', 'ISO 8601 duration'),
       example({ seconds: 3665 }, '{{ seconds | duration:"H:mm:ss" }}', '1:01:05', 'Seconds'),
       example({ duration: 'PT5M30S' }, '{{ duration | duration }}', '05:30', 'Default format'),
+      example({ duration: 'P1DT2H' }, '{{ duration | duration:"HH:mm:ss" }}', '26:00:00', 'More than 24 hours'),
     ],
   },
 
@@ -79,8 +173,8 @@ const docs: FilterDoc[] = [
   { slug: 'pascal', name: 'pascal', category: 'Text', summary: 'Convert text to PascalCase.', syntax: ['pascal'], related: ['camel', 'kebab', 'snake'], examples: [example({ title: 'hello world' }, '{{ title | pascal }}', 'HelloWorld')] },
   {
     slug: 'replace', name: 'replace', category: 'Text', summary: 'Replace one or more strings or regular expressions.', syntax: ['replace:"old":"new"', 'replace:("a":"b", "c":"d")'],
-    parameters: ['Each quoted search value is followed by a colon and its replacement.', 'Regular expressions may include flags, for example "/[aeiou]/g".'],
-    notes: ['Multiple replacements are applied from left to right.', 'Use an empty replacement to remove matching text.', 'Supported regular-expression flags are g, i, m, s, u, and y. Escape template punctuation such as colons or pipes with a backslash when matching it literally.'],
+    parameters: ['Each quoted search value is followed by a colon and its replacement.', 'Regular expressions may include flags, for example `"/[aeiou]/g"`.'],
+    notes: ['Multiple replacements are applied from left to right.', 'Use an empty replacement to remove matching text.', 'Supported regular-expression flags are `g`, `i`, `m`, `s`, `u`, and `y`. Escape template punctuation such as colons or pipes with a backslash when matching it literally.'],
     examples: [
       example({ message: 'hello, world!' }, '{{ message | replace:",":"" }}', 'hello world!', 'Remove text'),
       example({ message: 'hello world' }, '{{ message | replace:"e":"a","o":"0" }}', 'hall0 w0rld', 'Multiple replacements'),
@@ -99,7 +193,7 @@ const docs: FilterDoc[] = [
 
   { slug: 'blockquote', name: 'blockquote', category: 'Markdown', summary: 'Prefix every line as a Markdown blockquote.', syntax: ['blockquote'], examples: [example({ quote: 'First line\nSecond line' }, '{{ quote | blockquote }}', '> First line\n> Second line')] },
   { slug: 'bold', name: 'bold', searchTerms: ['strong', 'emphasis', 'underscore'], category: 'Markdown', summary: 'Wrap text in Markdown bold markers.', syntax: ['bold', 'bold:_'], parameters: ['The default marker is `*`. Pass `_` to use the alternate underscore syntax. The marker is doubled around the value.'], notes: [inlineWhitespace, recursiveMarkdownValues], related: ['italic', 'strike'], examples: [example({ text: 'Important' }, '{{ text | bold }}', '**Important**', 'Asterisks'), example({ text: 'Important' }, '{{ text | bold:_ }}', '__Important__', 'Underscores')] },
-  { slug: 'callout', name: 'callout', category: 'Markdown', summary: 'Create a callout.', syntax: ['callout', 'callout:("info", "Title", false)'], parameters: ['Parameters are callout type, optional title, and optional fold state.', 'The type defaults to info and the title defaults to empty.', 'Use true for collapsed, false for expanded, or omit the fold state for a non-foldable callout.'], notes: ["Output uses Obsidian's blockquote-based callout syntax. Callouts are also known as alerts or admonitions in other Markdown systems."], related: ['blockquote'], examples: [example({ message: 'Remember this' }, '{{ message | callout:("tip", "Note") }}', '> [!tip] Note\n> Remember this', 'Type and title'), example({ message: 'More details' }, '{{ message | callout:("info", "Details", true) }}', '> [!info]- Details\n> More details', 'Collapsed callout')] },
+  { slug: 'callout', name: 'callout', category: 'Markdown', summary: 'Create a callout.', syntax: ['callout', 'callout:("info", "Title", false)'], parameters: ['Parameters are callout type, optional title, and optional fold state.', 'The type defaults to `info` and the title defaults to empty.', 'Use `true` for collapsed, `false` for expanded, or omit the fold state for a non-foldable callout.'], notes: ["Output uses Obsidian's blockquote-based callout syntax. Callouts are also known as alerts or admonitions in other Markdown systems."], related: ['blockquote'], examples: [example({ message: 'Remember this' }, '{{ message | callout:("tip", "Note") }}', '> [!tip] Note\n> Remember this', 'Type and title'), example({ message: 'More details' }, '{{ message | callout:("info", "Details", true) }}', '> [!info]- Details\n> More details', 'Collapsed callout')] },
   {
     slug: 'code', name: 'code', category: 'Markdown', summary: 'Format inline code or a fenced code block.', syntax: ['code', 'code:"typescript"'],
     parameters: ['An optional language creates a fenced code block and adds the language after the opening fence.'],
@@ -108,10 +202,10 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'code-block', name: 'code_block', category: 'Markdown', summary: 'Create a fenced code block.', syntax: ['code_block', 'code_block:"typescript"'],
-    searchTerms: ['fenced code', 'code fence', 'syntax highlighting'], parameters: ['The optional language is added after the opening fence.'], notes: [recursiveMarkdownValues], related: ['code'],
+    searchTerms: ['fenced code', 'code fence', 'syntax highlighting'], parameters: ['Use this filter to explicitly create a code block. The `code` filter defaults to inline code using backticks, and automatically creates a fenced code block for multiline inputs or when a language is specified.', 'The optional language is added after the opening fence.'], notes: [recursiveMarkdownValues], related: ['code'],
     examples: [example({ source: 'const answer = 42' }, '{{ source | code_block:"typescript" }}', '```typescript\nconst answer = 42\n```')],
   },
-  { slug: 'comment', name: 'comment', searchTerms: ['hidden text', 'percent'], category: 'Markdown', summary: 'Wrap text in comment markers.', syntax: ['comment'], notes: ['Multiline comments put the opening and closing %% markers on separate lines.', inlineWhitespace, recursiveMarkdownValues], examples: [example({ note: 'Hidden note' }, '{{ note | comment }}', '%%Hidden note%%')] },
+  { slug: 'comment', name: 'comment', searchTerms: ['hidden text', 'percent'], category: 'Markdown', summary: 'Wrap text in comment markers.', syntax: ['comment'], notes: ['Multiline comments put the opening and closing `%%` markers on separate lines.', inlineWhitespace, recursiveMarkdownValues], examples: [example({ note: 'Hidden note' }, '{{ note | comment }}', '%%Hidden note%%')] },
   { slug: 'embed', name: 'embed', searchTerms: ['transclusion', 'attachment', 'wiki embed'], category: 'Markdown', summary: 'Create an embedded wiki reference.', syntax: ['embed', 'embed:"Preview"'], parameters: ['The optional parameter sets an alias for string and array inputs.'], notes: ['For object inputs, keys are targets and values are aliases.'], related: ['image', 'wikilink'], examples: [example({ target: 'diagram.png' }, '{{ target | embed }}', '![[diagram.png]]', 'File'), example({ target: 'Project Atlas' }, '{{ target | embed:"Preview" }}', '![[Project Atlas|Preview]]', 'Alias'), example({ targets: ['one.md', 'two.md'] }, '{{ targets | embed }}', '["![[one.md]]","![[two.md]]"]', 'Array input')] },
   { slug: 'escape-md', name: 'escape_md', searchTerms: ['literal markdown', 'backslash', 'special characters'], category: 'Markdown', summary: 'Escape Markdown punctuation so text renders literally.', syntax: ['escape_md'], notes: ['Every ASCII punctuation character supported by Markdown backslash escapes is prefixed with a backslash.', 'Existing backslashes are escaped so they remain visible.', recursiveMarkdownValues], related: ['code', 'strip_md'], examples: [example({ text: '# Draft *title*' }, '{{ text | escape_md }}', '\\# Draft \\*title\\*')] },
   {
@@ -124,7 +218,7 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'fragment-link', name: 'fragment_link', category: 'Markdown', summary: 'Add a source URL with a text-fragment anchor to highlights.', syntax: ['fragment_link:"https://example.com"', 'fragment_link:"Source:https://example.com"'],
-    parameters: ['Pass a source URL. Prefix it with custom link text and a colon to replace the default “link” text.'], related: ['link'],
+    parameters: ['Pass a source URL. Prefix it with custom link text and a colon to replace the default `link` text.'], related: ['link'],
     examples: [
       example({ highlights: ['Selected text', 'Another passage'] }, '{{ highlights | fragment_link:"https://example.com" }}', '["Selected text [link](https://example.com#:~:text=Selected%20text)","Another passage [link](https://example.com#:~:text=Another%20passage)"]'),
       example({ highlights: ['Selected text', 'Another passage'] }, '{{ highlights | fragment_link:"Source:https://example.com" }}', '["Selected text [Source](https://example.com#:~:text=Selected%20text)","Another passage [Source](https://example.com#:~:text=Another%20passage)"]', 'Custom link text'),
@@ -145,7 +239,7 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'hr', name: 'hr', category: 'Markdown', summary: 'Place a horizontal rule around text.', syntax: ['hr', 'hr:before', 'hr:both'],
-    searchTerms: ['horizontal rule', 'thematic break', 'separator'], parameters: ['Use after (the default), before, or both to choose the rule position.'], notes: ['The filter emits --- and separates it from content with a blank line.', recursiveMarkdownValues],
+    searchTerms: ['horizontal rule', 'thematic break', 'separator'], parameters: ['Use `after` (the default), `before`, or `both` to choose the rule position.'], notes: ['The filter emits `---` and separates it from content with a blank line.', recursiveMarkdownValues],
     examples: [example({ text: 'Section end' }, '{{ text | hr }}', 'Section end\n\n---', 'After'), example({ text: 'Section start' }, '{{ text | hr:before }}', '---\n\nSection start', 'Before')],
   },
   {
@@ -171,7 +265,7 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'list', name: 'list', category: 'Markdown', summary: 'Convert a value or array to a Markdown list.', syntax: ['list', 'list:numbered', 'list:task', 'list:numbered-task'],
-    parameters: ['Choose bullet (default), numbered, task, or numbered-task.'], related: ['table'],
+    parameters: ['Choose `bullet` (default), `numbered`, `task`, or `numbered-task`.'], related: ['table'],
     examples: [
       example({ items: ['Apple', 'Pear'] }, '{{ items | list }}', '- Apple\n- Pear', 'Bullet list'),
       example({ items: ['Apple', 'Pear'] }, '{{ items | list:numbered }}', '1. Apple\n2. Pear', 'Numbered list'),
@@ -179,13 +273,13 @@ const docs: FilterDoc[] = [
       example({ items: ['Write draft', 'Review edits'] }, '{{ items | list:numbered-task }}', '1. [ ] Write draft\n2. [ ] Review edits', 'Numbered task list'),
     ],
   },
-  { slug: 'math', name: 'math', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Format inline math or a math block.', syntax: ['math'], notes: ['Multiline input automatically becomes a block delimited by $$.', inlineWhitespace, recursiveMarkdownValues], related: ['math_block'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math }}', '$x^2 + y^2$')] },
-  { slug: 'math-block', name: 'math_block', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Create a block math expression.', syntax: ['math_block'], notes: [recursiveMarkdownValues], related: ['math'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math_block }}', '$$\nx^2 + y^2\n$$')] },
+  { slug: 'math', name: 'math', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Format inline math or a math block.', syntax: ['math'], notes: ['Multiline input automatically becomes a block delimited by `$$`.', inlineWhitespace, recursiveMarkdownValues], related: ['math_block'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math }}', '$x^2 + y^2$')] },
+  { slug: 'math-block', name: 'math_block', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Create a block math expression.', syntax: ['math_block'], notes: ['Use this filter to explicitly create a math block. The `math` filter defaults to inline math using a single `$`, and automatically uses `$$` block fences for multiline inputs.', recursiveMarkdownValues], related: ['math'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math_block }}', '$$\nx^2 + y^2\n$$')] },
   { slug: 'strike', name: 'strike', searchTerms: ['strikethrough', 'deleted'], category: 'Markdown', summary: 'Wrap text in Markdown strikethrough markers.', syntax: ['strike'], notes: [inlineWhitespace, recursiveMarkdownValues], related: ['bold', 'italic', 'highlight'], examples: [example({ text: 'Removed' }, '{{ text | strike }}', '~~Removed~~')] },
   {
     slug: 'table', name: 'table', category: 'Markdown', summary: 'Convert arrays or objects to a compact Markdown table.', syntax: ['table', 'table:("Column 1", "Column 2")'],
     parameters: ['Optional parameters set column headers.'],
-    notes: ['Arrays of objects use object keys as headers. Arrays of arrays use each nested array as a row. Simple arrays use a single “Value” column unless custom headers are supplied.'], related: ['list', 'table_pretty'],
+    notes: ['Arrays of objects use object keys as headers. Arrays of arrays use each nested array as a row. Simple arrays use a single `Value` column unless custom headers are supplied.'], related: ['list', 'table_pretty'],
     examples: [
       example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | table }}', '| name | role |\n| - | - |\n| Ada | Engineer |\n| Lin | Designer |', 'Array of objects'),
       example({ names: ['Ada', 'Lin'] }, '{{ names | table }}', '| Value |\n| - |\n| Ada |\n| Lin |', 'Simple array'),
@@ -205,16 +299,16 @@ const docs: FilterDoc[] = [
   {
     slug: 'wikilink', name: 'wikilink', category: 'Markdown', summary: 'Create wikilinks from strings, arrays, or objects.', syntax: ['wikilink', 'wikilink:"Alias"'],
     parameters: ['The optional parameter sets an alias for string and array inputs.'],
-    notes: ['Output uses Obsidian-compatible [[target|alias]] syntax. Wikilinks are also commonly called internal links.', 'For object inputs, keys are note names and values are aliases.'], related: ['link'],
+    notes: ['Output uses Obsidian-compatible `[[target|alias]]` syntax. Wikilinks are also commonly called internal links.', 'For object inputs, keys are note names and values are aliases.'], related: ['link'],
     examples: [
       example({ page: 'Project Atlas' }, '{{ page | wikilink:"Atlas" }}', '[[Project Atlas|Atlas]]', 'String with alias'),
       example({ pages: ['Project Atlas', 'Daily Notes'] }, '{{ pages | wikilink }}', '["[[Project Atlas]]","[[Daily Notes]]"]', 'Array input'),
       example({ pages: { 'Project Atlas': 'Atlas', 'Daily Notes': 'Journal' } }, '{{ pages | wikilink }}', '["[[Project Atlas|Atlas]]","[[Daily Notes|Journal]]"]', 'Object input'),
     ],
   },
-  { slug: 'yaml', name: 'yaml', category: 'Markdown', summary: 'Quote a value safely for a YAML scalar.', syntax: ['yaml'], notes: ['Canonical numbers, booleans, and null are preserved. Ambiguous strings are quoted.'], examples: [example({ title: 'A: value #1' }, '{{ title | yaml }}', '"A: value #1"')] },
+  { slug: 'yaml', name: 'yaml', category: 'Markdown', summary: 'Quote a value safely for a YAML scalar.', syntax: ['yaml'], notes: ['Canonical numbers, booleans, and `null` are preserved. Ambiguous strings are quoted.'], examples: [example({ title: 'A: value #1' }, '{{ title | yaml }}', '"A: value #1"')] },
 
-  { slug: 'calc', name: 'calc', category: 'Numbers', summary: 'Apply a simple arithmetic operation to a number.', syntax: ['calc:"+10"', 'calc:"*2"', 'calc:"**3"'], parameters: ['Supported operators are +, -, *, /, **, and ^.'], notes: ['Non-numeric input is returned unchanged.'], related: ['round', 'number_format'], examples: [example({ count: 5 }, '{{ count | calc:"+10" }}', '15', 'Addition'), example({ count: 2 }, '{{ count | calc:"**3" }}', '8', 'Exponentiation')] },
+  { slug: 'calc', name: 'calc', category: 'Numbers', summary: 'Apply a simple arithmetic operation to a number.', syntax: ['calc:"+10"', 'calc:"*2"', 'calc:"**3"'], parameters: ['Supported operators are `+`, `-`, `*`, `/`, `**`, and `^`.'], notes: ['Non-numeric input is returned unchanged.'], related: ['round', 'number_format'], examples: [example({ count: 5 }, '{{ count | calc:"+10" }}', '15', 'Addition'), example({ count: 2 }, '{{ count | calc:"**3" }}', '8', 'Exponentiation')] },
   {
     slug: 'number-format', name: 'number_format', category: 'Numbers', summary: 'Add thousands separators and optional decimal places.', syntax: ['number_format', 'number_format:2', 'number_format:(2, ",", ".")'],
     parameters: ['Parameters set decimal places, the decimal separator, and the thousands separator, in that order.'],
@@ -232,16 +326,16 @@ const docs: FilterDoc[] = [
   { slug: 'join', name: 'join', category: 'Collections', summary: 'Join array items with an optional separator.', syntax: ['join', 'join:", "'], parameters: ['The default separator is a comma. Escaped newlines are supported.'], related: ['split'], examples: [example({ tags: ['notes', 'ideas', 'books'] }, '{{ tags | join:", " }}', 'notes, ideas, books')] },
   { slug: 'last', name: 'last', category: 'Collections', summary: 'Return the last item in an array.', syntax: ['last'], related: ['first', 'slice'], examples: [example({ items: ['a', 'b', 'c'] }, '{{ items | last }}', 'c')] },
   { slug: 'length', name: 'length', category: 'Collections', summary: 'Count string characters, array items, or object keys.', syntax: ['length'], examples: [example({ tags: ['notes', 'ideas', 'books'] }, '{{ tags | length }}', '3', 'Array length'), example({ title: 'Knap' }, '{{ title | length }}', '4', 'String length'), example({ author: { name: 'Ada', role: 'Writer' } }, '{{ author | length }}', '2', 'Object length')] },
-  { slug: 'map', name: 'map', category: 'Collections', summary: 'Map array items with a small arrow-function expression.', syntax: ['map:item => item.name', 'map:item => item.nested.name', 'map:item => ({name: item.name})', 'map:item => "prefix/${item}"'], parameters: ['The expression can select nested properties, construct a small object, or interpolate an item into a string literal.'], notes: ['Built-in filters cannot be called inside a map expression. Chain template after map when you need to render the mapped results.'], related: ['template'], examples: [example({ people: [{ name: 'Ada' }, { name: 'Lin' }] }, '{{ people | map:person => person.name }}', '["Ada","Lin"]', 'Select a property'), example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | map:person => ({name: person.name, role: person.role}) }}', '[{"name":"Ada","role":"Engineer"},{"name":"Lin","role":"Designer"}]', 'Construct objects'), example({ genres: ['rock', 'pop'] }, '{{ genres | map:item => "genres/${item}" }}', '["genres/rock","genres/pop"]', 'Build strings')] },
+  { slug: 'map', name: 'map', category: 'Collections', summary: 'Map array items with a small arrow-function expression.', syntax: ['map:item => item.name', 'map:item => item.nested.name', 'map:item => ({name: item.name})', 'map:item => "prefix/${item}"'], parameters: ['The expression can select nested properties, construct a small object, or interpolate an item into a string literal.'], notes: ['Built-in filters cannot be called inside a `map` expression. Chain `template` after `map` when you need to render the mapped results.'], related: ['template'], examples: [example({ people: [{ name: 'Ada' }, { name: 'Lin' }] }, '{{ people | map:person => person.name }}', '["Ada","Lin"]', 'Select a property'), example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | map:person => ({name: person.name, role: person.role}) }}', '[{"name":"Ada","role":"Engineer"},{"name":"Lin","role":"Designer"}]', 'Construct objects'), example({ genres: ['rock', 'pop'] }, '{{ genres | map:item => "genres/${item}" }}', '["genres/rock","genres/pop"]', 'Build strings')] },
   { slug: 'merge', name: 'merge', category: 'Collections', summary: 'Append one or more values to an array.', syntax: ['merge:"value"', 'merge:("a", "b")'], notes: ['Quoted values may contain commas.'], related: ['unique'], examples: [example({ tags: ['notes', 'ideas'] }, '{{ tags | merge:"books" }}', '["notes","ideas","books"]', 'Append one value'), example({ tags: ['notes', 'drafts'] }, '{{ tags | merge:("ideas", "books") }}', '["notes","drafts","ideas","books"]', 'Append multiple values')] },
   { slug: 'nth', name: 'nth', category: 'Collections', summary: 'Select positions from an array with nth-pattern syntax.', syntax: ['nth:3', 'nth:2n', 'nth:n+3', 'nth:2,3:4'], parameters: ['Indexes are one-based. Patterns support a single position, every nth item, an offset, or positions within repeating groups.'], related: ['first', 'last', 'slice'], examples: [example({ items: ['a', 'b', 'c', 'd', 'e', 'f'] }, '{{ items | nth:2n }}', '["b","d","f"]', 'Every nth item'), example({ items: [1, 2, 3, 4, 5, 6, 7, 8] }, '{{ items | nth:2,3:4 }}', '[2,3,6,7]', 'Repeating groups')] },
   { slug: 'object', name: 'object', category: 'Collections', summary: 'Convert an object to keys, values, or key-value pairs.', syntax: ['object:"keys"', 'object:"values"', 'object:"array"'], parameters: ['A mode parameter is required: `keys`, `values`, or `array`. Bare and parenthesized spellings remain supported.'], examples: [example({ person: { name: 'Ada', role: 'Writer' } }, '{{ person | object:"keys" }}', '["name","role"]', 'Keys'), example({ person: { name: 'Ada', role: 'Writer' } }, '{{ person | object:"values" }}', '["Ada","Writer"]', 'Values'), example({ person: { name: 'Ada', role: 'Writer' } }, '{{ person | object:"array" }}', '[["name","Ada"],["role","Writer"]]', 'Key-value pairs')] },
   { slug: 'parse-json', name: 'parse_json', searchTerms: ['decode json', 'json array', 'json object'], category: 'Collections', summary: 'Parse JSON text into a typed template value.', syntax: ['parse_json'], notes: ['Invalid JSON is returned unchanged with a nonfatal warning.', 'Values that are already typed are returned unchanged.', 'Collection-aware filters recognize serialized arrays and objects automatically, so ordinary collection chains do not require `parse_json`.'], related: ['object'], examples: [example({ value: '["one","two"]' }, '{{ value | parse_json | join:", " }}', 'one, two')] },
   { slug: 'reverse', name: 'reverse', category: 'Collections', summary: 'Reverse a string, array, or object entry order.', syntax: ['reverse'], related: ['slice'], examples: [example({ word: 'abc' }, '{{ word | reverse }}', 'cba', 'String'), example({ items: ['a', 'b', 'c'] }, '{{ items | reverse }}', '["c","b","a"]', 'Array'), example({ values: { first: 1, second: 2 } }, '{{ values | reverse }}', '{"second":2,"first":1}', 'Object')] },
   { slug: 'slice', name: 'slice', category: 'Collections', summary: 'Extract part of a string or array.', syntax: ['slice:1', 'slice:1,4'], parameters: ['The first index is inclusive and the second is exclusive. Negative indexes count from the end.', 'With one index, the slice continues to the end. A negative second index excludes items from the end.'], related: ['first', 'last'], examples: [example({ word: 'hello' }, '{{ word | slice:1,4 }}', 'ell', 'String range'), example({ items: ['a', 'b', 'c', 'd'] }, '{{ items | slice:1,3 }}', '["b","c"]', 'Array range'), example({ word: 'hello' }, '{{ word | slice:-3 }}', 'llo', 'Negative start'), example({ word: 'hello' }, '{{ word | slice:0,-2 }}', 'hel', 'Negative end')] },
-  { slug: 'sort', name: 'sort', category: 'Collections', summary: 'Sort an array by value or object property.', syntax: ['sort', 'sort:"desc"', 'sort:"name"', 'sort:("name", "desc")'], parameters: ['Arrays sort in ascending order by default. Pass `desc` to reverse the direction.', 'Pass a property name to sort objects by that property. A dotted path selects a nested property.', 'With both a property and direction, wrap the parameters in parentheses.'], notes: ['Numbers are compared numerically. Missing and null property values remain at the end.', 'Serialized arrays and objects produced by another filter are recognized automatically.'], related: ['reverse'], examples: [example({ values: [10, 2, 1] }, '{{ values | sort }}', '[1,2,10]', 'Numbers'), example({ values: ['a', 'c', 'b'] }, '{{ values | sort:"desc" }}', '["c","b","a"]', 'Descending'), example({ people: [{ name: 'Lin' }, { name: 'Ada' }] }, '{{ people | sort:"name" }}', '[{"name":"Ada"},{"name":"Lin"}]', 'Object property')] },
+  { slug: 'sort', name: 'sort', category: 'Collections', summary: 'Sort an array by value or object property.', syntax: ['sort', 'sort:"desc"', 'sort:"name"', 'sort:("name", "desc")'], parameters: ['Arrays sort in ascending order by default. Pass `desc` to reverse the direction.', 'Pass a property name to sort objects by that property. A dotted path selects a nested property.', 'With both a property and direction, wrap the parameters in parentheses.'], notes: ['Numbers are compared numerically. Missing and `null` property values remain at the end.', 'Serialized arrays and objects produced by another filter are recognized automatically.'], related: ['reverse'], examples: [example({ values: [10, 2, 1] }, '{{ values | sort }}', '[1,2,10]', 'Numbers'), example({ values: ['a', 'c', 'b'] }, '{{ values | sort:"desc" }}', '["c","b","a"]', 'Descending'), example({ people: [{ name: 'Lin' }, { name: 'Ada' }] }, '{{ people | sort:"name" }}', '[{"name":"Ada"},{"name":"Lin"}]', 'Object property')] },
   { slug: 'split', name: 'split', category: 'Collections', summary: 'Split a string into a JSON array.', syntax: ['split', 'split:","', 'split:[0-9]'], parameters: ['Without a separator, the value is split into characters. The separator may be a regular-expression pattern.'], related: ['join'], examples: [example({ value: 'a,b,c' }, '{{ value | split:"," }}', '["a","b","c"]', 'Separator'), example({ value: 'abc' }, '{{ value | split }}', '["a","b","c"]', 'Characters'), example({ value: 'a1b2c' }, '{{ value | split:[0-9] }}', '["a","b","c"]', 'Regular expression')] },
-  { slug: 'template', name: 'template', category: 'Collections', summary: 'Render an object or each array item with a small ${property} template.', syntax: ['template:"${name}"'], parameters: ['The template parameter can reference nested object properties. Array items are separated by a blank line.', 'Use ${str} for plain strings, including strings produced by map.'], related: ['map'], examples: [example({ person: { name: 'Ada', role: 'Engineer' } }, '{{ person | template:"${name} — ${role}" }}', 'Ada — Engineer', 'Object'), example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | template:"${name} — ${role}" }}', 'Ada — Engineer\n\nLin — Designer', 'Array of objects'), example({ values: ['rock', 'pop'] }, '{{ values | template:"- ${str}" }}', '- rock\n\n- pop', 'Strings')] },
+  { slug: 'template', name: 'template', category: 'Collections', summary: 'Render an object or each array item with a small ${property} template.', syntax: ['template:"${name}"'], parameters: ['The template parameter can reference nested object properties. Array items are separated by a blank line.', 'Use `${str}` for plain strings, including strings produced by `map`.'], related: ['map'], examples: [example({ person: { name: 'Ada', role: 'Engineer' } }, '{{ person | template:"${name} — ${role}" }}', 'Ada — Engineer', 'Object'), example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | template:"${name} — ${role}" }}', 'Ada — Engineer\n\nLin — Designer', 'Array of objects'), example({ values: ['rock', 'pop'] }, '{{ values | template:"- ${str}" }}', '- rock\n\n- pop', 'Strings')] },
   { slug: 'unique', name: 'unique', category: 'Collections', summary: 'Remove duplicate values from arrays or objects.', syntax: ['unique'], notes: ['Arrays of objects are compared by value. For objects, duplicate values are removed while the last matching key is retained. Strings are returned unchanged.'], related: ['merge'], examples: [example({ tags: ['notes', 'ideas', 'notes'] }, '{{ tags | unique }}', '["notes","ideas"]', 'Primitive values'), example({ items: [{ a: 1 }, { b: 2 }, { a: 1 }] }, '{{ items | unique }}', '[{"a":1},{"b":2}]', 'Objects in an array'), example({ values: { first: 'same', second: 'different', third: 'same' } }, '{{ values | unique }}', '{"second":"different","third":"same"}', 'Duplicate object values')] },
 
   { slug: 'remove-attr', name: 'remove_attr', category: 'HTML cleanup', summary: 'Remove selected attributes from HTML tags.', syntax: ['remove_attr:"class"', 'remove_attr:("class", "style")'], related: ['strip_attr'], examples: [example({ html: '<div class="card" id="intro">Hello</div>' }, '{{ html | remove_attr:"class" }}', '<div id="intro">Hello</div>', 'One attribute'), example({ html: '<div class="card" id="intro" style="color:red">Hello</div>' }, '{{ html | remove_attr:("class", "style") }}', '<div id="intro">Hello</div>', 'Multiple attributes')] },
@@ -251,8 +345,8 @@ const docs: FilterDoc[] = [
   { slug: 'strip-md', name: 'strip_md', aliases: ['stripmd'], category: 'HTML cleanup', summary: 'Remove Markdown formatting while keeping readable text.', syntax: ['strip_md'], notes: ['Removes formatting including emphasis, highlights, headings, code, blockquotes, lists, and wikilinks.', 'Images, tables, footnote references, fenced code blocks, URLs, and HTML tags are removed rather than converted to visible text.'], related: ['strip_tags'], examples: [example({ text: '**Bold** and [linked](https://example.com)' }, '{{ text | strip_md }}', 'Bold and linked', 'Inline formatting'), example({ text: '# Heading\n\n> Quoted text' }, '{{ text | strip_md }}', 'Heading\n\nQuoted text', 'Block formatting')] },
   { slug: 'strip-tags', name: 'strip_tags', category: 'HTML cleanup', summary: 'Remove all HTML tags except an optional allowlist.', syntax: ['strip_tags', 'strip_tags:"b"'], notes: ['Text inside removed tags is preserved. Common HTML entities are decoded.'], related: ['remove_tags', 'strip_md'], examples: [example({ html: '<p>Hello <b>world</b>!</p>' }, '{{ html | strip_tags }}', 'Hello world!', 'Remove every tag'), example({ html: '<p>Hello <b>world</b>!</p>' }, '{{ html | strip_tags:"b" }}', 'Hello <b>world</b>!', 'Keep selected tags')] },
 
-  { slug: 'html-to-json', name: 'html_to_json', category: 'HTML preset', summary: 'Convert an HTML fragment into a structured JSON tree.', syntax: ['html_to_json'], environment: 'html', notes: ['Requires browser-compatible DOM globals and the knap/html preset.'], related: ['remove_html'], examples: [{ ...example({ html: '<p>Hello</p>' }, '{{ html | html_to_json }}', '{"type":"element","tag":"p","children":[{"type":"text","content":"Hello"}]}'), testable: false }] },
-  { slug: 'remove-html', name: 'remove_html', category: 'HTML preset', summary: 'Remove selected HTML elements and their contents.', syntax: ['remove_html:"script"', 'remove_html:("script", ".ad", "#promo")'], environment: 'html', parameters: ['Selectors may be tag names, classes, IDs, or other CSS selectors.'], notes: ['Unlike remove_tags, this removes the matched element and everything inside it.', 'Requires browser-compatible DOM globals and the knap/html preset.'], related: ['html_to_json', 'remove_tags'], examples: [{ ...example({ html: '<p>Keep</p><script>remove()</script>' }, '{{ html | remove_html:"script" }}', '<p>Keep</p>', 'Tag selector'), testable: false }, { ...example({ html: '<main><p>Keep</p><aside class="ad">Remove</aside></main>' }, '{{ html | remove_html:".ad" }}', '<main xmlns="http://www.w3.org/1999/xhtml"><p>Keep</p></main>', 'Class selector'), testable: false }] },
+  { slug: 'html-to-json', name: 'html_to_json', category: 'HTML preset', summary: 'Convert an HTML fragment into a structured JSON tree.', syntax: ['html_to_json'], environment: 'html', notes: ['Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['remove_html'], examples: [{ ...example({ html: '<p>Hello</p>' }, '{{ html | html_to_json }}', '{"type":"element","tag":"p","children":[{"type":"text","content":"Hello"}]}'), testable: false }] },
+  { slug: 'remove-html', name: 'remove_html', category: 'HTML preset', summary: 'Remove selected HTML elements and their contents.', syntax: ['remove_html:"script"', 'remove_html:("script", ".ad", "#promo")'], environment: 'html', parameters: ['Selectors may be tag names, classes, IDs, or other CSS selectors.'], notes: ['Unlike `remove_tags`, this removes the matched element and everything inside it.', 'Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['html_to_json', 'remove_tags'], examples: [{ ...example({ html: '<p>Keep</p><script>remove()</script>' }, '{{ html | remove_html:"script" }}', '<p>Keep</p>', 'Tag selector'), testable: false }, { ...example({ html: '<main><p>Keep</p><aside class="ad">Remove</aside></main>' }, '{{ html | remove_html:".ad" }}', '<main xmlns="http://www.w3.org/1999/xhtml"><p>Keep</p></main>', 'Class selector'), testable: false }] },
 ];
 
 export const filterDocs = docs.map((filter) => ({

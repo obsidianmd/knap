@@ -1,14 +1,7 @@
+import { normalizeParamList } from '../parser-utils';
+
 export const remove_html = (html: string, params: string = ''): string => {
-	// Remove outer parentheses if present
-	params = params.replace(/^\((.*)\)$/, '$1');
-
-	// Remove any surrounding quotes (both single and double) and unescape internal quotes
-	params = params.replace(/^(['"])([\s\S]*)\1$/, '$2').replace(/\\(['"])/g, '$1');
-
-	// Split by comma, but respect both single and double quoted strings
-	const elementsToRemove = params.split(/,(?=(?:(?:[^"']*["'][^"']*["'])*[^"']*$))/)
-		.map(elem => elem.trim())
-		.filter(Boolean);
+	const elementsToRemove = normalizeParamList(params).filter(Boolean);
 
 	// If no elements specified, return the original HTML
 	if (elementsToRemove.length === 0) {

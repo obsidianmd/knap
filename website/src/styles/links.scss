@@ -5,13 +5,18 @@
   text-decoration-color: var(--link-decoration-color, var(--faint));
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
 }
 
 // Color links in body copy, including Markdown-generated paragraphs, lists, and tables.
-@each $section, $color, $underline in (
-  ("variables", "blue", #205ea6),
-  ("filters", "orange", #bc5215),
-  ("logic", "green", #66800b)
+@each $section, $color, $underline, $hover in (
+  ("variables", "blue", #205ea6, #66a0c8),
+  ("filters", "orange", #bc5215, #ec8b49),
+  ("logic", "green", #66800b, #a0af54)
 ) {
   :where(.lede, .markdown-doc :is(p, li, td, th), .doc-section :is(p, li, td, th)) a:is(
     [href="/#{$section}"],
@@ -22,5 +27,9 @@
   ) {
     --link-color: var(--#{$color});
     --link-decoration-color: #{$underline};
+
+    &:hover {
+      --link-color: #{$hover};
+    }
   }
 }

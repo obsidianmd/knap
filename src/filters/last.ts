@@ -7,7 +7,8 @@ export const last = (str: string): string => {
 	try {
 		const array = JSON.parse(str);
 		if (Array.isArray(array) && array.length > 0) {
-			return array[array.length - 1].toString();
+			const value = array[array.length - 1];
+			return value == null ? '' : value.toString();
 		}
 	} catch {
 		// Plain strings are valid pass-through values.

@@ -54,7 +54,7 @@ export const slice = (str: string, param?: string, context?: FilterContext): str
 	if (Array.isArray(value)) {
 		const slicedArray = value.slice(start, end);
 		if (slicedArray.length === 1) {
-			return slicedArray[0].toString();
+			return slicedArray[0] == null ? '' : slicedArray[0].toString();
 		}
 		return JSON.stringify(slicedArray);
 	} else {

@@ -28,4 +28,8 @@ describe('first filter', () => {
 		const result = first('[{"a":1},{"b":2}]');
 		expect(result).toBe('[object Object]');
 	});
+
+	test('renders a selected null as empty text', () => {
+		expect(first('[null,"x"]')).toBe('');
+	});
 });

@@ -1,11 +1,7 @@
+import { normalizeParamList } from '../parser-utils';
+
 export const strip_attr = (html: string, keepAttributes: string = ''): string => {
-	// Remove outer parentheses if present
-	keepAttributes = keepAttributes.replace(/^\((.*)\)$/, '$1');
-
-	// Remove any surrounding quotes (both single and double) and unescape internal quotes
-	keepAttributes = keepAttributes.replace(/^(['"])([\s\S]*)\1$/, '$2').replace(/\\(['"])/g, '$1');
-
-	const keepAttributesList = keepAttributes.split(',').map(attr => attr.trim()).filter(Boolean);
+	const keepAttributesList = normalizeParamList(keepAttributes).filter(Boolean);
 
 	return html.replace(/<(\w+)\s+(?:[^>]*?)>/g, (match, tag) => {
 		if (keepAttributesList.length === 0) {

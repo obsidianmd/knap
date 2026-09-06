@@ -14,6 +14,11 @@ describe('remove_tags filter', () => {
 		expect(result).not.toContain('<em>');
 	});
 
+	test.each(['b, em', '"b, em"', '"b", "em"', '("b", "em")'])
+		('accepts equivalent argument spelling %s', params => {
+			expect(remove_tags('<p><b>one</b><em>two</em></p>', params)).toBe('<p>onetwo</p>');
+		});
+
 	test('preserves unspecified tags', () => {
 		const result = remove_tags('<div><p><b>text</b></p></div>', 'b');
 		expect(result).toContain('<div>');

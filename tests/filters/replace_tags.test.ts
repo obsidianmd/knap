@@ -7,6 +7,15 @@ describe('replace_tags filter', () => {
 		expect(result).toBe('<h2>text</h2>');
 	});
 
+	test.each(['"strong":"h2"', 'strong:h2', '("strong":"h2")', '("strong", "h2")'])
+		('accepts equivalent argument spelling %s', params => {
+			expect(replace_tags('<strong>text</strong>', params)).toBe('<h2>text</h2>');
+		});
+
+	test('preserves source-only tag removal', () => {
+		expect(replace_tags('<strong>text</strong>', 'strong')).toBe('text');
+	});
+
 	test('preserves content and attributes', () => {
 		const result = replace_tags('<strong class="bold">text</strong>', '"strong":"em"');
 		expect(result).toContain('<em');

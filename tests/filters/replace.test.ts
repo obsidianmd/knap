@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { createEngine } from '../../src/engine';
 import { replace, validateReplaceParams } from '../../src/filters/replace';
-import { standardFilterMetadata, standardFilters } from '../../src/filters';
+import { applyFiltersWithRegistry, standardFilterMetadata, standardFilters } from '../../src/filters';
 import { parse, validateFilters } from '../../src/parser';
 
 const engine = createEngine({ filters: standardFilters });
@@ -59,6 +59,10 @@ describe('replace filter', () => {
 		expect(replace('hello:world', '"\\:":"-"')).toBe('hello-world');
 	});
 
+	test('escapes pipes in literal search strings', () => {
+		expect(replace('a|b', '"a|b":"c"')).toBe('c');
+	});
+
 	test('handles apostrophes and escaped commas inside double quotes', () => {
 		expect(replace("don't stop", '"don\'t":"do not"')).toBe('do not stop');
 		expect(replace('a,b and a,b', '"a\\,b":"x"')).toBe('x and x');
@@ -96,6 +100,19 @@ describe('replace filter via renderer', () => {
 			variables: { msg: "don't stop" },
 		});
 		expect(result).toEqual({ output: 'do not stop', errors: [], warnings: [] });
+	});
+
+	test('replaces literal pipes through both execution paths', async () => {
+		await expect(engine.renderOrThrow('{{msg|replace:"a|b":"c"}}', {
+			variables: { msg: 'a|b' },
+		})).resolves.toBe('c');
+
+		expect(applyFiltersWithRegistry(
+			'a|b',
+			'replace:"a|b":"c"',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('c');
 	});
 
 	test('preserves regex escapes through the template parser', async () => {

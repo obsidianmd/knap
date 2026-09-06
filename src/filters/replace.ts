@@ -104,7 +104,7 @@ export const replace = (str: string, param?: string, context?: FilterContext): s
 		}
 
 		// Escape special regex characters for literal string replacement
-		const searchRegex = new RegExp(search.replace(/([.*+?^${}()[\]\\])/g, '\\$1'), 'g');
+		const searchRegex = new RegExp(search.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g');
 		return acc.replace(searchRegex, replace);
 	}, str);
 };
