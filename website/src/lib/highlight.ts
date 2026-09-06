@@ -20,7 +20,7 @@ function tokenClass(token: string, language: CodeLanguage) {
   if (/^(true|false|null|undefined)$/.test(token)) return 'syn-constant';
   if (/^(if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)$/.test(token)) return 'syn-keyword';
   if (language === 'ts' && /^(const|let|type|async|await|return|new|throw|export)$/.test(token)) return 'syn-keyword';
-  if (language === 'shell' && /^(pnpm|npm|npx)$/.test(token)) return 'syn-filter';
+  if (language === 'shell' && /^(pnpm|npm|npx|yarn|bun)$/.test(token)) return 'syn-filter';
   if (/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*$/.test(token)) return 'syn-variable';
   return undefined;
 }

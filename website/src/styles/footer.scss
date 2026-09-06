@@ -1,16 +1,18 @@
-footer {
-  width: min(calc(100% - 48px), var(--content));
+.site-footer {
+  width: min(calc(100% - 48px), var(--reading));
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 30px;
+  gap: 24px;
   margin-inline: auto;
   border-top: 1px solid var(--line);
-  padding-block: 30px 50px;
+  padding-block: 24px 40px;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--font-size-small);
 
   p {
+    grid-column: 1 / -1;
+    grid-row: 2;
     margin: 0;
   }
   > a:last-child {
@@ -37,15 +39,16 @@ footer {
 }
 
 .docs-footer {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 14px 20px;
-  margin-top: 110px;
+  margin-top: 72px;
   border-top: 1px solid var(--line);
   padding-top: 24px;
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: var(--font-size-small);
 
   a {
     color: var(--paper);
@@ -56,8 +59,8 @@ footer {
 }
 
 @media (max-width: 680px) {
-  footer {
-    width: min(calc(100% - 32px), var(--content));
+  .site-footer {
+    width: min(calc(100% - 32px), var(--reading));
     grid-template-columns: 1fr auto;
 
     .footer-nav {

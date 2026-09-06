@@ -1,4 +1,8 @@
 :root {
+  --font-size-title: clamp(2rem, 4vw, 2.5rem);
+  --font-size-heading: 1.25rem;
+  --font-size-body: clamp(1rem, 0.875rem + 0.2vw, 1.125rem);
+  --font-size-small: 0.875rem;
   --ink: #100f0f;
   --panel: #1c1b1a;
   --line: #282726;
@@ -26,7 +30,8 @@
   --syntax-magenta: #e47da8;
   --syntax-muted: #9f9d96;
   --accent: var(--purple);
-  --content: 1180px;
+  --content: 960px;
+  --reading: 720px;
 }
 
 * {
@@ -44,8 +49,8 @@ body {
   background: var(--ink);
   color: var(--body);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: calc(0.9375rem + 0.25vw);
-  line-height: 1.6;
+  font-size: var(--font-size-body);
+  line-height: 1.55;
   text-rendering: optimizeLegibility;
   color-scheme: dark;
   -webkit-font-smoothing: antialiased;
@@ -56,21 +61,21 @@ a {
 }
 
 .wordmark {
-  font-size: 1.55rem;
-  font-weight: 760;
-  letter-spacing: -0.045em;
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 .button {
   display: inline-flex;
-  min-height: 48px;
+  min-height: 42px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--faint);
   border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 0.88rem;
-  font-weight: 600;
+  padding: 8px 14px;
+  font-size: var(--font-size-small);
+  font-weight: 500;
   transition: background 150ms ease, color 150ms ease;
 
   &-primary {

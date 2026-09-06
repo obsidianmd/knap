@@ -180,5 +180,8 @@ function setupFilterDirectoryView() {
   show(viewFromUrl());
 }
 
+import { setupOutline } from './outline';
+
+setupOutline();
 setupSearch();
 setupFilterDirectoryView();

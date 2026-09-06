@@ -1,0 +1,56 @@
+---
+import CodeBlock from './CodeBlock.astro';
+
+interface Props {
+  template: string;
+  markdown: string;
+}
+
+const { template, markdown } = Astro.props;
+---
+
+<div data-template-example>
+  <div class="example-tabs segmented-control" role="tablist" aria-label="Example format">
+    <button type="button" role="tab" id="example-template-tab" aria-controls="example-template" aria-selected="true" tabindex="0">Template</button>
+    <button type="button" role="tab" id="example-markdown-tab" aria-controls="example-markdown" aria-selected="false" tabindex="-1">Markdown</button>
+  </div>
+  <div class="markdown-transform">
+    <div id="example-template" role="tabpanel" aria-labelledby="example-template-tab" tabindex="0">
+      <CodeBlock code={template} showLineNumbers />
+    </div>
+    <div id="example-markdown" role="tabpanel" aria-labelledby="example-markdown-tab" tabindex="0" hidden>
+      <CodeBlock language="md" code={markdown} showLineNumbers />
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-template-example]').forEach((example) => {
+    const tabs = [...example.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...example.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+
+    const select = (selected: HTMLButtonElement) => {
+      tabs.forEach((tab) => {
+        tab.setAttribute('aria-selected', String(tab === selected));
+        tab.tabIndex = tab === selected ? 0 : -1;
+      });
+      panels.forEach((panel) => { panel.hidden = panel.id !== selected.getAttribute('aria-controls'); });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (event) => {
+        let nextIndex: number;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') nextIndex = 0;
+        else if (event.key === 'End') nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        const nextTab = tabs[nextIndex];
+        select(nextTab);
+        nextTab.focus();
+      });
+    });
+  });
+</script>

@@ -1,13 +1,17 @@
 ---
 title: Knap
-description: The templating language for Markdown.
+description: The template language for Markdown.
 ---
 
-# The templating language for Markdown
+# The template language for Markdown.
 
-Knap lets you create reusable templates that turn data into structured Markdown documents.
+Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with [variables](/variables), [filters](/filters), and [logic](/logic).
 
-```knap title="template.md"
+## Example
+
+### Template
+
+```knap
 ---
 year: {{ year }}
 director: {{ directors | wikilink }}
@@ -18,20 +22,16 @@ genre: {{ genres }}
 
 {{ plot | blockquote }}
 
+{% if cast %}
 ## Cast
 
 {{ cast | slice:0,4 | table }}
+{% endif %}
 ```
 
-## Quick start
+### Markdown
 
-Install Knap with `pnpm add knap`, then read the [API quick start](/api#quick-start).
-
-## Parse it. Knap it. Quick, format it.
-
-Knap is a simple language designed to generate Markdown in a repeatable way. Knap filters are designed to manipulate HTML, JSON, Markdown, and YAML to generate [tables](/filters/table), [links](/filters/link), [lists](/filters/list), [footnotes](/filters/footnote), [blockquotes](/filters/blockquote), and [more](/filters).
-
-```md title="note.md"
+```md
 ---
 year: 1999
 director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
@@ -52,6 +52,14 @@ genre: ["Action","Sci-fi"]
 | Hugo Weaving | Agent Smith |
 ```
 
+## Install
+
+```shell
+npm install knap
+```
+
+Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`. Continue with the [API quick start](/api#quick-start).
+
 ## Made for applications that create Markdown
 
 - **Safe by design.** An AST interpreter handles templates. Knap does not use `eval` or execute arbitrary JavaScript.
@@ -62,10 +70,3 @@ genre: ["Action","Sci-fi"]
 
 - [Obsidian Web Clipper](https://obsidian.md/clipper)
 - [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer)
-
-## Documentation
-
-- [Variables](/variables)
-- [Logic](/logic)
-- [Filters](/filters)
-- [API](/api)

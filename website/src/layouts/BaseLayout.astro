@@ -12,7 +12,7 @@ const {
   description = 'Knap is a safe, flexible templating language for turning structured data into Markdown.',
   markdownPath,
 } = Astro.props;
-const pageTitle = title ? `${title} · Knap` : 'Knap · The templating language for Markdown';
+const pageTitle = title ? `${title} · Knap` : 'Knap · The template language for Markdown';
 const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
 const canonical = new URL(canonicalPath, Astro.site);
 ---

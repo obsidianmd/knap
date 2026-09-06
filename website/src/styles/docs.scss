@@ -2,37 +2,34 @@
   min-height: 100vh;
 }
 .docs-layout {
-  width: min(calc(100% - 48px), var(--content));
-  display: grid;
-  grid-template-columns: 160px minmax(0, 720px) 160px;
-  justify-content: space-between;
-  gap: clamp(34px, 5vw, 76px);
+  width: min(calc(100% - 48px), var(--reading));
   margin-inline: auto;
-  padding-block: 64px 80px;
+  padding-block: 52px 72px;
 }
 .docs-toc {
-  position: sticky;
-  top: 36px;
-  align-self: start;
+  position: fixed;
+  top: 116px;
+  left: 24px;
+  width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
+  max-height: calc(100dvh - 148px);
+  overflow-y: auto;
   display: grid;
   gap: 8px;
-  border-left: 1px solid var(--line);
-  padding-left: 18px;
-
-  p {
-    margin: 0 0 8px;
-    color: var(--faint);
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
 
   a {
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: var(--font-size-small);
 
+    &.is-read {
+      color: var(--faint);
+
+      &:hover {
+        color: var(--muted);
+      }
+    }
+    &[aria-current="location"] {
+      color: var(--paper);
+    }
     &:hover {
       color: var(--paper);
     }
@@ -44,36 +41,35 @@
 
 .docs-title {
   container-type: inline-size;
-  margin-bottom: 70px;
+  margin-bottom: 48px;
 
   h1 {
-    --docs-title-size: clamp(3.5rem, 8vw, 6.7rem);
     margin: 0;
     color: var(--paper);
-    font-size: var(--docs-title-size);
-    line-height: 0.9;
-    letter-spacing: -0.07em;
+    font-size: var(--font-size-title);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
 
     &.docs-title-fit {
-      font-size: var(--docs-title-size);
-      font-size: min(var(--docs-title-size), var(--docs-title-fit));
+      font-size: min(var(--font-size-title), var(--docs-title-fit));
       white-space: nowrap;
     }
   }
 
   > p {
     max-width: 650px;
-    margin: 30px 0 0;
+    margin: 18px 0 0;
     color: var(--body);
-    font-size: 1.15rem;
-    line-height: 1.6;
+    font-size: var(--font-size-body);
+    line-height: 1.55;
   }
 }
 .docs-title-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 .docs-title-action {
   display: inline-flex;
@@ -86,7 +82,7 @@
   color: var(--body);
   padding: 7px 12px;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: var(--font-size-small);
   cursor: pointer;
 
   &:hover {
@@ -113,15 +109,16 @@
 }
 .doc-section {
   scroll-margin-top: 32px;
-  margin-bottom: 82px;
+  margin-bottom: 56px;
 
   > h2 {
     margin: 0 0 20px;
     padding-bottom: 13px;
     border-bottom: 1px solid var(--line);
     color: var(--paper);
-    font-size: 1.55rem;
-    letter-spacing: -0.025em;
+    font-size: var(--font-size-heading);
+    font-weight: 500;
+    letter-spacing: normal;
   }
 
   > p {
@@ -131,17 +128,17 @@
     margin-top: -5px;
   }
   a {
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent);
+    color: var(--link-color, var(--accent));
+    border-bottom: 1px solid currentColor;
   }
 }
 .doc-section :not(pre) > code, .doc-note code, .api-list code {
   background: var(--panel);
-  color: var(--paper);
+  color: var(--link-color, var(--paper));
   padding: 0.12em 0.24em;
   border-radius: 0.38em;
   font-family: "SFMono-Regular", Consolas, monospace;
-  font-size: 0.84em;
+  font-size: var(--font-size-small);
 }
 
 .doc-note {
@@ -152,7 +149,7 @@
   border-left: 3px solid var(--accent);
   background: var(--panel);
   padding: 18px 20px;
-  font-size: 0.88rem;
+  font-size: var(--font-size-small);
 
   strong {
     color: var(--paper);
@@ -163,7 +160,7 @@
 }
 .doc-muted-note {
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: var(--font-size-small);
 }
 
 .type-grid {
@@ -183,11 +180,11 @@
   code {
     color: var(--accent);
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.78rem;
+    font-size: var(--font-size-small);
   }
   span {
     color: var(--muted);
-    font-size: 0.78rem;
+    font-size: var(--font-size-small);
   }
 }
 
@@ -210,19 +207,20 @@
   p {
     margin: 0;
     color: var(--muted);
-    font-size: 0.84rem;
+    font-size: var(--font-size-small);
   }
 }
 
 .markdown-doc {
   > h2 {
     scroll-margin-top: 32px;
-    margin: 82px 0 20px;
+    margin: 56px 0 20px;
     padding-bottom: 13px;
     border-bottom: 1px solid var(--line);
     color: var(--paper);
-    font-size: 1.55rem;
-    letter-spacing: -0.025em;
+    font-size: var(--font-size-heading);
+    font-weight: 500;
+    letter-spacing: normal;
 
     &:first-child {
       margin-top: 0;
@@ -231,7 +229,7 @@
   > h3 {
     margin: 36px 0 12px;
     color: var(--paper);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
   }
   > p {
     margin: 0 0 18px;
@@ -240,16 +238,16 @@
     margin-top: -5px;
   }
   a {
-    color: var(--accent);
-    border-bottom: 1px solid var(--accent);
+    color: var(--link-color, var(--accent));
+    border-bottom: 1px solid currentColor;
   }
   :not(pre) > code {
     border-radius: 0.38em;
     background: var(--panel);
-    color: var(--paper);
+    color: var(--link-color, var(--paper));
     padding: 0.12em 0.24em;
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.84em;
+    font-size: var(--font-size-small);
   }
   > ul, > ol {
     margin: 20px 0 26px;
@@ -270,7 +268,7 @@
     background: var(--panel);
     padding: 18px 20px;
     color: var(--body);
-    font-size: 0.88rem;
+    font-size: var(--font-size-body);
 
     p {
       margin: 0;
@@ -295,22 +293,21 @@
   h1 {
     margin: 0 0 36px;
     color: var(--paper);
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: var(--font-size-title);
     line-height: 0.95;
     letter-spacing: -0.06em;
   }
 }
 
-@media (max-width: 1180px) {
-  .docs-layout {
-    grid-template-columns: 145px minmax(0, 720px);
-    justify-content: center;
+@media (max-width: 1120px) {
+  .docs-toc {
+    display: none;
   }
 }
 
 @media (max-width: 760px) {
   .docs-layout {
-    width: min(calc(100% - 32px), var(--content));
+    width: min(calc(100% - 32px), var(--reading));
     display: block;
     padding-top: 44px;
   }
@@ -318,11 +315,8 @@
     display: none;
   }
   .docs-title {
-    margin-bottom: 58px;
+    margin-bottom: 44px;
 
-    h1 {
-      --docs-title-size: clamp(3.5rem, 20vw, 5.8rem);
-    }
   }
   .doc-note {
     grid-template-columns: 1fr;

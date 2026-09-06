@@ -5,7 +5,7 @@ description: Create an immutable engine-scoped filter registry, then parse, vali
 
 ## Install
 
-```shell title="Terminal"
+```shell
 pnpm add knap
 ```
 
@@ -13,7 +13,7 @@ Knap is ESM-first, also ships CommonJS entry points, and requires Node.js 20 or 
 
 ## Quick start
 
-```ts title="render.ts"
+```ts
 import {
   createEngine,
   standardFilters,
@@ -77,7 +77,7 @@ Set `{ trimOutput: false }` in render options to preserve surrounding template w
 
 The lower-level exports let editors tokenize once, inspect an AST, and validate variables or filters independently.
 
-```ts title="validate.ts"
+```ts
 import {
   parse,
   standardFilterMetadata,

@@ -1,10 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CodeBlock from '../components/CodeBlock.astro';
-import CopyButton from '../components/CopyButton.astro';
+import TemplateExample from '../components/TemplateExample.astro';
 import FooterNav from '../components/FooterNav.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import { highlightCode } from '../lib/highlight';
+import Install from '../components/Install.astro';
 
 const movieTemplate = `---
 year: {{ year }}
@@ -16,9 +15,11 @@ genre: {{ genres }}
 
 {{ plot | blockquote }}
 
+{% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table }}`;
+{{ cast | slice:0,4 | table }}
+{% endif %}`;
 
 const markdownOutput = `---
 year: 1999
@@ -40,51 +41,34 @@ genre: ["Action","Sci-fi"]
 | Hugo Weaving | Agent Smith |`;
 ---
 
-<BaseLayout markdownPath="/index.md">
+<BaseLayout markdownPath="/index.md" description="Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with variables, filters, and logic.">
   <main>
     <section class="hero-shell">
       <SiteHeader />
       <div class="hero-grid">
         <div class="hero-copy">
-          <h1>The templating language for Markdown.</h1>
-          <p class="lede">Knap lets you create reusable templates that turn data into structured Markdown documents.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/logic">Read the language guide</a>
-            <a class="button button-secondary" href="/api">Add Knap to a project</a>
-          </div>
+          <h1>The template language for Markdown.</h1>
+          <p class="lede">Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with <a href="/variables">variables</a>, <a href="/filters">filters</a>, and <a href="/logic">logic</a>.</p>
         </div>
 
-        <div class="code-window doc-code-numbered" aria-label="Knap template example">
-          <div class="code-window-bar"><span>template.md</span><span class="code-window-actions"><CopyButton /></span></div>
-          <pre><code class="language-knap" data-language="knap" set:html={highlightCode(movieTemplate, 'knap', true)} /></pre>
-        </div>
       </div>
-    </section>
-
-    <section class="install-strip" aria-label="Installation">
-      <div><span class="install-label">Install</span><code>pnpm add knap</code></div>
-      <a href="/api#quick-start">Quick start →</a>
     </section>
 
     <section class="markdown-native" aria-labelledby="markdown-native-title">
       <header class="markdown-native-heading">
-        <h2 id="markdown-native-title">Parse&nbsp;it. Knap&nbsp;it. Quick, format it.</h2>
-        <div>
-          <p>Knap is a simple language designed to generate Markdown in a repeatably. Knap filters help manipulate app data to generate <a href="/filters/table">tables</a>, <a href="/filters/link">links</a>, <a href="/filters/list">lists</a>, <a href="/filters/footnote">footnotes</a>, <a href="/filters/blockquote">blockquotes</a>, and <a href="/filters">more</a>.</p>
-        </div>
+        <h2 id="markdown-native-title">Example</h2>
       </header>
-      <div class="markdown-transform">
-        <CodeBlock label="template.md" code={movieTemplate} showLineNumbers />
-        <CodeBlock language="md" label="note.md" code={markdownOutput} showLineNumbers />
-      </div>
+      <TemplateExample template={movieTemplate} markdown={markdownOutput} />
     </section>
+
+    <Install />
 
     <section class="feature-grid" aria-labelledby="why-knap">
       <div class="section-heading"><h2 id="why-knap">Made for applications that create Markdown.</h2></div>
       <div class="feature-cards">
-        <article><span class="feature-index">01</span><h3>Safe by design</h3><p>An AST interpreter handles templates. Knap does not use eval or execute arbitrary JavaScript.</p></article>
-        <article><span class="feature-index">02</span><h3>Application-owned</h3><p>Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.</p></article>
-        <article><span class="feature-index">03</span><h3>Useful diagnostics</h3><p>Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.</p></article>
+        <article><h3>Safe by design</h3><p>An AST interpreter handles templates. Knap does not use eval or execute arbitrary JavaScript.</p></article>
+        <article><h3>Application-owned</h3><p>Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.</p></article>
+        <article><h3>Useful diagnostics</h3><p>Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.</p></article>
       </div>
     </section>
 
@@ -94,12 +78,6 @@ genre: ["Action","Sci-fi"]
         <a href="https://obsidian.md/clipper" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span></div><strong aria-hidden="true">↗</strong></a>
         <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
       </div>
-    </section>
-
-    <section class="path-grid" aria-label="Documentation paths">
-      <a href="/variables"><span>Start with</span><strong>Variables</strong><small>{'{{ title }}'} →</small></a>
-      <a href="/logic"><span>Then add</span><strong>Logic</strong><small>{'{% if author %}'} →</small></a>
-      <a href="/filters"><span>Shape with</span><strong>Filters</strong><small>{'| trim | title'} →</small></a>
     </section>
 
     <footer class="site-footer"><a class="wordmark footer-mark" href="/">Knap</a><FooterNav /><p>Open source under the MIT license.</p><a href="https://github.com/obsidianmd/knap">GitHub ↗</a></footer>

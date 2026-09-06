@@ -21,7 +21,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   <main class="docs-page">
     <SiteHeader />
     <div class="docs-layout">
-      <aside class="docs-toc" aria-label="On this page"><p>On this page</p>{toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}</aside>
+      <aside class="docs-toc" aria-label="Page outline">{toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}</aside>
 
       <article class="docs-content">
         <header class="docs-title">

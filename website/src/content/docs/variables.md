@@ -78,7 +78,7 @@ Variable output supports names with spaces, so imported column headings can rema
 
 If a value is not present in the variables object, the host can load it with `resolveVariable`. Local values always take precedence.
 
-```ts title="render.ts"
+```ts
 const result = await engine.render('{{ remoteValue | upper }}', {
   variables: {},
   context: { documentId: 'example' },

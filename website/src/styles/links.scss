@@ -1,0 +1,12 @@
+// Color links in body copy, including Markdown-generated paragraphs, lists, and tables.
+@each $section, $color in ("variables": "blue", "filters": "orange", "logic": "green") {
+  :where(.lede, .markdown-doc :is(p, li, td, th), .doc-section :is(p, li, td, th)) a:is(
+    [href="/#{$section}"],
+    [href="/#{$section}.html"],
+    [href^="/#{$section}/"],
+    [href^="/#{$section}#"],
+    [href^="/#{$section}?"]
+  ) {
+    --link-color: var(--syntax-#{$color});
+  }
+}

@@ -13,7 +13,7 @@
     padding: 12px 16px;
     color: var(--body);
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: 0.72rem;
+    font-size: var(--font-size-small);
   }
 
   &-actions {
@@ -27,7 +27,7 @@
     overflow-x: auto;
     padding: 24px 0;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: clamp(0.77rem, 1.2vw, 0.9rem);
+    font-size: var(--font-size-small);
     line-height: 1.85;
   }
 }
@@ -78,8 +78,7 @@
     border-bottom: 1px solid var(--line);
     padding: 8px 10px 8px 14px;
     color: var(--muted);
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.66rem;
+    font-size: var(--font-size-small);
   }
 
   pre {
@@ -88,7 +87,7 @@
     padding-block: 18px;
     color: var(--paper);
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.82rem;
+    font-size: var(--font-size-small);
     line-height: 1.72;
   }
 

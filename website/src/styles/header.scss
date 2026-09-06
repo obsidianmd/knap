@@ -1,12 +1,11 @@
 .site-header {
-  width: min(calc(100% - 48px), var(--content));
-  min-height: 76px;
+  width: min(calc(100% - 48px), var(--reading));
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+  gap: 24px;
   margin-inline: auto;
-  border-bottom: 1px solid var(--line);
   color: var(--paper);
 
   .filter-search-trigger {
@@ -15,9 +14,9 @@
 }
 .site-header-links {
   display: flex;
-  gap: 26px;
-  font-size: 0.82rem;
-  font-weight: 650;
+  gap: 20px;
+  font-size: var(--font-size-small);
+  font-weight: 400;
 
   a {
     color: var(--body);
@@ -38,7 +37,7 @@
   color: var(--muted);
   padding: 4px 7px;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: var(--font-size-small);
   cursor: pointer;
 
   &:hover {
@@ -48,13 +47,13 @@
   kbd {
     color: var(--accent);
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.62rem;
+    font-size: var(--font-size-small);
   }
 }
 
 @media (max-width: 760px) {
   .site-header {
-    width: min(calc(100% - 32px), var(--content));
+    width: min(calc(100% - 32px), var(--reading));
     align-items: flex-start;
     padding-block: 20px;
   }

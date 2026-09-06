@@ -12,14 +12,14 @@
 .command-palette {
   width: min(100%, 680px);
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 12px;
   background: var(--panel);
   color: var(--body);
-  box-shadow: 0 24px 80px rgb(16 15 15 / 90%);
+  box-shadow: 0 20px 60px rgb(16 15 15 / 65%);
 
   kbd {
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.62rem;
+    font-size: var(--font-size-small);
   }
 
   > header {
@@ -45,7 +45,7 @@
     color: var(--paper);
     padding: 4px 0;
     font: inherit;
-    font-size: 1.05rem;
+    font-size: var(--font-size-body);
     font-weight: 400;
 
     &::placeholder {
@@ -65,7 +65,7 @@
     align-items: center;
     border: 0;
     padding: 8px 12px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-weight: 400;
 
     &.is-active {
@@ -80,8 +80,9 @@
     font-weight: 700;
   }
   code {
+    color: var(--syntax-orange);
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.76rem;
+    font-size: var(--font-size-small);
     font-weight: 500;
   }
   p {

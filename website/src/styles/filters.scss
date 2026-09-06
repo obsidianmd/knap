@@ -23,27 +23,27 @@
         background: transparent;
         color: var(--paper);
         padding: 0;
-        font-size: 0.78rem;
+        font-size: var(--font-size-small);
       }
     }
 
     small {
       color: var(--muted);
-      font-size: 0.6rem;
+      font-size: var(--font-size-small);
     }
   }
 
   p {
     margin: 0;
     color: var(--body);
-    font-size: 0.82rem;
+    font-size: var(--font-size-small);
   }
   .filter-example {
     border: 0;
     background: transparent;
     color: var(--orange);
     padding: 0;
-    font-size: 0.68rem;
+    font-size: var(--font-size-small);
     white-space: nowrap;
   }
 }
@@ -70,7 +70,7 @@
     color: var(--body);
     padding: 7px 13px;
     font: inherit;
-    font-size: 0.7rem;
+    font-size: var(--font-size-small);
     cursor: pointer;
 
     &:hover {
@@ -98,12 +98,12 @@
   h3 {
     margin: 0;
     color: var(--paper);
-    font-size: 0.96rem;
+    font-size: var(--font-size-body);
   }
   header p {
     margin: 0;
     color: var(--muted);
-    font-size: 0.82rem;
+    font-size: var(--font-size-small);
   }
   .filter-list {
     margin-top: 14px;
@@ -132,17 +132,17 @@
       background: transparent;
       color: var(--paper);
       padding: 0;
-      font-size: 0.78rem;
+      font-size: var(--font-size-small);
     }
   }
   small {
     color: var(--muted);
-    font-size: 0.58rem;
+    font-size: var(--font-size-small);
   }
   p {
     margin: 0;
     color: var(--body);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
   }
   > span {
     color: var(--accent);
@@ -152,7 +152,7 @@
 .filter-alias-note {
   margin-top: 18px !important;
   color: var(--muted);
-  font-size: 0.84rem;
+  font-size: var(--font-size-small);
 
   code + code {
     margin-left: 6px;
@@ -168,7 +168,7 @@
   h3 {
     margin: 0;
     color: var(--paper);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
   }
 
   &-untitled {
@@ -220,7 +220,7 @@
   }
   span {
     color: var(--muted);
-    font-size: 0.76rem;
+    font-size: var(--font-size-small);
   }
 }
 .filter-pagination {
@@ -249,14 +249,14 @@
   }
   small {
     color: var(--muted);
-    font-size: 0.62rem;
+    font-size: var(--font-size-small);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
   span {
     color: var(--paper);
     font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.78rem;
+    font-size: var(--font-size-small);
   }
 }
 
@@ -282,7 +282,7 @@
     grid-template-columns: 1fr 18px;
 
     > div > code, p {
-      font-size: 1rem;
+      font-size: var(--font-size-body);
     }
     p {
       grid-column: 1;
