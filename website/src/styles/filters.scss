@@ -162,68 +162,12 @@
 }
 .related-filters {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  border: 1px solid var(--line);
-  background: var(--line);
-
-  a {
-    display: grid;
-    gap: 8px;
-    border: 0;
-    background: var(--ink);
-    padding: 17px;
-
-    &:hover {
-      background: var(--panel);
-    }
-  }
-  code {
-    width: fit-content;
-    color: var(--accent) !important;
-  }
-  span {
-    color: var(--muted);
-    font-size: var(--font-size-small);
-  }
+  margin: 0;
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 18px;
+  list-style: none;
 }
-.filter-pagination {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  margin-top: 90px;
-  border: 1px solid var(--line);
-  background: var(--line);
-
-  a, > span {
-    min-height: 88px;
-    display: grid;
-    align-content: center;
-    gap: 4px;
-    background: var(--ink);
-    padding: 18px;
-  }
-  a {
-    &:last-child {
-      text-align: right;
-    }
-    &:hover {
-      background: var(--panel);
-    }
-  }
-  small {
-    color: var(--muted);
-    font-size: var(--font-size-small);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  span {
-    color: var(--paper);
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: var(--font-size-small);
-  }
-}
-
 @media (max-width: 760px) {
   .filter-list article {
     grid-template-columns: 120px 1fr;
@@ -252,8 +196,5 @@
       grid-row: 1 / 3;
       align-self: center;
     }
-  }
-  .related-filters {
-    grid-template-columns: 1fr;
   }
 }

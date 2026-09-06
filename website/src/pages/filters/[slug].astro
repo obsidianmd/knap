@@ -9,9 +9,6 @@ export function getStaticPaths() {
 }
 
 const { filter } = Astro.props;
-const index = filterDocs.findIndex((item) => item.slug === filter.slug);
-const previous = filterDocs[index - 1];
-const next = filterDocs[index + 1];
 const slugifyHeading = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const exampleHeadings = filter.examples.flatMap((item) =>
   filter.examples.length === 1 && item.title === 'Basic usage'
@@ -58,10 +55,5 @@ const headings = [
     </div>
   </section>
 
-  {filter.related?.length && <section id="related" class="doc-section"><h2>Related filters</h2><div class="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related && <a href={`/filters/${related.slug}`}><code>{name}</code><span>{related.summary}</span></a>; })}</div></section>}
-
-  <nav class="filter-pagination" aria-label="Filter pages">
-    {previous ? <a href={`/filters/${previous.slug}`}><small>Previous</small><span>← {previous.name}</span></a> : <span></span>}
-    {next ? <a href={`/filters/${next.slug}`}><small>Next</small><span>{next.name} →</span></a> : <span></span>}
-  </nav>
+  {filter.related?.length && <section id="related" class="doc-section"><h2>Related filters</h2><ul class="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related && <li><a class="filter-row" href={`/filters/${related.slug}`}><div><code>{name}</code></div><p>{related.summary}</p><span aria-hidden="true">→</span></a></li>; })}</ul></section>}
 </DocsLayout>

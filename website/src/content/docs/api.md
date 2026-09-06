@@ -1,6 +1,6 @@
 ---
 title: API
-description: Create an immutable engine-scoped filter registry, then parse, validate, or render templates against application-owned data.
+description: Add Knap to your app to parse, validate, and render templates.
 ---
 
 ## Install
