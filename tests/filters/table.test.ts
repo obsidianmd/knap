@@ -25,6 +25,13 @@ describe('table filter', () => {
 		expect(result).toContain('| Col1 | Col2 |');
 	});
 
+	test('converts arrays of arrays into rows', () => {
+		const result = table('[["Alice",30],["Bob",25]]', '("Name", "Age")');
+		expect(result).toContain('| Name | Age |');
+		expect(result).toContain('| Alice | 30 |');
+		expect(result).toContain('| Bob | 25 |');
+	});
+
 	test('handles empty array', () => {
 		// Empty array creates a default single-column table with no rows
 		const result = table('[]');

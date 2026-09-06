@@ -1,0 +1,48 @@
+---
+import CodeBlock from './CodeBlock.astro';
+
+interface Props {
+  headingId?: string;
+  note?: string;
+  showDescription?: boolean;
+}
+
+const { headingId = 'install-title', note, showDescription = true } = Astro.props;
+
+const managers = [
+  { name: 'npm', command: 'npm install knap' },
+  { name: 'pnpm', command: 'pnpm add knap' },
+  { name: 'yarn', command: 'yarn add knap' },
+  { name: 'bun', command: 'bun add knap' },
+];
+---
+
+<section class="install-section" aria-labelledby={headingId}>
+  <header class="install-heading">
+    <h2 id={headingId}>Install</h2>
+    {showDescription && <p>Add Knap to your app so users can safely generate Markdown from variables you define.</p>}
+  </header>
+  <div class="install-managers segmented-control" style={`--segment-count: ${managers.length}`} role="group" aria-label="Package manager">
+    {managers.map(({ name }, index) => (
+      <button type="button" data-install-manager={name} aria-pressed={index === 0} aria-controls={`install-${name}`}>{name}</button>
+    ))}
+  </div>
+  {managers.map(({ name, command }, index) => (
+    <div id={`install-${name}`} data-install-panel={name} hidden={index !== 0}>
+      <CodeBlock language="shell" code={command} highlight={false} />
+    </div>
+  ))}
+  {note && <p class="install-note">{note}</p>}
+</section>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-install-manager]');
+  const panels = document.querySelectorAll<HTMLElement>('[data-install-panel]');
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const manager = button.dataset.installManager;
+      buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      panels.forEach((panel) => { panel.hidden = panel.dataset.installPanel !== manager; });
+    });
+  });
+</script>

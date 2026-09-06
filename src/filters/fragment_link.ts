@@ -12,6 +12,9 @@ export const fragment_link = (str: string, param?: string): string[] => {
 		return [str];
 	}
 
+	// Parameters from the template renderer preserve quotes around URL strings.
+	param = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+
 	// Use a regex to split the param, extracting the URL and custom name
 	const match = param.match(/^(.*?):?((https?:\/\/|file:\/\/).*$)/);
 	const linktext = String(

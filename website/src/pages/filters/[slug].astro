@@ -1,0 +1,56 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro';
+import FilterExample from '../../components/FilterExample.astro';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { filterDocs, filterDocsByName } from '../../../lib/filter-docs';
+
+export function getStaticPaths() {
+  return filterDocs.map((filter) => ({ params: { slug: filter.slug }, props: { filter } }));
+}
+
+const { filter } = Astro.props;
+const slugifyHeading = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character] ?? character);
+const renderInlineCode = (value: string) => escapeHtml(value).replace(/`([^`]+)`/g, '<code>$1</code>');
+const exampleHeadings = filter.examples.flatMap((item) =>
+  filter.examples.length === 1 && item.title === 'Basic usage'
+    ? []
+    : [{ depth: 3, slug: slugifyHeading(item.title), text: item.title }]
+);
+const headings = [
+  { depth: 2, slug: 'syntax', text: 'Syntax' },
+  ...(filter.parameters?.length || filter.notes?.length || filter.references?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
+  { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
+  ...exampleHeadings,
+  ...(filter.related?.length ? [{ depth: 2, slug: 'related', text: 'Related filters' }] : []),
+];
+---
+
+<DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`} fitTitle>
+  {filter.environment === 'html' && <aside class="doc-note"><strong>HTML preset</strong><div>This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</div></aside>}
+
+  <section id="syntax" class="doc-section">
+    <h2>Syntax</h2>
+    <CodeBlock code={filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')} />
+  </section>
+
+  {(filter.parameters?.length || filter.notes?.length || filter.references?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li set:html={renderInlineCode(note)} />)}{filter.references?.map((reference) => <li><a href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label}</a></li>)}</ul></section>}
+
+  <section id="examples" class="doc-section">
+    <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
+    <div class="filter-examples">
+      {filter.examples.map((item) => (
+        <article class:list={['filter-example-card', filter.examples.length === 1 && item.title === 'Basic usage' && 'filter-example-card-untitled']}>
+          {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3 id={slugifyHeading(item.title)}>{item.title}</h3></header>}
+          <FilterExample
+            input={JSON.stringify(item.variables, null, 2)}
+            template={item.template}
+            output={item.expected}
+          />
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {filter.related?.length && <section id="related" class="doc-section"><h2>Related filters</h2><ul class="related-filters">{filter.related.map((name) => { const related = filterDocsByName.get(name); return related && <li><a class="filter-row" href={`/filters/${related.slug}`}><div><code>{name}</code></div><p>{related.summary}</p><span aria-hidden="true">→</span></a></li>; })}</ul></section>}
+</DocsLayout>

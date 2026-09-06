@@ -1,0 +1,239 @@
+.filter-section > p {
+  color: var(--muted);
+}
+.filter-list {
+  border-top: 1px solid var(--line);
+  margin-top: 27px;
+
+  article {
+    display: grid;
+    grid-template-columns: 160px 1fr 175px;
+    gap: 20px;
+    align-items: baseline;
+    border-bottom: 1px solid var(--line);
+    padding-block: 13px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      > code {
+        border: 0;
+        background: transparent;
+        color: var(--paper);
+        padding: 0;
+        font-size: var(--font-size-small);
+      }
+    }
+
+    small {
+      color: var(--muted);
+      font-size: var(--font-size-small);
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--body);
+    font-size: var(--font-size-small);
+  }
+  .filter-example {
+    border: 0;
+    background: transparent;
+    color: var(--orange);
+    padding: 0;
+    font-size: var(--font-size-small);
+    white-space: nowrap;
+  }
+}
+.compact-filter-list {
+  margin-bottom: 28px;
+}
+
+.filter-directory {
+  margin-top: 28px;
+}
+.filter-directory-group {
+  margin-top: 28px;
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 18px;
+
+  > header {
+    display: grid;
+    gap: 4px;
+  }
+  h3 {
+    margin: 0;
+    color: var(--paper);
+    font-size: var(--font-size-body);
+    font-weight: 400;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: var(--font-size-body);
+    font-weight: 400;
+  }
+  .filter-list {
+    border-top: 0;
+    margin-top: 14px;
+  }
+}
+[data-filter-view-panel] > .filter-directory-group:first-child {
+  margin-top: 24px;
+}
+.filter-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 18px;
+  gap: 20px;
+  align-items: baseline;
+  border-bottom: 0 !important;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: inherit !important;
+  text-decoration: none;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: var(--line);
+  }
+  > div {
+    display: grid;
+    gap: 3px;
+
+    > code {
+      width: fit-content;
+      border: 0;
+      background: transparent;
+      color: var(--syntax-orange);
+      padding: 0;
+      font-size: var(--font-size-small) !important;
+    }
+  }
+  small {
+    color: var(--muted);
+    font-size: var(--font-size-small);
+  }
+  p {
+    margin: 0;
+    color: var(--body);
+    font-size: var(--font-size-small);
+  }
+  > span {
+    color: var(--faint);
+  }
+}
+
+.filter-example-card {
+  margin-top: 38px;
+
+  h3 {
+    margin: 0;
+    color: var(--paper);
+    font-size: var(--font-size-body);
+  }
+
+  &-untitled {
+    margin-top: 0;
+  }
+}
+.filter-examples > .filter-example-card:first-child {
+  margin-top: 18px;
+}
+.filter-example-table {
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--panel);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  tr:not(:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    width: 100px;
+    padding: 16px;
+    color: var(--muted);
+    font-size: var(--font-size-small);
+    font-weight: 400;
+    text-align: left;
+    vertical-align: top;
+  }
+  td {
+    min-width: 0;
+    padding: 0;
+  }
+  .doc-code {
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+}
+.behavior-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding-left: 1.25rem;
+
+  li::marker {
+    color: var(--faint);
+  }
+}
+.related-filters {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: 0;
+  }
+
+  .filter-row {
+    padding-block: 7px;
+
+    &:hover {
+      background: var(--panel);
+    }
+  }
+}
+@media (max-width: 760px) {
+  .filter-example-table th {
+    width: 76px;
+    padding-inline: 12px;
+  }
+  .filter-list article {
+    grid-template-columns: 120px 1fr;
+
+    > :last-child {
+      grid-column: 2;
+    }
+  }
+  .filter-row {
+    grid-template-columns: 120px 1fr 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-row {
+    grid-template-columns: 1fr 18px;
+
+    > div > code, p {
+      font-size: var(--font-size-body);
+    }
+    p {
+      grid-column: 1;
+    }
+    > span {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      align-self: center;
+    }
+  }
+}

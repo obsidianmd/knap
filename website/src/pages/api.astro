@@ -1,0 +1,11 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import Install from '../components/Install.astro';
+import { Content, frontmatter, getHeadings } from '../content/docs/api.md';
+const headings = [{ depth: 2, slug: 'install', text: 'Install' }, ...getHeadings()];
+---
+
+<DocsLayout current="api" title={frontmatter.title} description={frontmatter.description} headings={headings} markdownPath="/api.md">
+  <Install headingId="install" note="Knap is ESM-first, also ships CommonJS entry points, and requires Node.js 20 or later." showDescription={false} />
+  <Content />
+</DocsLayout>

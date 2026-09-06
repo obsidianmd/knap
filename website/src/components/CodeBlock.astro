@@ -1,0 +1,30 @@
+---
+import CopyButton from './CopyButton.astro';
+import { highlightCode, type CodeLanguage } from '../lib/highlight';
+
+interface Props {
+  code: string;
+  language?: CodeLanguage;
+  label?: string;
+  showLineNumbers?: boolean;
+  highlight?: boolean;
+}
+
+const { code, language = 'knap', label, showLineNumbers = false, highlight = true } = Astro.props;
+const normalizedCode = code.replace(/^\n|\n$/g, '');
+const escapeHtml = (value: string) => value
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+const plainCode = normalizedCode.split('\n').map((line, index) => `<span class="doc-code-line"><span class="doc-line-number" hidden>${index + 1}</span><span class="doc-code-source">${escapeHtml(line)}</span></span>`).join('');
+const renderedCode = highlight ? highlightCode(normalizedCode, language, showLineNumbers) : plainCode;
+---
+
+<figure class:list={['doc-code', !label && 'doc-code-unlabeled', showLineNumbers && 'doc-code-numbered']} data-code-block>
+  {label ? (
+    <figcaption><span>{label}</span><span class="doc-code-actions"><CopyButton /></span></figcaption>
+  ) : <CopyButton />}
+  <pre><code class={`language-${language}`} data-language={language} set:html={renderedCode} /></pre>
+</figure>

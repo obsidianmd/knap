@@ -1,0 +1,67 @@
+---
+import CodeBlock from './CodeBlock.astro';
+import type { CodeLanguage } from '../lib/highlight';
+
+interface Tab {
+  key: string;
+  label: string;
+  code: string;
+  language?: CodeLanguage;
+}
+
+interface Props {
+  id: string;
+  tabs: Tab[];
+  defaultTab: string;
+  showLineNumbers?: boolean;
+}
+
+const { id, tabs, defaultTab, showLineNumbers = false } = Astro.props;
+---
+
+<div class="code-tabs" data-code-tabs>
+  <div class="example-tabs segmented-control" style={`--segment-count: ${tabs.length}`} role="tablist" aria-label="Code example">
+    {tabs.map((tab) => {
+      const selected = tab.key === defaultTab;
+      return <button type="button" role="tab" id={`${id}-${tab.key}-tab`} aria-controls={`${id}-${tab.key}`} aria-selected={selected} tabindex={selected ? 0 : -1}>{tab.label}</button>;
+    })}
+  </div>
+  <div class="code-tab-panels">
+    {tabs.map((tab) => (
+      <div id={`${id}-${tab.key}`} role="tabpanel" aria-labelledby={`${id}-${tab.key}-tab`} tabindex="0" hidden={tab.key !== defaultTab}>
+        <CodeBlock language={tab.language} code={tab.code} showLineNumbers={showLineNumbers} />
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-code-tabs]').forEach((example) => {
+    const tabs = [...example.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...example.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+
+    const select = (selected: HTMLButtonElement) => {
+      tabs.forEach((tab) => {
+        tab.setAttribute('aria-selected', String(tab === selected));
+        tab.tabIndex = tab === selected ? 0 : -1;
+      });
+      panels.forEach((panel) => { panel.hidden = panel.id !== selected.getAttribute('aria-controls'); });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (event) => {
+        let nextIndex: number;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') nextIndex = 0;
+        else if (event.key === 'End') nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        const nextTab = tabs[nextIndex];
+        select(nextTab);
+        nextTab.focus();
+      });
+    });
+  });
+</script>

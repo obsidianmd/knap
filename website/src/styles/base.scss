@@ -1,0 +1,103 @@
+:root {
+  --font-size-title: clamp(2rem, 4vw, 2.5rem);
+  --font-size-heading: 1.25rem;
+  --font-size-body: clamp(1rem, 0.875rem + 0.2vw, 1.125rem);
+  --font-size-small: 0.875rem;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "IBM Plex Mono", "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco, "Consolas", "Source Code Pro", monospace;
+  --ink: #100f0f;
+  --panel: #1c1b1a;
+  --line: #282726;
+  --line-hover: #343331;
+  --line-active: #403e3c;
+  --faint: #575653;
+  --muted: #878580;
+  --body: #cecdc3;
+  --paper: #cecdc3;
+  --red: #d14d41;
+  --orange: #da702c;
+  --yellow: #d0a215;
+  --green: #879a39;
+  --cyan: #3aa99f;
+  --blue: #4385be;
+  --purple: #8b7ec8;
+  --magenta: #ce5d97;
+  --syntax-red: #e8705f;
+  --syntax-orange: #ec8b49;
+  --syntax-yellow: #dfb431;
+  --syntax-green: #a0af54;
+  --syntax-cyan: #5abdac;
+  --syntax-blue: #66a0c8;
+  --syntax-purple: #8b7ec8;
+  --syntax-magenta: #e47da8;
+  --syntax-muted: #9f9d96;
+  --accent: var(--purple);
+  --content: 960px;
+  --reading: calc(var(--font-size-body) * 42);
+}
+
+* {
+  box-sizing: border-box;
+}
+::selection {
+  background: rgb(218 112 44 / 24%);
+  color: var(--syntax-orange);
+}
+[hidden] {
+  display: none !important;
+}
+html {
+  background: var(--ink);
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--body);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: var(--font-size-body);
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wordmark {
+  font-size: var(--font-size-heading);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--faint);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  transition: background 150ms ease, color 150ms ease;
+
+  &-primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--ink);
+  }
+  &-secondary:hover {
+    background: var(--panel);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
