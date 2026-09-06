@@ -4,11 +4,11 @@
 .docs-layout {
   width: min(calc(100% - 48px), var(--reading));
   margin-inline: auto;
-  padding-block: 52px 72px;
+  padding-block: 64px 72px;
 }
 .docs-toc {
   position: fixed;
-  top: 116px;
+  top: 128px;
   left: 24px;
   width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
   max-height: calc(100dvh - 148px);
@@ -112,9 +112,7 @@
   margin-bottom: 56px;
 
   > h2 {
-    margin: 0 0 20px;
-    padding-bottom: 13px;
-    border-bottom: 1px solid var(--line);
+    margin: 0 0 16px;
     color: var(--paper);
     font-size: var(--font-size-heading);
     font-weight: 500;
@@ -214,9 +212,7 @@
 .markdown-doc {
   > h2 {
     scroll-margin-top: 32px;
-    margin: 56px 0 20px;
-    padding-bottom: 13px;
-    border-bottom: 1px solid var(--line);
+    margin: 56px 0 16px;
     color: var(--paper);
     font-size: var(--font-size-heading);
     font-weight: 500;
@@ -282,7 +278,7 @@
   }
 }
 .not-found {
-  width: min(calc(100% - 48px), 720px);
+  width: min(calc(100% - 48px), var(--reading));
   margin: 12vh auto;
 
   > p {

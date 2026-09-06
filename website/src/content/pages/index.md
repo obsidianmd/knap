@@ -54,19 +54,23 @@ genre: ["Action","Sci-fi"]
 
 ## Install
 
+Add Knap to your app so users can safely generate Markdown from variables you define.
+
 ```shell
 npm install knap
 ```
 
-Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`. Continue with the [API quick start](/api#quick-start).
+Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`.
 
-## Made for applications that create Markdown
+## Knap in use
+
+Knap was created for [Obsidian](https://obsidian.md) and is named after [flintknapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.
+
+- [Obsidian Web Clipper](https://obsidian.md/clipper)
+- [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer)
+
+## Why Knap?
 
 - **Safe by design.** An AST interpreter handles templates. Knap does not use `eval` or execute arbitrary JavaScript.
 - **Application-owned.** Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.
 - **Useful diagnostics.** Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.
-
-## Powered by Knap
-
-- [Obsidian Web Clipper](https://obsidian.md/clipper)
-- [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer)

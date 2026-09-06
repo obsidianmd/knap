@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import FooterNav from '../components/FooterNav.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 
 interface Heading { depth: number; slug: string; text: string }
@@ -39,7 +39,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
           </div>
         </header>
         <div class="markdown-doc"><slot /></div>
-        <footer class="docs-footer"><span>Knap is open source under the MIT license.</span><FooterNav /><span><a href={markdownPath}>Markdown</a> · <a href="https://github.com/obsidianmd/knap">View source ↗</a></span></footer>
+        <SiteFooter markdownPath={markdownPath} />
       </article>
 
     </div>

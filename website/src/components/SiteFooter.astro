@@ -1,0 +1,15 @@
+---
+import FooterNav from './FooterNav.astro';
+
+interface Props {
+  markdownPath: string;
+}
+
+const { markdownPath } = Astro.props;
+---
+
+<footer class="site-footer">
+  <span>Knap is open source under the MIT license.</span>
+  <FooterNav />
+  <span><a href={markdownPath}>Markdown</a> · <a href="https://github.com/obsidianmd/knap">View source ↗</a></span>
+</footer>

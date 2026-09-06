@@ -31,7 +31,7 @@
   --syntax-muted: #9f9d96;
   --accent: var(--purple);
   --content: 960px;
-  --reading: 720px;
+  --reading: calc(var(--font-size-body) * 42);
 }
 
 * {

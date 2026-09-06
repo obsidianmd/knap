@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TemplateExample from '../components/TemplateExample.astro';
-import FooterNav from '../components/FooterNav.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import Install from '../components/Install.astro';
 
 const movieTemplate = `---
@@ -42,7 +42,7 @@ genre: ["Action","Sci-fi"]
 ---
 
 <BaseLayout markdownPath="/index.md" description="Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with variables, filters, and logic.">
-  <main>
+  <main class="home-page">
     <section class="hero-shell">
       <SiteHeader />
       <div class="hero-grid">
@@ -63,23 +63,23 @@ genre: ["Action","Sci-fi"]
 
     <Install />
 
-    <section class="feature-grid" aria-labelledby="why-knap">
-      <div class="section-heading"><h2 id="why-knap">Made for applications that create Markdown.</h2></div>
-      <div class="feature-cards">
-        <article><h3>Safe by design</h3><p>An AST interpreter handles templates. Knap does not use eval or execute arbitrary JavaScript.</p></article>
-        <article><h3>Application-owned</h3><p>Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.</p></article>
-        <article><h3>Useful diagnostics</h3><p>Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.</p></article>
-      </div>
-    </section>
-
-    <section class="used-by" aria-labelledby="used-by-knap">
-      <header class="used-by-heading"><div><h2 id="used-by-knap">Powered by Knap.</h2></div><p>Knap is the shared template language behind tools that turn web pages and imported data into durable Markdown.</p></header>
+    <section class="used-by" aria-labelledby="knap-in-use">
+      <header class="used-by-heading"><div><h2 id="knap-in-use">Knap in use</h2></div><p>Knap was created for <a href="https://obsidian.md">Obsidian</a> and is named after <a href="https://en.wikipedia.org/wiki/Knapping">flintknapping</a>, the process of shaping stones to form arrowheads, scrapers, and other tools.</p></header>
       <div class="used-by-list">
         <a href="https://obsidian.md/clipper" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Renders page data, highlights, selectors, and custom variables through user-defined templates before saving them as Markdown.</span></div><strong aria-hidden="true">↗</strong></a>
         <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card"><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Applies templates and filters to imported fields so notes from other apps arrive in a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
       </div>
     </section>
 
-    <footer class="site-footer"><a class="wordmark footer-mark" href="/">Knap</a><FooterNav /><p>Open source under the MIT license.</p><a href="https://github.com/obsidianmd/knap">GitHub ↗</a></footer>
+    <section class="feature-grid" aria-labelledby="why-knap">
+      <div class="section-heading"><h2 id="why-knap">Why Knap?</h2></div>
+      <ul class="feature-list">
+        <li><strong>Safe by design.</strong> An AST interpreter handles templates. Knap does not use eval or execute arbitrary JavaScript.</li>
+        <li><strong>Application-owned.</strong> Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.</li>
+        <li><strong>Useful diagnostics.</strong> Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.</li>
+      </ul>
+    </section>
+
+    <SiteFooter markdownPath="/index.md" />
   </main>
 </BaseLayout>

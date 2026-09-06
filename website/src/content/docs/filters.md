@@ -21,9 +21,9 @@ Search filters using `⌘K` to find a filter by name, alias, category, or behavi
 
 <!-- FILTER_DIRECTORY -->
 
-## Opt into the HTML preset
+## HTML filters
 
-[`html_to_json`](/filters/html-to-json) and [`remove_html`](/filters/remove-html) require browser-compatible DOM globals, so they are exported separately from `knap/html`.
+`html_to_json` and `remove_html` require browser-compatible DOM globals, so they are exported separately from `knap/html`.
 
 ```ts title="engine.ts"
 import { createEngine, standardFilters } from 'knap';

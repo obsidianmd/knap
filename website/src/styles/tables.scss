@@ -13,6 +13,9 @@
     text-align: left;
     vertical-align: top;
   }
+  th:first-child, td:first-child {
+    padding-left: 0;
+  }
   th {
     color: var(--muted);
     font-size: var(--font-size-small);
@@ -34,6 +37,9 @@
     padding: 13px 14px;
     text-align: left;
     vertical-align: top;
+  }
+  th:first-child, td:first-child {
+    padding-left: 0;
   }
   th {
     color: var(--muted);

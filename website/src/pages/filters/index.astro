@@ -15,7 +15,7 @@ const alphabeticalDirectory = [...filterDocs]
   .map(renderFilterRow)
   .join('');
 const directory = `<div class="filter-directory">
-  <div class="filter-view-switch" role="group" aria-label="Filter list view">
+  <div class="filter-view-switch segmented-control" role="group" aria-label="Filter list view">
     <button type="button" data-filter-view-control="alphabetical" aria-pressed="true">A–Z</button>
     <button type="button" data-filter-view-control="grouped" aria-pressed="false">Grouped</button>
   </div>

@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
 import remarkGfm from 'remark-gfm';
-import { highlightCode } from './src/lib/highlight.ts';
+import { highlightCode, highlightInlineKnap } from './src/lib/highlight.ts';
 
 const copyIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
 const copyButton = `<button type="button" class="doc-code-copy" data-copy-code title="Copy code" aria-label="Copy code">${copyIcon}</button>`;
@@ -10,6 +10,16 @@ const escapeHtml = (value) => value.replace(/[&<>"']/g, (character) => ({ '&': '
 function staticCodeBlocks() {
   return (tree) => {
     const visit = (node, parent, index) => {
+      if (node?.type === 'inlineCode' && parent && typeof index === 'number') {
+        const highlighted = highlightInlineKnap(node.value);
+        if (highlighted) {
+          parent.children[index] = {
+            type: 'html',
+            value: `<code class="inline-syntax language-knap">${highlighted}</code>`,
+          };
+        }
+        return;
+      }
       if (node?.type === 'code' && parent && typeof index === 'number') {
         const match = typeof node.meta === 'string' ? node.meta.match(/(?:^|\s)title=(?:"([^"]+)"|'([^']+)'|([^\s]+))/) : undefined;
         const label = match?.[1] ?? match?.[2] ?? match?.[3];

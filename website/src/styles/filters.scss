@@ -54,60 +54,34 @@
 .filter-directory {
   margin-top: 28px;
 }
-.filter-view-switch {
-  width: fit-content;
-  display: flex;
-  gap: 2px;
-  border-radius: 999px;
-  background: var(--panel);
-  padding: 3px;
-
-  button {
-    min-height: 36px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--body);
-    padding: 7px 13px;
-    font: inherit;
-    font-size: var(--font-size-small);
-    cursor: pointer;
-
-    &:hover {
-      color: var(--paper);
-    }
-    &[aria-pressed="true"] {
-      background: var(--accent);
-      color: var(--ink);
-    }
-    &:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-  }
-}
 .filter-directory-group {
-  margin-top: 54px;
+  margin-top: 28px;
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 18px;
 
   > header {
     display: grid;
-    grid-template-columns: 150px 1fr;
-    gap: 20px;
-    align-items: baseline;
+    gap: 4px;
   }
   h3 {
     margin: 0;
     color: var(--paper);
     font-size: var(--font-size-body);
+    font-weight: 400;
   }
   header p {
     margin: 0;
     color: var(--muted);
-    font-size: var(--font-size-small);
+    font-size: var(--font-size-body);
+    font-weight: 400;
   }
   .filter-list {
     margin-top: 14px;
   }
+}
+[data-filter-view-panel] > .filter-directory-group:first-child {
+  margin-top: 24px;
 }
 .filter-row {
   display: grid;
@@ -120,7 +94,7 @@
   transition: background 150ms ease;
 
   &:hover {
-    background: var(--panel);
+    background: var(--line);
   }
   > div {
     display: grid;
@@ -130,7 +104,7 @@
       width: fit-content;
       border: 0;
       background: transparent;
-      color: var(--paper);
+      color: var(--syntax-orange);
       padding: 0;
       font-size: var(--font-size-small);
     }
@@ -141,11 +115,11 @@
   }
   p {
     margin: 0;
-    color: var(--body);
-    font-size: var(--font-size-body);
+    color: var(--muted);
+    font-size: var(--font-size-small);
   }
   > span {
-    color: var(--accent);
+    color: var(--body);
   }
 }
 
@@ -161,10 +135,6 @@
 .filter-example-card {
   margin-top: 38px;
 
-  > header {
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 11px;
-  }
   h3 {
     margin: 0;
     color: var(--paper);
@@ -175,16 +145,8 @@
     margin-top: 0;
   }
 }
-.example-grid {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
-
-  .doc-code {
-    min-width: 0;
-    margin: 14px 0 0;
-  }
+.filter-example-card .code-tabs {
+  margin-top: 14px;
 }
 .behavior-list {
   display: grid;
@@ -267,10 +229,6 @@
     > :last-child {
       grid-column: 2;
     }
-  }
-  .filter-directory-group > header {
-    grid-template-columns: 1fr;
-    gap: 5px;
   }
   .filter-row {
     grid-template-columns: 120px 1fr 18px;
