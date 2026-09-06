@@ -18,6 +18,12 @@ describe('strip_tags filter', () => {
 		expect(result).toContain('<em>');
 	});
 
+	test.each(['b, em', '"b, em"', '"b", "em"', '("b", "em")'])
+		('accepts equivalent argument spelling %s', params => {
+			expect(strip_tags('<p><b>bold</b><em>emphasis</em></p>', params))
+				.toBe('<b>bold</b><em>emphasis</em>');
+		});
+
 	test('handles nested tags', () => {
 		expect(strip_tags('<div><p>text</p></div>')).toBe('text');
 	});

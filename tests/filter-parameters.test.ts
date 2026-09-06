@@ -74,7 +74,7 @@ describe('built-in filter parameter spellings', () => {
 	test.each([
 		'{{ value | replace_tags:"strong":"h2" }}',
 		'{{ value | replace_tags:strong:h2 }}',
-		'{{ value | replace_tags:("strong","h2") }}',
+		'{{ value | replace_tags:("strong":"h2") }}',
 	])('normalizes HTML transformation arguments as %s', async template => {
 		await expect(engine.renderOrThrow(template, {
 			variables: { value: '<strong>text</strong>' },
@@ -84,7 +84,7 @@ describe('built-in filter parameter spellings', () => {
 	test.each([
 		'replace_tags:"strong":"h2"',
 		'replace_tags:strong:h2',
-		'replace_tags:("strong","h2")',
+		'replace_tags:("strong":"h2")',
 	])('normalizes HTML transformations as %s through the synchronous helper', filterString => {
 		expect(applyFiltersWithRegistry(
 			'<strong>text</strong>',
@@ -92,6 +92,54 @@ describe('built-in filter parameter spellings', () => {
 			standardFilters,
 			{ variables: {} },
 		)).toBe('<h2>text</h2>');
+	});
+
+	test('keeps comma-separated HTML transformations independent in both execution paths', async () => {
+		const html = '<b>bold</b><em>emphasis</em>';
+		await expect(engine.renderOrThrow('{{ value | replace_tags:b,em }}', {
+			variables: { value: html },
+		})).resolves.toBe('boldemphasis');
+		expect(applyFiltersWithRegistry(
+			html,
+			'replace_tags:b,em',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('boldemphasis');
+
+		await expect(engine.renderOrThrow('{{ value | replace_tags:b,"em":"i" }}', {
+			variables: { value: html },
+		})).resolves.toBe('bold<i>emphasis</i>');
+		expect(applyFiltersWithRegistry(
+			html,
+			'replace_tags:b,"em":"i"',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('bold<i>emphasis</i>');
+	});
+
+	test.each([
+		'{{ value | strip_tags:b,em }}',
+		'{{ value | strip_tags:"b,em" }}',
+		'{{ value | strip_tags:"b","em" }}',
+		'{{ value | strip_tags:("b","em") }}',
+	])('normalizes strip_tags arguments as %s', async template => {
+		await expect(engine.renderOrThrow(template, {
+			variables: { value: '<p><b>bold</b><em>emphasis</em></p>' },
+		})).resolves.toBe('<b>bold</b><em>emphasis</em>');
+	});
+
+	test.each([
+		'strip_tags:b,em',
+		'strip_tags:"b,em"',
+		'strip_tags:"b","em"',
+		'strip_tags:("b","em")',
+	])('normalizes strip_tags as %s through the synchronous helper', filterString => {
+		expect(applyFiltersWithRegistry(
+			'<p><b>bold</b><em>emphasis</em></p>',
+			filterString,
+			standardFilters,
+			{ variables: {} },
+		)).toBe('<b>bold</b><em>emphasis</em>');
 	});
 
 	test('preserves apostrophes inside double-quoted arguments', async () => {

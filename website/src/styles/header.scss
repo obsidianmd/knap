@@ -18,16 +18,6 @@
   margin-left: auto;
   font-size: var(--font-size-small);
   font-weight: 400;
-
-  a {
-    color: var(--body);
-    transition: color 150ms ease;
-
-    &:hover,
-    &:focus-visible {
-      color: #f2f0e5;
-    }
-  }
 }
 .filter-search-trigger {
   display: inline-flex;

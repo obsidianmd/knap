@@ -1,23 +1,17 @@
-import { splitParamPair, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
+import { splitParamList, splitParamPair, unquoteParamToken } from '../parser-utils';
 
 const cleanTag = (value: string): string => unquoteParamToken(value).replace(/\\(.)/g, '$1');
 
 export const replace_tags = (html: string, params: string = ''): string => {
-	const tokens = splitParams(unwrapParamList(params)).filter(Boolean);
+	const tokens = splitParamList(params).filter(Boolean);
 	const transformations: Array<[string, string]> = [];
 
-	for (let index = 0; index < tokens.length; index++) {
-		const [rawSource, rawTarget] = splitParamPair(tokens[index]);
-		if (rawTarget !== undefined) {
-			transformations.push([
-				cleanTag(rawSource),
-				cleanTag(rawTarget),
-			]);
-		} else if (index + 1 < tokens.length) {
-			transformations.push([cleanTag(rawSource), cleanTag(tokens[++index])]);
-		} else {
-			transformations.push([cleanTag(rawSource), '']);
-		}
+	for (const token of tokens) {
+		const [rawSource, rawTarget] = splitParamPair(token);
+		transformations.push([
+			cleanTag(rawSource),
+			rawTarget === undefined ? '' : cleanTag(rawTarget),
+		]);
 	}
 
 	// If no transformations specified, return the original HTML

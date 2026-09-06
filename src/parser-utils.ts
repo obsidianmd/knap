@@ -147,13 +147,19 @@ export function cleanScalarParam(value: string | undefined): string | undefined 
 	return unquoted === undefined ? undefined : decodeParamEscapes(unquoted);
 }
 
-/** Normalize a comma-separated argument list without decoding meaningful backslashes. */
-export function normalizeParamList(value: string): string[] {
+/** Split a comma-separated argument list, including legacy whole-list quoting. */
+export function splitParamList(value: string): string[] {
 	const unwrapped = unwrapParamList(value);
 	const tokens = splitParams(unwrapped);
-	const quotedList = tokens.length === 1 && unquoteParamToken(tokens[0]) !== tokens[0].trim();
-	const listTokens = quotedList ? splitParams(unquoteParamToken(tokens[0])) : tokens;
-	return listTokens.map(token => unquoteParamToken(token).replace(/\\(["'])/g, '$1'));
+	const unquoted = tokens.length === 1 ? unquoteParamToken(tokens[0]) : '';
+	const quotedList = unquoted !== tokens[0]?.trim() && unquoted.includes(',');
+	return quotedList ? splitParams(unquoted) : tokens;
+}
+
+/** Normalize a comma-separated argument list without decoding meaningful backslashes. */
+export function normalizeParamList(value: string): string[] {
+	return splitParamList(value)
+		.map(token => unquoteParamToken(token).replace(/\\(["'])/g, '$1'));
 }
 
 /** Split once on a colon outside quotes or nested expressions. */

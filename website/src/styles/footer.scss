@@ -9,28 +9,12 @@
   padding-block: 24px 48px;
   color: var(--muted);
   font-size: var(--font-size-small);
-
-  a {
-    color: var(--paper);
-  }
-  .footer-nav {
-    gap: 14px;
-  }
 }
 
 .footer-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-
-  a {
-    color: var(--body);
-    transition: color 150ms ease;
-
-    &:hover {
-      color: var(--paper);
-    }
-  }
 }
 
 @media (max-width: 480px) {
