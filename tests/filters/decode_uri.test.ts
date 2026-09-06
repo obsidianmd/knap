@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
 import { decode_uri } from '../../src/filters/decode_uri';
+import { standardFilters } from '../../src/filters';
 
 describe('decode_uri filter', () => {
 	test('decodes URL-encoded Chinese text', () => {
@@ -28,5 +30,12 @@ describe('decode_uri filter', () => {
 		expect(decode_uri('%E0%A4%A')).toBe('%E0%A4%A');
 		expect(decode_uri('%')).toBe('%');
 		expect(decode_uri('%ZZ')).toBe('%ZZ');
+	});
+
+	test('decodes string values recursively in typed collections', async () => {
+		const engine = createEngine({ filters: standardFilters });
+		await expect(engine.renderOrThrow('{{ value | decode_uri }}', {
+			variables: { value: ['hello%20world', { path: 'a%2Fb', count: 2 }] },
+		})).resolves.toBe('["hello world",{"path":"a/b","count":2}]');
 	});
 });

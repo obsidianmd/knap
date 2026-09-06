@@ -94,3 +94,53 @@ export function parseRegexPattern(pattern: string): { pattern: string; flags: st
 		flags: match[2]
 	};
 }
+
+export function cleanParamToken(value: string): string {
+	return value.trim().replace(/^(["'])([\s\S]*)\1$/, '$2');
+}
+
+/** Split comma-separated filter parameters while preserving quoted commas. */
+export function splitParams(value: string): string[] {
+	const parts: string[] = [];
+	let current = '';
+	let quote = '';
+	let escaped = false;
+	let parenDepth = 0;
+	let curlyDepth = 0;
+
+	for (const character of value) {
+		if (escaped) {
+			current += character;
+			escaped = false;
+		} else if (character === '\\') {
+			current += character;
+			escaped = true;
+		} else if (quote) {
+			current += character;
+			if (character === quote) quote = '';
+		} else if (character === '"' || character === "'") {
+			current += character;
+			quote = character;
+		} else if (character === '(') {
+			current += character;
+			parenDepth++;
+		} else if (character === ')') {
+			current += character;
+			parenDepth--;
+		} else if (character === '{') {
+			current += character;
+			curlyDepth++;
+		} else if (character === '}') {
+			current += character;
+			curlyDepth--;
+		} else if (character === ',' && parenDepth === 0 && curlyDepth === 0) {
+			parts.push(current.trim());
+			current = '';
+		} else {
+			current += character;
+		}
+	}
+
+	parts.push(current.trim());
+	return parts;
+}

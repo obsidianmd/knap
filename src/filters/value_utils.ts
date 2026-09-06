@@ -8,11 +8,24 @@ export function isPlainObject(value: TemplateValue): value is Record<string, Tem
 	return prototype === Object.prototype || prototype === null;
 }
 
-export function recursiveInput(value: string, context?: FilterContext): TemplateValue {
-	if (!context || !Object.prototype.hasOwnProperty.call(context, 'rawValue')) return value;
-	return Array.isArray(context.rawValue) || isPlainObject(context.rawValue)
-		? context.rawValue
-		: value;
+export function inputValue(
+	value: string,
+	context?: FilterContext,
+	parseSerialized = false,
+): TemplateValue {
+	if (context && Object.prototype.hasOwnProperty.call(context, 'rawValue')) {
+		return Array.isArray(context.rawValue) || isPlainObject(context.rawValue)
+			? context.rawValue
+			: value;
+	}
+	if (parseSerialized) {
+		try {
+			return JSON.parse(value);
+		} catch {
+			// Use the filter's string input when it is not serialized JSON.
+		}
+	}
+	return value;
 }
 
 export function mapStringValues(value: TemplateValue, formatter: StringFormatter): TemplateValue {

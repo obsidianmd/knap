@@ -1,5 +1,5 @@
 import type { FilterContext, TemplateValue } from '../types';
-import { mapStringValues, recursiveInput } from './value_utils';
+import { inputValue, mapStringValues } from './value_utils';
 
 function encodeValue(value: string): string {
 	try {
@@ -13,4 +13,4 @@ export const encode_uri = (
 	value: string,
 	_param?: string,
 	context?: FilterContext,
-): TemplateValue => mapStringValues(recursiveInput(value, context), encodeValue);
+): TemplateValue => mapStringValues(inputValue(value, context), encodeValue);

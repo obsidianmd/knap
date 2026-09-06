@@ -1,39 +1,11 @@
 import type { FilterContext } from '../types';
+import { cleanParamToken, splitParams } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
-
-function splitParams(value: string): string[] {
-	const parts: string[] = [];
-	let current = '';
-	let quote = '';
-	let escaped = false;
-	for (const character of value) {
-		if (escaped) {
-			current += character;
-			escaped = false;
-		} else if (character === '\\') {
-			current += character;
-			escaped = true;
-		} else if (quote) {
-			current += character;
-			if (character === quote) quote = '';
-		} else if (character === '"' || character === "'") {
-			current += character;
-			quote = character;
-		} else if (character === ',') {
-			parts.push(current.trim());
-			current = '';
-		} else {
-			current += character;
-		}
-	}
-	parts.push(current.trim());
-	return parts;
-}
 
 function parseHeaders(params: string | undefined): string[] {
 	if (!params) return [];
 	return splitParams(params.replace(/^\(([\s\S]*)\)$/, '$1'))
-		.map(value => value.replace(/^(["'])([\s\S]*)\1$/, '$2'));
+		.map(cleanParamToken);
 }
 
 const escapeCell = (cell: string) => cell.replace(/\|/g, '\\|');
@@ -92,13 +64,15 @@ const formatTable = (
 
 		if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
 			const maxColumns = Math.max(...data.map(row => row.length));
-			const headers = customHeaders.length > 0 ? customHeaders : Array(maxColumns).fill('');
+			const headers = customHeaders.length > 0
+				? [...customHeaders, ...Array(Math.max(0, maxColumns - customHeaders.length)).fill('')]
+				: Array(maxColumns).fill('');
 			return renderTable(headers, data, pretty);
 		}
 
 		if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
 			const headers = customHeaders.length > 0 ? customHeaders : Object.keys(data[0]);
-			const rows = data.map(row => headers.map(header => row[header] || ''));
+			const rows = data.map(row => headers.map(header => row[header] ?? ''));
 			return renderTable(headers, rows, pretty);
 		}
 

@@ -7,6 +7,10 @@ import {
 } from '../src';
 
 describe('applyFiltersWithRegistry', () => {
+	test('returns an empty string when an unfiltered value cannot be serialized', () => {
+		expect(applyFiltersWithRegistry(undefined, '', standardFilters, { variables: {} })).toBe('');
+	});
+
 	test('uses a custom registry and passes the host context', () => {
 		const filters: FilterRegistry<{ origin: string }> = {
 			upper: standardFilters.upper,

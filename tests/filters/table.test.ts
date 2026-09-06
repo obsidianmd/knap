@@ -56,6 +56,27 @@ describe('table filter', () => {
 		expect(result).toContain('| Bob | 25 |');
 	});
 
+	test('preserves cells beyond the supplied custom headers', () => {
+		expect(table('[["Alice",30,"Admin"]]', '("Name", "Age")')).toBe([
+			'| Name | Age |  |',
+			'| - | - | - |',
+			'| Alice | 30 | Admin |',
+		].join('\n'));
+	});
+
+	test('preserves zero and false in object rows', () => {
+		expect(table('[{"count":0,"enabled":false}]')).toBe([
+			'| count | enabled |',
+			'| - | - |',
+			'| 0 | false |',
+		].join('\n'));
+	});
+
+	test('supports commas inside quoted custom headers', () => {
+		expect(table('[["Ada","Writer"]]', '("Name, full", "Role")'))
+			.toContain('| Name, full | Role |');
+	});
+
 	test('handles empty array', () => {
 		// Empty array creates a default single-column table with no rows
 		const result = table('[]');

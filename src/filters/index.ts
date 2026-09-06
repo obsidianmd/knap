@@ -351,7 +351,7 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 	context: FilterContext<TContext>,
 ): string {
 	if (!filterString) {
-		return typeof value === 'string' ? value : JSON.stringify(value);
+		return typeof value === 'string' ? value : JSON.stringify(value) ?? '';
 	}
 
 	let processedValue: unknown = value;

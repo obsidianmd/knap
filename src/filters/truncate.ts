@@ -1,5 +1,6 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
-import { mapStringValues, recursiveInput } from './value_utils';
+import { cleanParamToken, splitParams } from '../parser-utils';
+import { inputValue, mapStringValues } from './value_utils';
 
 type TruncateMode = 'chars' | 'words';
 
@@ -9,42 +10,9 @@ interface TruncateOptions {
 	suffix: string;
 }
 
-function cleanToken(value: string): string {
-	return value.trim().replace(/^(["'])([\s\S]*)\1$/, '$2');
-}
-
-function splitParams(value: string): string[] {
-	const parts: string[] = [];
-	let current = '';
-	let quote = '';
-	let escaped = false;
-	for (const character of value) {
-		if (escaped) {
-			current += character;
-			escaped = false;
-		} else if (character === '\\') {
-			current += character;
-			escaped = true;
-		} else if (quote) {
-			current += character;
-			if (character === quote) quote = '';
-		} else if (character === '"' || character === "'") {
-			current += character;
-			quote = character;
-		} else if (character === ',') {
-			parts.push(cleanToken(current));
-			current = '';
-		} else {
-			current += character;
-		}
-	}
-	parts.push(cleanToken(current));
-	return parts;
-}
-
 function paramParts(param: string | undefined): string[] {
 	return param
-		? splitParams(param.replace(/^\(([\s\S]*)\)$/, '$1'))
+		? splitParams(param.replace(/^\(([\s\S]*)\)$/, '$1')).map(cleanParamToken)
 		: [];
 }
 
@@ -71,7 +39,7 @@ export const validateTruncateParams = (param: string | undefined): ParamValidati
 };
 
 function truncateString(value: string, options: TruncateOptions): string {
-	if (options.limit === 0) return value ? '' : value;
+	if (options.limit === 0) return '';
 	if (options.mode === 'words') {
 		const words = [...value.matchAll(/\S+/g)];
 		if (words.length <= options.limit) return value;
@@ -91,5 +59,5 @@ export const truncate = (
 	context?: FilterContext,
 ): TemplateValue => {
 	const options = parseParams(param);
-	return mapStringValues(recursiveInput(value, context), item => truncateString(item, options));
+	return mapStringValues(inputValue(value, context), item => truncateString(item, options));
 };
