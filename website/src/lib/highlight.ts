@@ -99,6 +99,8 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>,
 
 export function highlightInlineKnap(value: string) {
   const isKnapSyntax = /(\{\{|\}\}|\{%|%\}|\?\?|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)\b)/.test(value)
+    || /(?:==|!=|>=|<=|&&|\|\|)/.test(value)
+    || /(?:^|\s)[<>!](?:\s|$)/.test(value)
     || /^loop\.(?:index|index0|first|last|length)$/.test(value)
     || value === 'item_index';
   return isKnapSyntax ? highlightTokenLine(value, 'knap', false) : undefined;
