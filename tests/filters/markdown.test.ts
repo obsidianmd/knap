@@ -147,9 +147,27 @@ describe('Markdown formatting filters', () => {
 		}));
 	});
 
+	test('formats scalar values through the filter string interface', async () => {
+		await expect(render('{{ value | bold }}', { value: 5 })).resolves.toBe('**5**');
+		await expect(render('{{ value | h1 }}', { value: true })).resolves.toBe('# true');
+	});
+
+	test('does not treat non-plain objects as recursive records', async () => {
+		const created = new Date('2020-01-02T00:00:00.000Z');
+		await expect(render('{{ value | bold }}', { value: created }))
+			.resolves.toBe('**"2020-01-02T00:00:00.000Z"**');
+		await expect(render('{{ value | bold }}', { value: { label: 'dated', created } }))
+			.resolves.toBe('{"label":"**dated**","created":"2020-01-02T00:00:00.000Z"}');
+	});
+
 	test('selects inline or block formatting separately for collection values', async () => {
 		await expect(render('{{ values | code }}', { values: ['one', 'two\nthree'] }))
 			.resolves.toBe('["`one`","```\\ntwo\\nthree\\n```"]');
+	});
+
+	test('uses block formatting when code has a trailing newline', async () => {
+		await expect(render('{{ value | code }}', { value: 'one line\n' }))
+			.resolves.toBe('```\none line\n```\n');
 	});
 });
 

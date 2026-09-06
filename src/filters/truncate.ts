@@ -1,4 +1,5 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
+import { mapStringValues, recursiveInput } from './value_utils';
 
 type TruncateMode = 'chars' | 'words';
 
@@ -77,31 +78,18 @@ function truncateString(value: string, options: TruncateOptions): string {
 		const finalWord = words[options.limit - 1];
 		return `${value.slice(0, finalWord.index + finalWord[0].length).trimEnd()}${options.suffix}`;
 	}
-	const characters = Array.from(value);
+	const characters = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(value)]
+		.map(segment => segment.segment);
 	return characters.length <= options.limit
 		? value
 		: `${characters.slice(0, options.limit).join('')}${options.suffix}`;
-}
-
-function inputValue(value: string, context?: FilterContext): TemplateValue {
-	return context && Object.prototype.hasOwnProperty.call(context, 'rawValue')
-		? context.rawValue
-		: value;
-}
-
-function truncateValue(value: TemplateValue, options: TruncateOptions): TemplateValue {
-	if (typeof value === 'string') return truncateString(value, options);
-	if (Array.isArray(value)) return value.map(item => truncateValue(item, options));
-	if (value && typeof value === 'object') {
-		return Object.fromEntries(
-			Object.entries(value).map(([key, item]) => [key, truncateValue(item, options)]),
-		);
-	}
-	return value;
 }
 
 export const truncate = (
 	value: string,
 	param?: string,
 	context?: FilterContext,
-): TemplateValue => truncateValue(inputValue(value, context), parseParams(param));
+): TemplateValue => {
+	const options = parseParams(param);
+	return mapStringValues(recursiveInput(value, context), item => truncateString(item, options));
+};

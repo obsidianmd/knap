@@ -1,27 +1,9 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
-
-type StringFormatter = (value: string) => string;
-
-function inputValue(value: string, context?: FilterContext): TemplateValue {
-	return context && Object.prototype.hasOwnProperty.call(context, 'rawValue')
-		? context.rawValue
-		: value;
-}
-
-function mapStringValues(value: TemplateValue, formatter: StringFormatter): TemplateValue {
-	if (typeof value === 'string') return formatter(value);
-	if (Array.isArray(value)) return value.map(item => mapStringValues(item, formatter));
-	if (value && typeof value === 'object') {
-		return Object.fromEntries(
-			Object.entries(value).map(([key, item]) => [key, mapStringValues(item, formatter)]),
-		);
-	}
-	return value;
-}
+import { mapStringValues, recursiveInput, type StringFormatter } from './value_utils';
 
 function markdownFilter(formatter: StringFormatter) {
 	return (value: string, _param?: string, context?: FilterContext): TemplateValue =>
-		mapStringValues(inputValue(value, context), formatter);
+		mapStringValues(recursiveInput(value, context), formatter);
 }
 
 function wrapInline(value: string, open: string, close = open): string {
@@ -43,7 +25,7 @@ function splitBlankLinePadding(value: string): { leading: string; content: strin
 }
 
 function isMultiline(value: string): boolean {
-	return /[\r\n]/.test(splitBlankLinePadding(value).content);
+	return /[\r\n]/.test(value);
 }
 
 function formatHeading(level: number, value: string): string {
@@ -90,12 +72,12 @@ export const validateItalicParams = (param: string | undefined): ParamValidation
 
 export const bold = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const marker = cleanParam(param) ?? '*';
-	return mapStringValues(inputValue(value, context), item => wrapInline(item, marker.repeat(2)));
+	return mapStringValues(recursiveInput(value, context), item => wrapInline(item, marker.repeat(2)));
 };
 
 export const italic = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const marker = cleanParam(param) ?? '*';
-	return mapStringValues(inputValue(value, context), item => wrapInline(item, marker));
+	return mapStringValues(recursiveInput(value, context), item => wrapInline(item, marker));
 };
 
 export const strike = markdownFilter(value => wrapInline(value, '~~'));
@@ -133,7 +115,7 @@ export const validateHighlightParams = (param: string | undefined): ParamValidat
 
 export const highlight = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const marker = resolveHighlightMarker(param) ?? '';
-	return mapStringValues(inputValue(value, context), item => wrapInline(item, `==${marker}`, '=='));
+	return mapStringValues(recursiveInput(value, context), item => wrapInline(item, `==${marker}`, '=='));
 };
 
 type HrPosition = 'after' | 'before' | 'both';
@@ -170,7 +152,7 @@ export const validateHrParams = (param: string | undefined): ParamValidationResu
 
 export const hr = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const position = (cleanParam(param) ?? 'after') as HrPosition;
-	return mapStringValues(inputValue(value, context), item => {
+	return mapStringValues(recursiveInput(value, context), item => {
 		if (position === 'before') return prependBlock(item, '---');
 		if (position === 'both') return appendBlock(prependBlock(item, '---'), '---');
 		return appendBlock(item, '---');
@@ -206,7 +188,7 @@ export const validateCodeParams = (param: string | undefined): ParamValidationRe
 
 export const code = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const language = cleanParam(param);
-	return mapStringValues(inputValue(value, context), item =>
+	return mapStringValues(recursiveInput(value, context), item =>
 		language !== undefined || isMultiline(item)
 			? formatCodeBlock(item, language ?? '')
 			: formatInlineCode(item)
@@ -215,7 +197,7 @@ export const code = (value: string, param?: string, context?: FilterContext): Te
 
 export const code_block = (value: string, param?: string, context?: FilterContext): TemplateValue => {
 	const language = cleanParam(param) ?? '';
-	return mapStringValues(inputValue(value, context), item => formatCodeBlock(item, language));
+	return mapStringValues(recursiveInput(value, context), item => formatCodeBlock(item, language));
 };
 
 function formatMathBlock(value: string): string {

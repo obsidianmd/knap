@@ -22,4 +22,10 @@ describe('compact filter', () => {
 			variables: { value: 'text' },
 		})).resolves.toBe('text');
 	});
+
+	test('does not flatten non-plain objects into empty records', async () => {
+		await expect(engine.renderOrThrow('{{ value | compact }}', {
+			variables: { value: new Date('2024-01-02T03:04:05.000Z') },
+		})).resolves.toBe('"2024-01-02T03:04:05.000Z"');
+	});
 });

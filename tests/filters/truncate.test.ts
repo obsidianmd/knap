@@ -9,6 +9,15 @@ describe('truncate filter', () => {
 		await expect(engine.renderOrThrow('{{ value | truncate:6 }}', {
 			variables: { value: 'Hello 🌍!' },
 		})).resolves.toBe('Hello …');
+		await expect(engine.renderOrThrow('{{ value | truncate:1 }}', {
+			variables: { value: '👨‍👩‍👧 family' },
+		})).resolves.toBe('👨‍👩‍👧…');
+	});
+
+	test('truncates scalar values through the filter string interface', async () => {
+		await expect(engine.renderOrThrow('{{ value | truncate:3 }}', {
+			variables: { value: 123456 },
+		})).resolves.toBe('123…');
 	});
 
 	test('truncates by words', async () => {

@@ -1,4 +1,5 @@
 import type { FilterContext, TemplateValue } from '../types';
+import { isPlainObject } from './value_utils';
 
 function inputValue(value: string, context?: FilterContext): TemplateValue {
 	if (context && Object.prototype.hasOwnProperty.call(context, 'rawValue')) {
@@ -22,7 +23,7 @@ export const compact = (
 ): TemplateValue => {
 	const input = inputValue(value, context);
 	if (Array.isArray(input)) return input.filter(item => !isEmpty(item));
-	if (input && typeof input === 'object') {
+	if (isPlainObject(input)) {
 		return Object.fromEntries(Object.entries(input).filter(([, item]) => !isEmpty(item)));
 	}
 	return input;
