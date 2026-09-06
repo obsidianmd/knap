@@ -138,10 +138,10 @@ const docs: FilterDoc[] = [
   { slug: 'h6', name: 'h6', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-six heading.', syntax: ['h6'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h5'], examples: [example({ title: 'Introduction' }, '{{ title | h6 }}', '###### Introduction')] },
   { slug: 'hard-break', name: 'hard_break', searchTerms: ['line break', 'newline'], category: 'Markdown', summary: 'Turn single newlines into Markdown hard line breaks.', syntax: ['hard_break'], notes: ['Two trailing spaces are added before single newlines. Blank lines between paragraphs are preserved.', recursiveMarkdownValues], examples: [example({ text: 'First line\nSecond line\n\nNew paragraph' }, '{{ text | hard_break }}', 'First line  \nSecond line\n\nNew paragraph')] },
   {
-    slug: 'highlight', name: 'highlight', searchTerms: ['mark', 'color'], category: 'Markdown', summary: 'Wrap text in highlight markers.', syntax: ['highlight', 'highlight:🔵', 'highlight:blue'],
-    parameters: ['Optionally pass 🔴, 🟠, 🟡, 🟢, 🔵, or 🟣. The names `red`, `orange`, `yellow`, `green`, `blue`, and `purple` are also accepted.'],
+    slug: 'highlight', name: 'highlight', searchTerms: ['mark', 'color'], category: 'Markdown', summary: 'Wrap text in highlight markers.', syntax: ['highlight', 'highlight:blue'],
+    parameters: ['Optionally pass `red`, `orange`, `yellow`, `green`, `blue`, or `purple` to add a color marker.'],
     notes: [inlineWhitespace, recursiveMarkdownValues], related: ['bold', 'italic', 'strike'],
-    examples: [example({ text: 'Remember this' }, '{{ text | highlight }}', '==Remember this==', 'Default'), example({ text: 'Remember this' }, '{{ text | highlight:🔵 }}', '==🔵Remember this==', 'Color emoji'), example({ text: 'Remember this' }, '{{ text | highlight:blue }}', '==🔵Remember this==', 'Color name')],
+    examples: [example({ text: 'Remember this' }, '{{ text | highlight }}', '==Remember this==', 'Default'), example({ text: 'Remember this' }, '{{ text | highlight:blue }}', '==🔵Remember this==', 'Color')],
   },
   {
     slug: 'hr', name: 'hr', category: 'Markdown', summary: 'Place a horizontal rule around text.', syntax: ['hr', 'hr:before', 'hr:both'],

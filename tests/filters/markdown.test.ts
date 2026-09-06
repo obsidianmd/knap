@@ -78,13 +78,6 @@ describe('Markdown formatting filters', () => {
 			.resolves.toBe(`==${marker}hello==`);
 	});
 
-	test('accepts bare and quoted color markers', async () => {
-		await expect(render('{{ value | highlight:🔴 }}', { value: 'hello' }))
-			.resolves.toBe('==🔴hello==');
-		await expect(render('{{ value | highlight:"🟣" }}', { value: 'hello' }))
-			.resolves.toBe('==🟣hello==');
-	});
-
 	test('applies a highlight color recursively to collections', async () => {
 		await expect(render('{{ values | highlight:blue }}', { values: ['one', { label: 'two' }] }))
 			.resolves.toBe('["==🔵one==",{"label":"==🔵two=="}]');
@@ -94,6 +87,10 @@ describe('Markdown formatting filters', () => {
 		expect(engine.validate('{{ value | highlight:"pink" }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid color "pink"'),
+		});
+		expect(engine.validate('{{ value | highlight:"🔴" }}')[0]).toMatchObject({
+			code: 'INVALID_FILTER_ARGUMENTS',
+			message: expect.stringContaining('invalid color "🔴"'),
 		});
 	});
 

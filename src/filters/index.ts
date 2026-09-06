@@ -107,7 +107,7 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	code_block: { example: 'code_block:"typescript"', validateParams: validateCodeParams },
 	date_modify: { example: 'date_modify:"+1 day"', validateParams: validateDateModifyParams },
 	hr: { example: 'hr:before', validateParams: validateHrParams },
-	highlight: { example: 'highlight:🔵', validateParams: validateHighlightParams },
+	highlight: { example: 'highlight:blue', validateParams: validateHighlightParams },
 	map: { example: 'map:x => x.name', validateParams: validateMapParams },
 	replace: { example: 'replace:"old":"new"', validateParams: validateReplaceParams },
 	slice: { example: 'slice:0,5', validateParams: validateSliceParams },

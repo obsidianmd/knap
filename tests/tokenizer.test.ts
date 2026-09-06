@@ -371,14 +371,6 @@ describe('Tokenizer', () => {
 		});
 	});
 
-	describe('Emoji filter arguments', () => {
-		test('tokenizes a color marker as a bare argument', () => {
-			const result = tokenize('{{ value | highlight:🔴 }}');
-			expect(result.errors).toHaveLength(0);
-			expect(result.tokens.some(token => token.type === 'identifier' && token.value === '🔴')).toBe(true);
-		});
-	});
-
 	describe('Filter Arguments with Empty String', () => {
 		test('tokenizes filter with empty string argument', () => {
 			const result = tokenize('{{"test"|replace:"%":""}}');

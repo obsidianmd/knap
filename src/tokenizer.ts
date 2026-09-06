@@ -560,22 +560,6 @@ function tokenizeExpression(state: TokenizerState, mode: 'variable' | 'tag'): vo
 		return;
 	}
 
-	// Color markers are valid bare filter arguments, e.g. highlight:🔴.
-	const previousType = state.tokens[state.tokens.length - 1]?.type;
-	const colorMarker = previousType && ['colon', 'comma', 'lparen'].includes(previousType)
-		? ['🔴', '🟠', '🟡', '🟢', '🔵', '🟣'].find(marker => lookAhead(state, marker))
-		: undefined;
-	if (colorMarker) {
-		state.tokens.push({
-			type: 'identifier',
-			value: colorMarker,
-			line: startLine,
-			column: startColumn,
-		});
-		advance(state, colorMarker.length);
-		return;
-	}
-
 	// Backslash starts an escaped argument (like \", \" in filter arguments)
 	if (char === '\\') {
 		tokenizeEscapedArgument(state);

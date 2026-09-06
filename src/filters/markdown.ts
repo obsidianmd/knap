@@ -92,15 +92,13 @@ const highlightColorMarkers = {
 	purple: '🟣',
 } as const;
 
-const highlightMarkers = new Set<string>(Object.values(highlightColorMarkers));
-
 function resolveHighlightMarker(param: string | undefined): string | undefined {
 	const color = cleanScalarParam(param);
 	if (color === undefined) return '';
 	if (Object.prototype.hasOwnProperty.call(highlightColorMarkers, color)) {
 		return highlightColorMarkers[color as keyof typeof highlightColorMarkers];
 	}
-	return highlightMarkers.has(color) ? color : undefined;
+	return undefined;
 }
 
 export const validateHighlightParams = (param: string | undefined): ParamValidationResult => {
@@ -110,7 +108,7 @@ export const validateHighlightParams = (param: string | undefined): ParamValidat
 	}
 	return {
 		valid: false,
-		error: `invalid color "${color}". Use a supported color name or circle emoji`,
+		error: `invalid color "${color}". Use red, orange, yellow, green, blue, or purple`,
 	};
 };
 
