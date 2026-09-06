@@ -10,6 +10,16 @@ const escapeHtml = (value) => value.replace(/[&<>"']/g, (character) => ({ '&': '
 function staticCodeBlocks() {
   return (tree) => {
     const visit = (node, parent, index) => {
+      if (node?.type === 'link' && /^https?:\/\//.test(node.url)) {
+        node.data = {
+          ...node.data,
+          hProperties: {
+            ...node.data?.hProperties,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+        };
+      }
       if (node?.type === 'inlineCode' && parent && typeof index === 'number') {
         const highlighted = highlightInlineKnap(node.value);
         if (highlighted) {

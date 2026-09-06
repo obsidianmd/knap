@@ -35,6 +35,7 @@ const pages = [
     summary: filter.summary,
     href: `/filters/${filter.slug}`,
     aliases: filter.aliases ?? [],
+    searchTerms: filter.searchTerms ?? [],
     syntax: filter.syntax,
   })),
 ];
@@ -58,6 +59,12 @@ const pages = [
         </svg>
       </span>
       <input type="search" placeholder="Search documentation…" aria-label="Search documentation" aria-controls="search-results" data-search-input />
+      <button class="command-search-clear" type="button" aria-label="Clear search" data-search-clear hidden>
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button>
     </header>
     <div class="command-results" id="search-results" role="listbox" data-search-results></div>
   </section>

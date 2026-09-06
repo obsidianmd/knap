@@ -24,7 +24,7 @@
 
   > header {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
     gap: 12px;
     align-items: center;
     border-bottom: 1px solid var(--line);
@@ -51,6 +51,24 @@
     &::placeholder {
       color: var(--faint);
     }
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+  }
+}
+.command-search-clear {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--faint);
+  padding: 4px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--muted);
   }
 }
 .command-results {

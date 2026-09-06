@@ -1,4 +1,4 @@
-.hero-grid, .markdown-native, .install-section, .feature-grid, .used-by {
+.hero-grid, .markdown-native, .install-section, .used-by {
   width: min(calc(100% - 48px), var(--reading));
   margin-inline: auto;
 }
@@ -36,7 +36,7 @@
 
 }
 
-.markdown-native-heading, .section-heading, .used-by-heading, .install-heading {
+.markdown-native-heading, .used-by-heading, .install-heading {
   h2 {
     margin: 0;
     font-size: var(--font-size-heading);
@@ -83,24 +83,6 @@
   margin: 18px 0 0;
 }
 
-.feature-grid {
-  padding-block: 56px;
-}
-
-.feature-list {
-  margin-top: 24px;
-  margin-bottom: 0;
-  padding-left: 1.25em;
-
-  li + li {
-    margin-top: 8px;
-  }
-
-  li::marker {
-    color: var(--faint);
-  }
-}
-
 .used-by {
   margin-top: 56px;
 }
@@ -119,10 +101,20 @@
   border-radius: 12px;
   background: var(--panel);
   padding: 18px;
+  transition: background 150ms ease;
 
   > strong {
     color: var(--muted);
     font-weight: 400;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: #222120;
+
+    h3 {
+      color: #f2f0e5;
+    }
   }
 
 }
@@ -133,6 +125,7 @@
     font-size: inherit;
     font-weight: 400;
     line-height: 1.5;
+    transition: color 150ms ease;
   }
 
   > span {
@@ -143,7 +136,7 @@
 }
 
 @media (max-width: 760px) {
-  .hero-grid, .markdown-native, .install-section, .feature-grid, .used-by {
+  .hero-grid, .markdown-native, .install-section, .used-by {
     width: min(calc(100% - 32px), var(--reading));
   }
 

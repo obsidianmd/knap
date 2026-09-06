@@ -68,9 +68,3 @@ Knap was created for [Obsidian](https://obsidian.md) and is named after [flintkn
 
 - [Obsidian Web Clipper](https://obsidian.md/clipper)
 - [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer)
-
-## Why Knap?
-
-- **Safe by design.** An AST interpreter handles templates. Knap does not use `eval` or execute arbitrary JavaScript.
-- **Application-owned.** Apps supply variables, asynchronous resolvers, and custom filters. Knap is independent of any host environment.
-- **Useful diagnostics.** Errors and warnings include stable codes, messages, lines, and columns for editor tooling and helpful user feedback.

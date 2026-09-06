@@ -86,6 +86,10 @@ const output = await engine.renderOrThrow(
 
 Set `{ trimOutput: false }` in render options to preserve surrounding template whitespace.
 
+## Execution model
+
+Knap parses templates into an AST and interprets them without using `eval` or executing arbitrary JavaScript. Applications control the variables, asynchronous resolvers, and custom filters available to each engine.
+
 ## Editor tooling
 
 The lower-level exports let editors tokenize once, inspect an AST, and validate variables or filters independently.

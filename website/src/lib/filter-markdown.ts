@@ -21,7 +21,8 @@ export function filterMarkdown(filter: FilterDoc) {
   if (filter.aliases?.length) lines.push(`Also available as ${filter.aliases.map((alias) => `\`${alias}\``).join(', ')}.`, '');
 
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
-  if (behavior.length) lines.push('## Behavior', '', ...behavior.map((note) => `- ${note}`), '');
+  const references = (filter.references ?? []).map((reference) => `[${reference.label}](${reference.href})`);
+  if (behavior.length || references.length) lines.push('## Behavior', '', ...behavior.map((note) => `- ${note}`), ...references.map((reference) => `- ${reference}`), '');
 
   lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
   filter.examples.forEach((item) => {

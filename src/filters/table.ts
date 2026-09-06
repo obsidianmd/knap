@@ -41,18 +41,6 @@ export const table = (str: string, params?: string, context?: FilterContext): st
 			return table.trim();
 		}
 
-		// Handle array of objects
-		if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
-			const headers = customHeaders.length > 0 ? customHeaders : Object.keys(data[0]);
-			let table = `| ${headers.join(' | ')} |\n| ${headers.map(() => '-').join(' | ')} |\n`;
-
-			data.forEach(row => {
-				table += `| ${headers.map(header => escapeCell(String(row[header] || ''))).join(' | ')} |\n`;
-			});
-
-			return table.trim();
-		}
-
 		// Handle array of arrays
 		if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
 			const maxColumns = Math.max(...data.map(row => row.length));
@@ -62,6 +50,18 @@ export const table = (str: string, params?: string, context?: FilterContext): st
 			data.forEach(row => {
 				const paddedRow = [...row, ...Array(maxColumns - row.length).fill('')];
 				table += `| ${paddedRow.map(cell => escapeCell(String(cell))).join(' | ')} |\n`;
+			});
+
+			return table.trim();
+		}
+
+		// Handle array of objects
+		if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+			const headers = customHeaders.length > 0 ? customHeaders : Object.keys(data[0]);
+			let table = `| ${headers.join(' | ')} |\n| ${headers.map(() => '-').join(' | ')} |\n`;
+
+			data.forEach(row => {
+				table += `| ${headers.map(header => escapeCell(String(row[header] || ''))).join(' | ')} |\n`;
 			});
 
 			return table.trim();

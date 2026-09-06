@@ -17,7 +17,7 @@ const exampleHeadings = filter.examples.flatMap((item) =>
 );
 const headings = [
   { depth: 2, slug: 'syntax', text: 'Syntax' },
-  ...(filter.parameters?.length || filter.notes?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
+  ...(filter.parameters?.length || filter.notes?.length || filter.references?.length ? [{ depth: 2, slug: 'behavior', text: 'Behavior' }] : []),
   { depth: 2, slug: 'examples', text: filter.examples.length === 1 ? 'Example' : 'Examples' },
   ...exampleHeadings,
   ...(filter.related?.length ? [{ depth: 2, slug: 'related', text: 'Related filters' }] : []),
@@ -33,7 +33,7 @@ const headings = [
     {filter.aliases?.length && <p class="filter-alias-note">Also available as {filter.aliases.map((alias) => <code>{alias}</code>)}.</p>}
   </section>
 
-  {(filter.parameters?.length || filter.notes?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li>{note}</li>)}</ul></section>}
+  {(filter.parameters?.length || filter.notes?.length || filter.references?.length) && <section id="behavior" class="doc-section"><h2>Behavior</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li>{note}</li>)}{filter.references?.map((reference) => <li><a href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label}</a></li>)}</ul></section>}
 
   <section id="examples" class="doc-section">
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>

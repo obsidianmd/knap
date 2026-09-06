@@ -81,6 +81,7 @@ type SearchItem = {
   summary: string;
   href: string;
   aliases?: string[];
+  searchTerms?: string[];
   syntax?: string[];
   tone?: 'variable';
 };
@@ -93,12 +94,13 @@ function setupSearch() {
   const trigger = document.querySelector<HTMLButtonElement>('[data-search-trigger]');
   const backdrop = document.querySelector<HTMLElement>('[data-search-backdrop]');
   const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const clearButton = document.querySelector<HTMLButtonElement>('[data-search-clear]');
   const resultsElement = document.querySelector<HTMLElement>('[data-search-results]');
   const data = document.querySelector<HTMLScriptElement>('#search-index')?.textContent;
-  if (!trigger || !backdrop || !input || !resultsElement || !data) return;
+  if (!trigger || !backdrop || !input || !clearButton || !resultsElement || !data) return;
 
   const items = JSON.parse(data) as SearchItem[];
-  let results = items.filter((item) => item.kind !== 'syntax' && item.kind !== 'section').slice(0, 12);
+  let results = items.filter((item) => item.kind === 'filter').slice(0, 12);
   let activeIndex = 0;
 
   const render = () => {
@@ -129,8 +131,8 @@ function setupSearch() {
     const query = input.value.trim().toLowerCase();
     results = items
       .filter((item) => query
-        ? [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)
-        : item.kind !== 'syntax' && item.kind !== 'section')
+        ? [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.searchTerms ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)
+        : item.kind === 'filter')
       .slice(0, 12);
     activeIndex = 0;
     render();
@@ -138,6 +140,7 @@ function setupSearch() {
 
   const open = () => {
     input.value = '';
+    clearButton.hidden = true;
     update();
     backdrop.hidden = false;
     input.focus({ preventScroll: true });
@@ -146,7 +149,16 @@ function setupSearch() {
 
   trigger.addEventListener('click', open);
   backdrop.addEventListener('mousedown', (event) => { if (event.target === backdrop) close(); });
-  input.addEventListener('input', update);
+  input.addEventListener('input', () => {
+    clearButton.hidden = input.value.length === 0;
+    update();
+  });
+  clearButton.addEventListener('click', () => {
+    input.value = '';
+    clearButton.hidden = true;
+    update();
+    input.focus();
+  });
   resultsElement.addEventListener('mousemove', (event) => {
     const result = (event.target as Element).closest<HTMLElement>('[data-result-index]');
     if (!result) return;
