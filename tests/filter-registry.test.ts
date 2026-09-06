@@ -23,6 +23,15 @@ describe('applyFiltersWithRegistry', () => {
 		expect(output).toBe('KNAP@https://obsidian.md');
 	});
 
+	test('passes the current typed value through rawValue while preserving string arguments', () => {
+		const filters: FilterRegistry = {
+			inspect: (value, _param, context) => JSON.stringify({ value, rawValue: context?.rawValue }),
+		};
+		const output = applyFiltersWithRegistry(['one', 'two'], 'inspect', filters, { variables: {} });
+
+		expect(output).toBe('{"value":"[\\"one\\",\\"two\\"]","rawValue":["one","two"]}');
+	});
+
 	test('rejects asynchronous filters in the synchronous helper', () => {
 		const filters: FilterRegistry = {
 			async_filter: async value => value,

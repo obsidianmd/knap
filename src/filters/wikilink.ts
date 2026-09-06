@@ -1,4 +1,4 @@
-export const wikilink = (str: string, param?: string): string => {
+const wikiReference = (str: string, param: string | undefined, prefix: string): string => {
 	if (!str.trim()) {
 		return str;
 	}
@@ -19,7 +19,7 @@ export const wikilink = (str: string, param?: string): string => {
 				if (typeof value === 'object' && value !== null) {
 					return processObject(value);
 				}
-				return `[[${key}|${value}]]`;
+				return `${prefix}[[${key}|${value}]]`;
 			}).flat();
 		};
 
@@ -28,7 +28,7 @@ export const wikilink = (str: string, param?: string): string => {
 				if (typeof item === 'object' && item !== null) {
 					return processObject(item);
 				}
-				return item ? (alias ? `[[${item}|${alias}]]` : `[[${item}]]`) : '';
+				return item ? (alias ? `${prefix}[[${item}|${alias}]]` : `${prefix}[[${item}]]`) : '';
 			});
 			return JSON.stringify(result);
 		} else if (typeof data === 'object' && data !== null) {
@@ -36,7 +36,11 @@ export const wikilink = (str: string, param?: string): string => {
 		}
 	} catch (error) {
 		// If parsing fails, treat it as a single string
-		return alias ? `[[${str}|${alias}]]` : `[[${str}]]`;
+		return alias ? `${prefix}[[${str}|${alias}]]` : `${prefix}[[${str}]]`;
 	}
 	return str;
 };
+
+export const wikilink = (str: string, param?: string): string => wikiReference(str, param, '');
+
+export const embed = (str: string, param?: string): string => wikiReference(str, param, '!');

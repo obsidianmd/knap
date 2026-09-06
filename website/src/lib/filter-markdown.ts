@@ -1,6 +1,10 @@
 import type { FilterDoc } from '../../lib/filter-docs';
 
-const fence = (language: string, code: string, title?: string) => `\`\`\`${language}${title ? ` title="${title}"` : ''}\n${code}\n\`\`\``;
+const fence = (language: string, code: string, title?: string) => {
+  const longestRun = Math.max(0, ...Array.from(code.matchAll(/`+/g), (match) => match[0].length));
+  const delimiter = '`'.repeat(Math.max(3, longestRun + 1));
+  return `${delimiter}${language}${title ? ` title="${title}"` : ''}\n${code}\n${delimiter}`;
+};
 
 export function filterMarkdown(filter: FilterDoc) {
   const lines = [

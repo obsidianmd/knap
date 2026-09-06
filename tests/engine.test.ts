@@ -146,6 +146,21 @@ describe('createEngine', () => {
 		});
 	});
 
+	test('preserves the string filter argument and exposes the original typed value', async () => {
+		const inspect: TemplateFilter = (value, _param, context) => JSON.stringify({
+			value,
+			rawValue: context?.rawValue,
+		});
+		const engine = createEngine({ filters: { inspect } });
+
+		const result = await engine.render('{{items|inspect}}', {
+			variables: { items: ['one', 'two'] },
+		});
+
+		expect(result.output).toBe('{"value":"[\\"one\\",\\"two\\"]","rawValue":["one","two"]}');
+		expect(result.errors).toEqual([]);
+	});
+
 	test('renderOrThrow throws the structured error collection', async () => {
 		const engine = createEngine({ filters: standardFilters });
 

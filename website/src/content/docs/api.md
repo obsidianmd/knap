@@ -108,6 +108,8 @@ const variableNames = validateVariables(parsed.ast);
 
 `applyFiltersWithRegistry()` applies a synchronous filter chain when a host needs Knap filter syntax outside a full render.
 
+Filter callbacks receive the compatibility string value as their first argument. `FilterContext.rawValue` contains the original typed value for filters that need to distinguish collections from literal JSON text.
+
 ## Package exports
 
 | Import | Includes |

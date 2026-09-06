@@ -6,17 +6,45 @@ import type {
 	ParamValidationResult,
 	ParamValidator,
 	TemplateFilter,
+	TemplateValue,
 } from '../types';
 export type { FilterMetadata, ParamValidationResult, ParamValidator } from '../types';
 
 import { blockquote } from './blockquote';
+import {
+	bold,
+	code,
+	code_block,
+	comment,
+	escape_md,
+	hard_break,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	highlight,
+	hr,
+	italic,
+	math,
+	math_block,
+	strike,
+	validateBoldParams,
+	validateCodeParams,
+	validateHighlightParams,
+	validateHrParams,
+	validateItalicParams,
+} from './markdown';
 import { calc, validateCalcParams } from './calc';
 import { callout } from './callout';
 import { camel } from './camel';
 import { capitalize } from './capitalize';
+import { compact } from './compact';
 import { date } from './date';
 import { date_modify, validateDateModifyParams } from './date_modify';
 import { decode_uri } from './decode_uri';
+import { encode_uri } from './encode_uri';
 import { first } from './first';
 import { footnote } from './footnote';
 import { fragment_link } from './fragment_link';
@@ -34,6 +62,7 @@ import { nth, validateNthParams } from './nth';
 import { number_format } from './number_format';
 import { object, validateObjectParams } from './object';
 import { pascal } from './pascal';
+import { parse_json } from './parse_json';
 import { reverse } from './reverse';
 import { remove_attr } from './remove_attr';
 import { remove_tags } from './remove_tags';
@@ -43,19 +72,21 @@ import { round, validateRoundParams } from './round';
 import { safe_name, validateSafeNameParams } from './safe_name';
 import { slice, validateSliceParams } from './slice';
 import { snake } from './snake';
+import { sort, validateSortParams } from './sort';
 import { split } from './split';
 import { strip_attr } from './strip_attr';
 import { strip_md } from './strip_md';
 import { strip_tags } from './strip_tags';
-import { table } from './table';
+import { table, table_pretty } from './table';
 import { template, validateTemplateParams } from './template';
 import { title } from './title';
 import { trim } from './trim';
+import { truncate, validateTruncateParams } from './truncate';
 import { uncamel } from './uncamel';
 import { unescape } from './unescape';
 import { unique } from './unique';
 import { upper } from './upper';
-import { wikilink } from './wikilink';
+import { embed, wikilink } from './wikilink';
 import { duration } from './duration';
 import { yaml } from './yaml';
 
@@ -63,7 +94,7 @@ type FilterFunction = (
 	value: string,
 	param?: string,
 	context?: FilterContext,
-) => string | any[];
+) => TemplateValue;
 
 // ============================================================================
 // Filter Metadata for Validation
@@ -72,24 +103,44 @@ type FilterFunction = (
 const filterMetadata: Record<string, FilterMetadata> = {
 	// Filters with validators
 	calc: { example: 'calc:"+10"', validateParams: validateCalcParams },
+	code: { example: 'code:"typescript"', validateParams: validateCodeParams },
+	code_block: { example: 'code_block:"typescript"', validateParams: validateCodeParams },
 	date_modify: { example: 'date_modify:"+1 day"', validateParams: validateDateModifyParams },
+	hr: { example: 'hr:before', validateParams: validateHrParams },
+	highlight: { example: 'highlight:🔵', validateParams: validateHighlightParams },
 	map: { example: 'map:x => x.name', validateParams: validateMapParams },
 	replace: { example: 'replace:"old":"new"', validateParams: validateReplaceParams },
 	slice: { example: 'slice:0,5', validateParams: validateSliceParams },
+	sort: { example: 'sort:(name, desc)', validateParams: validateSortParams },
 	template: { example: 'template:"${name}"', validateParams: validateTemplateParams },
+	truncate: { example: 'truncate:(100, words)', validateParams: validateTruncateParams },
 
 	// Filters with optional parameters (examples for documentation)
 	blockquote: {},
+	bold: { example: 'bold:_', validateParams: validateBoldParams },
 	callout: { example: 'callout:info' },
 	camel: {},
 	capitalize: {},
+	compact: {},
+	comment: {},
 	date: { example: 'date:"YYYY-MM-DD"' },
 	decode_uri: {},
 	duration: {},
+	embed: { example: 'embed:"Preview"' },
+	encode_uri: {},
+	escape_md: {},
 	first: {},
 	footnote: {},
 	fragment_link: {},
+	h1: {},
+	h2: {},
+	h3: {},
+	h4: {},
+	h5: {},
+	h6: {},
+	hard_break: {},
 	image: {},
+	italic: { example: 'italic:_', validateParams: validateItalicParams },
 	join: { example: 'join:", "' },
 	kebab: {},
 	last: {},
@@ -97,11 +148,14 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	link: {},
 	list: { example: 'list:numbered', validateParams: validateListParams },
 	lower: {},
+	math: {},
+	math_block: {},
 	merge: {},
 	nth: { example: 'nth:2', validateParams: validateNthParams },
 	number_format: {},
 	object: { example: 'object:keys', validateParams: validateObjectParams },
 	pascal: {},
+	parse_json: {},
 	remove_attr: {},
 	remove_tags: {},
 	replace_tags: {},
@@ -114,7 +168,9 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	strip_md: {},
 	strip_tags: {},
 	stripmd: {},
+	strike: {},
 	table: {},
+	table_pretty: {},
 	title: {},
 	trim: {},
 	uncamel: {},
@@ -133,18 +189,36 @@ export const standardFilterMetadata: Readonly<Record<string, FilterMetadata>> = 
 
 const filters: Record<string, FilterFunction> = {
 	blockquote,
+	bold,
 	calc,
 	callout,
 	camel,
 	capitalize,
+	compact,
+	code,
+	code_block,
+	comment,
 	date_modify,
 	date,
 	decode_uri,
 	duration,
+	embed,
+	encode_uri,
+	escape_md,
 	first,
 	footnote,
 	fragment_link,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	hard_break,
+	highlight,
+	hr,
 	image,
+	italic,
 	join,
 	kebab,
 	last,
@@ -153,11 +227,14 @@ const filters: Record<string, FilterFunction> = {
 	list,
 	lower,
 	map,
+	math,
+	math_block,
 	merge,
 	number_format,
 	nth,
 	object,
 	pascal,
+	parse_json,
 	reverse,
 	remove_attr,
 	remove_tags,
@@ -167,15 +244,19 @@ const filters: Record<string, FilterFunction> = {
 	safe_name,
 	slice,
 	snake,
+	sort,
 	split,
 	strip_attr,
 	strip_md,
 	strip_tags,
 	stripmd: strip_md, // an alias for strip_md
+	strike,
 	table,
+	table_pretty,
 	template,
 	title,
 	trim,
+	truncate,
 	uncamel,
 	unescape,
 	unique,
@@ -264,7 +345,7 @@ function isThenable(value: unknown): value is PromiseLike<unknown> {
  * while keeping parsing and chaining semantics in Knap.
  */
 export function applyFiltersWithRegistry<TContext = unknown>(
-	value: string | any[],
+	value: unknown,
 	filterString: string,
 	registry: Readonly<FilterRegistry<TContext>>,
 	context: FilterContext<TContext>,
@@ -283,8 +364,11 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 
 		const stringInput = typeof processedValue === 'string'
 			? processedValue
-			: JSON.stringify(processedValue);
-		const output = filter(stringInput, params.join(':'), context);
+			: JSON.stringify(processedValue) ?? '';
+		const output = filter(stringInput, params.join(':'), {
+			...context,
+			rawValue: processedValue,
+		});
 		if (isThenable(output)) {
 			throw new TypeError(`Filter "${name}" is asynchronous; use engine.render() for async filters`);
 		}

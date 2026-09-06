@@ -1,101 +1,127 @@
 import type { FilterContext } from '../types';
-import { errorMessage, reportFilterWarning } from './warnings';
+import { reportFilterWarning } from './warnings';
 
-export const table = (str: string, params?: string, context?: FilterContext): string => {
-	// Handle empty or invalid input
-	if (!str || str === 'undefined' || str === 'null') {
-		return str;
+function splitParams(value: string): string[] {
+	const parts: string[] = [];
+	let current = '';
+	let quote = '';
+	let escaped = false;
+	for (const character of value) {
+		if (escaped) {
+			current += character;
+			escaped = false;
+		} else if (character === '\\') {
+			current += character;
+			escaped = true;
+		} else if (quote) {
+			current += character;
+			if (character === quote) quote = '';
+		} else if (character === '"' || character === "'") {
+			current += character;
+			quote = character;
+		} else if (character === ',') {
+			parts.push(current.trim());
+			current = '';
+		} else {
+			current += character;
+		}
 	}
+	parts.push(current.trim());
+	return parts;
+}
+
+function parseHeaders(params: string | undefined): string[] {
+	if (!params) return [];
+	return splitParams(params.replace(/^\(([\s\S]*)\)$/, '$1'))
+		.map(value => value.replace(/^(["'])([\s\S]*)\1$/, '$2'));
+}
+
+const escapeCell = (cell: string) => cell.replace(/\|/g, '\\|');
+const cellWidth = (cell: string) => Array.from(cell).length;
+const padCell = (cell: string, width: number) => `${cell}${' '.repeat(width - cellWidth(cell))}`;
+
+function renderTable(headers: unknown[], rows: unknown[][], pretty: boolean): string {
+	const columnCount = headers.length;
+	const normalizedHeaders = headers.map(value => escapeCell(String(value)));
+	const normalizedRows = rows.map(row =>
+		[...row, ...Array(Math.max(0, columnCount - row.length)).fill('')]
+			.slice(0, columnCount)
+			.map(value => escapeCell(String(value))),
+	);
+
+	if (!pretty) {
+		return [
+			`| ${normalizedHeaders.join(' | ')} |`,
+			`| ${normalizedHeaders.map(() => '-').join(' | ')} |`,
+			...normalizedRows.map(row => `| ${row.join(' | ')} |`),
+		].join('\n');
+	}
+
+	const widths = normalizedHeaders.map((header, column) => Math.max(
+		3,
+		cellWidth(header),
+		...normalizedRows.map(row => cellWidth(row[column])),
+	));
+	const formatRow = (row: string[]) =>
+		`| ${row.map((cell, column) => padCell(cell, widths[column])).join(' | ')} |`;
+
+	return [
+		formatRow(normalizedHeaders),
+		`| ${widths.map(width => '-'.repeat(width)).join(' | ')} |`,
+		...normalizedRows.map(formatRow),
+	].join('\n');
+}
+
+const formatTable = (
+	str: string,
+	params: string | undefined,
+	context: FilterContext | undefined,
+	pretty: boolean,
+): string => {
+	if (!str || str === 'undefined' || str === 'null') return str;
 
 	try {
 		const data = JSON.parse(str);
-		let customHeaders: string[] = [];
+		const customHeaders = parseHeaders(params);
 
-		// Parse custom headers from params if provided
-		if (params) {
-			try {
-				// Remove outer parentheses if present and split by comma
-				const headerStr = params.replace(/^\((.*)\)$/, '$1');
-				customHeaders = headerStr.split(',').map(header =>
-					header.trim().replace(/^["'](.*)["']$/, '$1')
-				);
-			} catch (error) {
-				reportFilterWarning(context, `Could not parse table headers: ${errorMessage(error)}`);
-			}
-		}
-
-		// Function to escape pipe characters in cell content
-		const escapeCell = (cell: string) => cell.replace(/\|/g, '\\|');
-
-		// Handle single object
 		if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
 			const entries = Object.entries(data);
 			if (entries.length === 0) return str;
-
-			const [[firstKey, firstValue], ...restEntries] = entries;
-			let table = `| ${escapeCell(firstKey)} | ${escapeCell(String(firstValue))} |\n| - | - |\n`;
-
-			restEntries.forEach(([key, value]) => {
-				table += `| ${escapeCell(key)} | ${escapeCell(String(value))} |\n`;
-			});
-			return table.trim();
+			return renderTable(entries[0], entries.slice(1), pretty);
 		}
 
-		// Handle array of arrays
 		if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
 			const maxColumns = Math.max(...data.map(row => row.length));
 			const headers = customHeaders.length > 0 ? customHeaders : Array(maxColumns).fill('');
-			let table = `| ${headers.join(' | ')} |\n| ${headers.map(() => '-').join(' | ')} |\n`;
-
-			data.forEach(row => {
-				const paddedRow = [...row, ...Array(maxColumns - row.length).fill('')];
-				table += `| ${paddedRow.map(cell => escapeCell(String(cell))).join(' | ')} |\n`;
-			});
-
-			return table.trim();
+			return renderTable(headers, data, pretty);
 		}
 
-		// Handle array of objects
 		if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
 			const headers = customHeaders.length > 0 ? customHeaders : Object.keys(data[0]);
-			let table = `| ${headers.join(' | ')} |\n| ${headers.map(() => '-').join(' | ')} |\n`;
-
-			data.forEach(row => {
-				table += `| ${headers.map(header => escapeCell(String(row[header] || ''))).join(' | ')} |\n`;
-			});
-
-			return table.trim();
+			const rows = data.map(row => headers.map(header => row[header] || ''));
+			return renderTable(headers, rows, pretty);
 		}
 
-		// Handle simple array with custom headers
 		if (Array.isArray(data)) {
 			if (customHeaders.length > 0) {
-				const numColumns = customHeaders.length;
-				let table = `| ${customHeaders.join(' | ')} |\n| ${customHeaders.map(() => '-').join(' | ')} |\n`;
-
-				// Break the array into rows based on the number of columns
-				for (let i = 0; i < data.length; i += numColumns) {
-					const row = data.slice(i, i + numColumns);
-					// Pad the row with empty strings if needed
-					const paddedRow = [...row, ...Array(numColumns - row.length).fill('')];
-					table += `| ${paddedRow.map(cell => escapeCell(String(cell))).join(' | ')} |\n`;
+				const rows: unknown[][] = [];
+				for (let index = 0; index < data.length; index += customHeaders.length) {
+					rows.push(data.slice(index, index + customHeaders.length));
 				}
-				return table.trim();
+				return renderTable(customHeaders, rows, pretty);
 			}
-
-			// Default single column table if no headers provided
-			let table = "| Value |\n| - |\n";
-			data.forEach(item => {
-				table += `| ${escapeCell(String(item))} |\n`;
-			});
-
-			return table.trim();
+			return renderTable(['Value'], data.map(item => [item]), pretty);
 		}
 
-		// If none of the above cases match, return the original string
 		return str;
 	} catch {
 		reportFilterWarning(context, 'Could not parse value as JSON table data', 'INVALID_FILTER_INPUT');
 		return str;
 	}
 };
+
+export const table = (str: string, params?: string, context?: FilterContext): string =>
+	formatTable(str, params, context, false);
+
+export const table_pretty = (str: string, params?: string, context?: FilterContext): string =>
+	formatTable(str, params, context, true);

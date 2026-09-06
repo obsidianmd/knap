@@ -18,14 +18,14 @@ director: {{ directors | wikilink }}
 genre: {{ genres }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ plot | blockquote }}
 
 {% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table }}
+{{ cast | slice:0,4 | table_pretty }}
 {% endif %}
 ```
 
@@ -44,12 +44,12 @@ genre: ["Action","Sci-fi"]
 
 ## Cast
 
-| Actor | Role |
-| - | - |
-| Keanu Reeves | Neo |
-| Laurence Fishburne | Morpheus |
-| Carrie-Anne Moss | Trinity |
-| Hugo Weaving | Agent Smith |
+| Actor              | Role        |
+| ------------------ | ----------- |
+| Keanu Reeves       | Neo         |
+| Laurence Fishburne | Morpheus    |
+| Carrie-Anne Moss   | Trinity     |
+| Hugo Weaving       | Agent Smith |
 ```
 
 ## Install

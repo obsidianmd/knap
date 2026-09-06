@@ -69,6 +69,8 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>,
   const tokens = line.split(pattern).filter(Boolean);
   let expectsFilter = false;
   let inKnapExpression = false;
+  let currentFilter: string | undefined;
+  let inFilterArguments = false;
 
   return tokens.map((token, index) => {
     let className = tokenClass(token, language);
@@ -79,11 +81,21 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>,
       else if (!inKnapExpression) className = undefined;
     }
 
-    if (token === '|' && language === 'knap' && inKnapExpression) expectsFilter = true;
+    if (token === '|' && language === 'knap' && inKnapExpression) {
+      expectsFilter = true;
+      currentFilter = undefined;
+      inFilterArguments = false;
+    }
     else if (expectsFilter && /^\s+$/.test(token)) { /* keep waiting */ }
     else if (expectsFilter) {
       className = 'syn-filter';
+      currentFilter = token;
       expectsFilter = false;
+    }
+
+    if (token === ':' && currentFilter) inFilterArguments = true;
+    if (language === 'knap' && inKnapExpression && inFilterArguments && currentFilter !== 'map' && className === 'syn-variable') {
+      className = 'syn-string';
     }
 
     if ((language === 'ts' || language === 'json') && className === 'syn-variable') {

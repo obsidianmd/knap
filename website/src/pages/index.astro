@@ -15,14 +15,14 @@ director: {{ directors | wikilink }}
 genre: {{ genres }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ plot | blockquote }}
 
 {% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table }}
+{{ cast | slice:0,4 | table_pretty }}
 {% endif %}`,
     markdown: `---
 year: 1999
@@ -36,12 +36,12 @@ genre: ["Action","Sci-fi"]
 
 ## Cast
 
-| Actor | Role |
-| - | - |
-| Keanu Reeves | Neo |
-| Laurence Fishburne | Morpheus |
-| Carrie-Anne Moss | Trinity |
-| Hugo Weaving | Agent Smith |`,
+| Actor              | Role        |
+| ------------------ | ----------- |
+| Keanu Reeves       | Neo         |
+| Laurence Fishburne | Morpheus    |
+| Carrie-Anne Moss   | Trinity     |
+| Hugo Weaving       | Agent Smith |`,
   },
   {
     key: 'recipe',
@@ -52,7 +52,7 @@ servings: {{ servings }}
 source: {{ url }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ description | blockquote }}
 
@@ -98,7 +98,7 @@ source: {{ url }}
 tags: {{ tags }}
 ---
 
-# {{ title ?? "Untitled" }}
+{{ (title ?? "Untitled") | h1 }}
 
 {{ description | blockquote }}
 
@@ -126,7 +126,7 @@ doi: {{ doi }}
 source: {{ url }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 ## Abstract
 

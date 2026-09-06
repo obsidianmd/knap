@@ -121,43 +121,63 @@ Parameters follow a filter name after a colon, and filters can be chained with
 ```liquid
 {{ title | trim | upper }}
 {{ published | date:"YYYY-MM-DD" }}
+{{ title | h1 }}
+{{ source | code:"typescript" }}
+{{ json_text | parse_json | bold | join:", " }}
 ```
+
+Markdown formatting filters apply recursively to string values in arrays and
+objects while preserving keys and non-string values. `parse_json` explicitly
+turns JSON text into a typed value for collection-aware filter chains.
 
 ### Standard filters
 
 | Filter | Purpose |
 | --- | --- |
 | `blockquote` | Format text as a Markdown block quote. |
+| `bold`, `italic`, `strike`, `highlight` | Wrap text in inline Markdown formatting. |
 | `calc` | Apply a basic arithmetic operation to a number. |
-| `callout` | Format content as an Obsidian callout. |
+| `callout` | Format content as a callout. |
 | `camel`, `kebab`, `pascal`, `snake` | Convert text to the named casing style. |
 | `capitalize`, `lower`, `title`, `upper` | Change text capitalization. |
+| `code`, `code_block` | Format inline code or a fenced code block. |
+| `comment` | Format a comment. |
+| `compact` | Remove null and empty-string values from a collection. |
 | `date` | Parse and format a date. |
 | `date_modify` | Add or subtract a date unit. |
-| `decode_uri` | Decode percent-encoded URI text. |
+| `decode_uri`, `encode_uri` | Decode or encode URI component text. |
 | `duration` | Format ISO 8601 durations or a number of seconds. |
+| `embed` | Format a wiki-style embed. |
+| `escape_md` | Escape Markdown punctuation so text renders literally. |
 | `first`, `last`, `nth`, `slice` | Select values or ranges from arrays and text. |
 | `footnote` | Format values as Markdown footnotes. |
 | `fragment_link` | Add text-fragment links using a source URL parameter. |
+| `h1`, `h2`, `h3`, `h4`, `h5`, `h6` | Format Markdown headings. |
+| `hard_break` | Turn single newlines into Markdown hard line breaks. |
+| `hr` | Place a horizontal rule before or after a value. |
 | `image` | Format a URL as a Markdown image. |
 | `join`, `split` | Join arrays or split strings. |
 | `length` | Return the length of a value. |
-| `link`, `wikilink` | Format Markdown links or Obsidian wikilinks. |
+| `link`, `wikilink` | Format Markdown links or wikilinks. |
 | `list` | Format array-like data as a list. |
 | `map` | Map fields from structured array data. |
+| `math`, `math_block` | Format inline or block math. |
 | `merge` | Merge structured values. |
 | `number_format`, `round` | Format or round numeric values. |
 | `object` | Select or reshape structured object data. |
+| `parse_json` | Parse JSON text into a typed template value. |
 | `remove_attr`, `strip_attr` | Remove selected HTML attributes or all except selected attributes. |
 | `remove_tags`, `strip_tags` | Remove selected HTML tags or all except selected tags. |
 | `replace` | Apply one or more text or regular-expression replacements. |
 | `replace_tags` | Replace selected HTML tag names. |
 | `reverse`, `unique` | Reverse or deduplicate array-like data. |
 | `safe_name` | Sanitize text for use as a file name. |
+| `sort` | Sort an array by value or object property. |
 | `strip_md` | Remove Markdown formatting. |
-| `table` | Format structured data as a Markdown table. |
+| `table`, `table_pretty` | Format structured data as a compact or padded Markdown table. |
 | `template` | Apply a small value-substitution template to structured data. |
 | `trim` | Remove surrounding whitespace. |
+| `truncate` | Shorten text to a character or word limit. |
 | `uncamel` | Convert camel-cased text into words. |
 | `unescape` | Unescape encoded text. |
 | `yaml` | Format a value as a YAML-safe scalar. |
@@ -244,6 +264,8 @@ const lookup: TemplateFilter = async (value, _param, context) => {
 The filter parameter is passed in its serialized Knap form so filters that
 accept multiple parameters can preserve delimiters and quoting. A custom filter
 that expects one scalar parameter can normalize surrounding quotes as above.
+The original typed input is available as `context.rawValue` when a filter needs
+to distinguish an array or object from text containing JSON.
 
 Host data needed by a custom filter belongs in the generic engine context:
 

@@ -24,6 +24,8 @@ export interface FilterWarning {
 export interface FilterContext<TContext = unknown> {
 	variables: TemplateVariables;
 	context?: TContext;
+	/** The value before Knap serializes it for the filter's string argument. */
+	rawValue?: TemplateValue;
 	reportWarning?: (warning: FilterWarning) => void;
 }
 

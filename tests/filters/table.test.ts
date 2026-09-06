@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { table } from '../../src/filters/table';
+import { table, table_pretty } from '../../src/filters/table';
 
 describe('table filter', () => {
 	test('converts array of objects to markdown table', () => {
@@ -23,6 +23,30 @@ describe('table filter', () => {
 	test('handles custom column headers', () => {
 		const result = table('["a","b","c","d"]', '("Col1", "Col2")');
 		expect(result).toContain('| Col1 | Col2 |');
+	});
+
+	test('pretty-prints tables with padded columns and separators', () => {
+		const result = table_pretty('[{"name":"Alice","age":30},{"name":"Bob","age":25}]');
+		expect(result).toBe([
+			'| name  | age |',
+			'| ----- | --- |',
+			'| Alice | 30  |',
+			'| Bob   | 25  |',
+		].join('\n'));
+	});
+
+	test('combines pretty formatting with custom headers', () => {
+		const result = table_pretty('["Ada","Engineer","Lin","Designer"]', '("Name", "Role")');
+		expect(result).toBe([
+			'| Name | Role     |',
+			'| ---- | -------- |',
+			'| Ada  | Engineer |',
+			'| Lin  | Designer |',
+		].join('\n'));
+	});
+
+	test('keeps pretty available as a normal table header', () => {
+		expect(table('["value"]', 'pretty')).toBe('| pretty |\n| - |\n| value |');
 	});
 
 	test('converts arrays of arrays into rows', () => {

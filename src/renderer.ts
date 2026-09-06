@@ -32,6 +32,7 @@ type ApplyFilterFn = (
 	paramString: string | undefined,
 	line: number,
 	column: number,
+	rawValue?: any,
 ) => any | Promise<any>;
 
 // ============================================================================
@@ -547,7 +548,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		paramString = formattedArgs.join(',');
 	}
 
-	return await state.context.applyFilter(stringValue, expr.name, paramString, expr.line, expr.column);
+	return await state.context.applyFilter(stringValue, expr.name, paramString, expr.line, expr.column, value);
 }
 
 function evaluateContains(left: any, right: any): boolean {
