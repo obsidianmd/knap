@@ -147,28 +147,68 @@
     margin-top: 0;
   }
 }
-.filter-example-card .code-tabs {
-  margin-top: 14px;
+.filter-example-table {
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--panel);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  tr:not(:last-child) {
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    width: 100px;
+    padding: 16px;
+    color: var(--muted);
+    font-size: var(--font-size-small);
+    font-weight: 400;
+    text-align: left;
+    vertical-align: top;
+  }
+  td {
+    min-width: 0;
+    padding: 0;
+  }
+  .doc-code {
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+  }
 }
 .behavior-list {
   display: grid;
-  gap: 11px;
+  gap: 2px;
   margin: 0;
   padding-left: 1.25rem;
 
   li::marker {
-    color: var(--accent);
+    color: var(--faint);
   }
 }
 .related-filters {
   display: grid;
   margin: 0;
-  border-radius: 12px;
-  background: var(--panel);
-  padding: 18px;
+  padding: 0;
   list-style: none;
+
+  > li {
+    margin: 0;
+  }
+
+  .filter-row {
+    padding-block: 7px;
+  }
 }
 @media (max-width: 760px) {
+  .filter-example-table th {
+    width: 76px;
+    padding-inline: 12px;
+  }
   .filter-list article {
     grid-template-columns: 120px 1fr;
 

@@ -86,11 +86,11 @@
   padding-left: 1.25em;
 
   li + li {
-    margin-top: 16px;
+    margin-top: 8px;
   }
 
   li::marker {
-    color: var(--muted);
+    color: var(--faint);
   }
 }
 

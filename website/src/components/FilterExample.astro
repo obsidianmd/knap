@@ -1,0 +1,30 @@
+---
+import CodeBlock from './CodeBlock.astro';
+
+interface Props {
+  input: string;
+  template: string;
+  output: string;
+}
+
+const { input, template, output } = Astro.props;
+---
+
+<div class="filter-example-table">
+  <table>
+    <tbody>
+      <tr>
+        <th scope="row">Input</th>
+        <td><CodeBlock code={input} language="json" /></td>
+      </tr>
+      <tr>
+        <th scope="row">Template</th>
+        <td><CodeBlock code={template} /></td>
+      </tr>
+      <tr>
+        <th scope="row">Output</th>
+        <td><CodeBlock code={output} language="md" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

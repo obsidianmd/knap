@@ -1,6 +1,6 @@
 ---
 import CodeBlock from '../../components/CodeBlock.astro';
-import CodeTabs from '../../components/CodeTabs.astro';
+import FilterExample from '../../components/FilterExample.astro';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import { filterDocs, filterDocsByName } from '../../../lib/filter-docs';
 
@@ -38,17 +38,13 @@ const headings = [
   <section id="examples" class="doc-section">
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
     <div class="filter-examples">
-      {filter.examples.map((item, exampleIndex) => (
+      {filter.examples.map((item) => (
         <article class:list={['filter-example-card', filter.examples.length === 1 && item.title === 'Basic usage' && 'filter-example-card-untitled']}>
           {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3 id={slugifyHeading(item.title)}>{item.title}</h3></header>}
-          <CodeTabs
-            id={`${filter.slug}-example-${exampleIndex}`}
-            defaultTab="template"
-            tabs={[
-              { key: 'input', label: 'Input', code: JSON.stringify(item.variables, null, 2), language: 'json' },
-              { key: 'template', label: 'Template', code: item.template },
-              { key: 'output', label: 'Output', code: item.expected, language: 'md' },
-            ]}
+          <FilterExample
+            input={JSON.stringify(item.variables, null, 2)}
+            template={item.template}
+            output={item.expected}
           />
         </article>
       ))}

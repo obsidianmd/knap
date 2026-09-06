@@ -45,7 +45,16 @@ const docs: FilterDoc[] = [
   { slug: 'kebab', name: 'kebab', category: 'Text', summary: 'Convert text to kebab-case.', syntax: ['kebab'], related: ['camel', 'pascal', 'snake'], examples: [example({ title: 'Hello World' }, '{{ title | kebab }}', 'hello-world')] },
   { slug: 'lower', name: 'lower', category: 'Text', summary: 'Convert text to lowercase.', syntax: ['lower'], related: ['capitalize', 'title', 'upper'], examples: [example({ title: 'HELLO WORLD' }, '{{ title | lower }}', 'hello world')] },
   { slug: 'pascal', name: 'pascal', category: 'Text', summary: 'Convert text to PascalCase.', syntax: ['pascal'], related: ['camel', 'kebab', 'snake'], examples: [example({ title: 'hello world' }, '{{ title | pascal }}', 'HelloWorld')] },
-  { slug: 'replace', name: 'replace', category: 'Text', summary: 'Replace one or more strings or regular expressions.', syntax: ['replace:"old":"new"', 'replace:("a":"b", "c":"d")'], parameters: ['Each quoted search value is followed by a colon and its replacement.', 'Regular expressions may include flags, for example "/[aeiou]/g".'], examples: [example({ message: 'hello world' }, '{{ message | replace:"e":"a","o":"0" }}', 'hall0 w0rld')] },
+  {
+    slug: 'replace', name: 'replace', category: 'Text', summary: 'Replace one or more strings or regular expressions.', syntax: ['replace:"old":"new"', 'replace:("a":"b", "c":"d")'],
+    parameters: ['Each quoted search value is followed by a colon and its replacement.', 'Regular expressions may include flags, for example "/[aeiou]/g".'],
+    examples: [
+      example({ message: 'hello, world!' }, '{{ message | replace:",":"" }}', 'hello world!', 'Remove text'),
+      example({ message: 'hello world' }, '{{ message | replace:"e":"a","o":"0" }}', 'hall0 w0rld', 'Multiple replacements'),
+      example({ message: 'hello world' }, '{{ message | replace:"/[aeiou]/g":"*" }}', 'h*ll* w*rld', 'Regular expression'),
+      example({ message: 'HELLO world' }, '{{ message | replace:"/hello/i":"hi" }}', 'hi world', 'Case-insensitive match'),
+    ],
+  },
   { slug: 'safe-name', name: 'safe_name', category: 'Text', summary: 'Remove characters that are unsafe in file names.', syntax: ['safe_name', 'safe_name:windows'], parameters: ['Optionally choose windows, mac, or linux rules. The default is conservative.'], examples: [example({ title: 'notes/2024: recap?' }, '{{ title | safe_name }}', 'notes2024 recap')] },
   { slug: 'snake', name: 'snake', category: 'Text', summary: 'Convert text to snake_case.', syntax: ['snake'], related: ['camel', 'kebab', 'pascal'], examples: [example({ title: 'Hello World' }, '{{ title | snake }}', 'hello_world')] },
   { slug: 'title', name: 'title', category: 'Text', summary: 'Convert text to Title Case.', syntax: ['title'], related: ['capitalize', 'lower', 'upper'], examples: [example({ title: 'hello world' }, '{{ title | title }}', 'Hello World')] },

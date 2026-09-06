@@ -147,8 +147,8 @@
   grid-template-columns: 120px 1fr;
   gap: 20px;
   margin: 28px 0;
-  border-left: 3px solid var(--accent);
-  background: var(--panel);
+  border-radius: 12px;
+  background: #1a1623;
   padding: 18px 20px;
   font-size: var(--font-size-small);
 
@@ -253,18 +253,17 @@
     padding-left: 1.25rem;
   }
   li {
-    margin-block: 7px;
-
-    &::marker {
-      color: var(--accent);
-    }
+    margin-block: 4px;
+  }
+  ul li::marker {
+    color: var(--faint);
   }
   > blockquote {
     display: grid;
     gap: 6px;
     margin: 28px 0;
-    border-left: 3px solid var(--accent);
-    background: var(--panel);
+    border-radius: 12px;
+    background: #1a1623;
     padding: 18px 20px;
     color: var(--body);
     font-size: var(--font-size-body);
