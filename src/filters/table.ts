@@ -1,11 +1,11 @@
 import type { FilterContext } from '../types';
-import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 function parseHeaders(params: string | undefined): string[] {
 	if (!params) return [];
 	return splitParams(unwrapParamList(params))
-		.map(cleanParamToken);
+		.map(unquoteParamToken);
 }
 
 const escapeCell = (cell: string) => cell.replace(/\|/g, '\\|');

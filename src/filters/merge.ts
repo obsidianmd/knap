@@ -1,5 +1,5 @@
 import type { FilterContext } from '../types';
-import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const merge = (str: string, param?: string, context?: FilterContext): string => {
@@ -24,7 +24,7 @@ export const merge = (str: string, param?: string, context?: FilterContext): str
 	}
 
 	try {
-		const processedItems = splitParams(unwrapParamList(param)).map(cleanParamToken);
+		const processedItems = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 		return JSON.stringify([...array, ...processedItems]);
 	} catch (error) {

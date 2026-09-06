@@ -1,5 +1,5 @@
 import type { FilterContext } from '../types';
-import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const number_format = (input: string, param?: string, context?: FilterContext): string => {
@@ -35,7 +35,7 @@ export const number_format = (input: string, param?: string, context?: FilterCon
 		let thousandsSep = ',';
 
 		if (param) {
-			const params = splitParams(unwrapParamList(param)).map(cleanParamToken);
+			const params = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 			if (params.length >= 1) decimals = parseInt(params[0], 10);
 			if (params.length >= 2) decPoint = unescapeString(params[1]);

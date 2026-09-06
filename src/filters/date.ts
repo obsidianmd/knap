@@ -4,7 +4,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
 import type { FilterContext } from '../types';
-import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 dayjs.extend(customParseFormat);
@@ -25,7 +25,7 @@ export const date = (str: string, param?: string, context?: FilterContext): stri
 		return dayjs(inputDate).format('YYYY-MM-DD');
 	}
 
-	const params = splitParams(unwrapParamList(param)).map(cleanParamToken);
+	const params = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 	const [outputFormat, inputFormat] = params;
 

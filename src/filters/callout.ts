@@ -1,4 +1,4 @@
-import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 
 export const callout = (str: string, param?: string): string => {
 	let type = 'info';
@@ -6,7 +6,7 @@ export const callout = (str: string, param?: string): string => {
 	let foldState: string | null = null;
 
 	if (param) {
-		const params = splitParams(unwrapParamList(param)).map(cleanParamToken);
+		const params = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 		if (params.length > 0) type = params[0] || type;
 		if (params.length > 1) title = params[1] || title;

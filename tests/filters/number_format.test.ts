@@ -29,4 +29,9 @@ describe('number_format filter', () => {
 	test('handles negative numbers', () => {
 		expect(number_format('-1234567')).toBe('-1,234,567');
 	});
+
+	test('decodes separator escapes once', () => {
+		expect(number_format('1234', String.raw`(0,".","\\x")`))
+			.toBe(String.raw`1\x234`);
+	});
 });

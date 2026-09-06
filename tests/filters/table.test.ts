@@ -77,6 +77,11 @@ describe('table filter', () => {
 			.toContain('| Name, full | Role |');
 	});
 
+	test('preserves backslashes in custom headers', () => {
+		expect(table('["value"]', String.raw`("C:\\header")`))
+			.toContain(`| ${String.raw`C:\\header`} |`);
+	});
+
 	test('handles empty array', () => {
 		// Empty array creates a default single-column table with no rows
 		const result = table('[]');
