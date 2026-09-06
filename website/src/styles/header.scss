@@ -23,8 +23,9 @@
     color: var(--body);
     transition: color 150ms ease;
 
-    &:hover {
-      color: var(--paper);
+    &:hover,
+    &:focus-visible {
+      color: #f2f0e5;
     }
   }
 }
