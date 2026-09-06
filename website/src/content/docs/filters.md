@@ -23,7 +23,7 @@ Search filters using `⌘K` to find a filter by name, alias, category, or behavi
 
 ## HTML filters
 
-`html_to_json` and `remove_html` require browser-compatible DOM globals, so they are exported separately from `knap/html`.
+<code><span class="syn-filter">html_to_json</span></code> and <code><span class="syn-filter">remove_html</span></code> require browser-compatible DOM globals, so they are exported separately from `knap/html`.
 
 ```ts title="engine.ts"
 import { createEngine, standardFilters } from 'knap';

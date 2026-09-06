@@ -19,6 +19,7 @@
   a {
     color: var(--muted);
     font-size: var(--font-size-small);
+    line-height: 1.25;
 
     &.is-read {
       color: var(--faint);

@@ -77,6 +77,7 @@
     font-weight: 400;
   }
   .filter-list {
+    border-top: 0;
     margin-top: 14px;
   }
 }
@@ -88,8 +89,9 @@
   grid-template-columns: 150px 1fr 18px;
   gap: 20px;
   align-items: baseline;
-  border-bottom: 1px solid var(--line) !important;
-  padding-block: 14px;
+  border-bottom: 0 !important;
+  border-radius: 12px;
+  padding: 10px 12px;
   color: inherit !important;
   transition: background 150ms ease;
 
@@ -106,7 +108,7 @@
       background: transparent;
       color: var(--syntax-orange);
       padding: 0;
-      font-size: var(--font-size-small);
+      font-size: var(--font-size-small) !important;
     }
   }
   small {
@@ -115,11 +117,11 @@
   }
   p {
     margin: 0;
-    color: var(--muted);
+    color: var(--body);
     font-size: var(--font-size-small);
   }
   > span {
-    color: var(--body);
+    color: var(--faint);
   }
 }
 

@@ -18,10 +18,13 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
 ---
 
 <BaseLayout title={title} description={description} markdownPath={markdownPath}>
-  <main class="docs-page">
+  <main id="top" class="docs-page">
     <SiteHeader />
     <div class="docs-layout">
-      <aside class="docs-toc" aria-label="Page outline">{toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}</aside>
+      <aside class="docs-toc" aria-label="Page outline">
+        <a class="docs-toc-title" href="#top">{title}</a>
+        {toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}
+      </aside>
 
       <article class="docs-content">
         <header class="docs-title">

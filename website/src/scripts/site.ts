@@ -162,14 +162,14 @@ function setupFilterDirectoryView() {
   if (!controls.length || !panels.length) return;
 
   type FilterView = 'grouped' | 'alphabetical';
-  const viewFromUrl = (): FilterView => new URLSearchParams(window.location.search).get('view') === 'grouped' ? 'grouped' : 'alphabetical';
+  const viewFromUrl = (): FilterView => new URLSearchParams(window.location.search).get('view') === 'alphabetical' ? 'alphabetical' : 'grouped';
   const show = (view: FilterView, updateUrl = false) => {
     controls.forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.filterViewControl === view)));
     panels.forEach((panel) => { panel.hidden = panel.dataset.filterViewPanel !== view; });
 
     if (updateUrl) {
       const url = new URL(window.location.href);
-      if (view === 'grouped') url.searchParams.set('view', 'grouped');
+      if (view === 'alphabetical') url.searchParams.set('view', 'alphabetical');
       else url.searchParams.delete('view');
       window.history.pushState({}, '', url);
     }
