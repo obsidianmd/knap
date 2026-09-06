@@ -30,4 +30,9 @@ describe('image filter', () => {
 		const result = image('image (1).jpg', 'alt');
 		expect(result).toContain('image');
 	});
+
+	test('preserves backslashes in alt text', () => {
+		expect(image('image.jpg', String.raw`"C:\\image"`))
+			.toBe(String.raw`![C:\\image](image.jpg)`);
+	});
 });

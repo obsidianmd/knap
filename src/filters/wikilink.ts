@@ -1,4 +1,4 @@
-import { cleanScalarParam } from '../parser-utils';
+import { unquoteScalarParam } from '../parser-utils';
 
 const wikiReference = (str: string, param: string | undefined, prefix: string): string => {
 	if (!str.trim()) {
@@ -7,7 +7,7 @@ const wikiReference = (str: string, param: string | undefined, prefix: string): 
 
 	let alias = '';
 	if (param) {
-		alias = cleanScalarParam(param) ?? alias;
+		alias = unquoteScalarParam(param) ?? alias;
 	}
 
 	try {

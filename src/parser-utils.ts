@@ -136,10 +136,15 @@ export function cleanParamToken(value: string): string {
 	return decodeParamEscapes(unquoteParamToken(value));
 }
 
-export function cleanScalarParam(value: string | undefined): string | undefined {
+export function unquoteScalarParam(value: string | undefined): string | undefined {
 	if (value === undefined) return undefined;
 	if (value !== '' && value.trim() === '') return value;
-	return cleanParamToken(unwrapParamList(value));
+	return unquoteParamToken(unwrapParamList(value));
+}
+
+export function cleanScalarParam(value: string | undefined): string | undefined {
+	const unquoted = unquoteScalarParam(value);
+	return unquoted === undefined ? undefined : decodeParamEscapes(unquoted);
 }
 
 /** Split comma-separated filter parameters while preserving quoted commas. */

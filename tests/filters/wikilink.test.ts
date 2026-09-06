@@ -36,6 +36,11 @@ describe('wikilink filter', () => {
 	test('removes quotes from alias parameter', () => {
 		expect(wikilink('page', '"alias"')).toBe('[[page|alias]]');
 	});
+
+	test('preserves backslashes in aliases', () => {
+		expect(wikilink('page', String.raw`"C:\\alias"`))
+			.toBe(String.raw`[[page|C:\\alias]]`);
+	});
 });
 
 describe('embed filter', () => {

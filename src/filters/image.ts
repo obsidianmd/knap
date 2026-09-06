@@ -1,5 +1,5 @@
 import { escapeMarkdown } from '../string-utils';
-import { cleanScalarParam } from '../parser-utils';
+import { unquoteScalarParam } from '../parser-utils';
 
 export const image = (str: string, param?: string): string | string[] => {
 	if (!str.trim()) {
@@ -8,7 +8,7 @@ export const image = (str: string, param?: string): string | string[] => {
 
 	let altText = '';
 	if (param) {
-		altText = cleanScalarParam(param) ?? altText;
+		altText = unquoteScalarParam(param) ?? altText;
 	}
 
 	try {

@@ -1,4 +1,4 @@
-import { cleanScalarParam } from '../parser-utils';
+import { unquoteScalarParam } from '../parser-utils';
 
 export const join = (str: string, param?: string): string => {
 	// Return early if input is empty or invalid
@@ -19,7 +19,7 @@ export const join = (str: string, param?: string): string => {
 
 	let separator = ',';
 	if (param) {
-		separator = cleanScalarParam(param) ?? separator;
+		separator = unquoteScalarParam(param) ?? separator;
 		// Replace \n with actual newline character
 		separator = separator.replace(/\\n/g, '\n');
 	}

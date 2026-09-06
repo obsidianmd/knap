@@ -1,5 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { join } from '../../src/filters/join';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('join filter', () => {
 	test('combines array elements with comma by default', () => {
@@ -28,6 +32,15 @@ describe('join filter', () => {
 
 	test('joins with dash separator', () => {
 		expect(join('["a","b","c"]', '-')).toBe('a-b-c');
+	});
+
+	test('preserves backslashes in separators', async () => {
+		expect(join('["a","b"]', String.raw`"\\"`)).toBe(String.raw`a\\b`);
+
+		const template = String.raw`{{ items | join:"\\\\" }}`;
+		await expect(engine.renderOrThrow(template, {
+			variables: { items: ['a', 'b'] },
+		})).resolves.toBe(String.raw`a\\b`);
 	});
 
 	test('joins with quoted newline separator', () => {

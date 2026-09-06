@@ -1,5 +1,5 @@
 import { escapeMarkdown } from '../string-utils';
-import { cleanScalarParam } from '../parser-utils';
+import { unquoteScalarParam } from '../parser-utils';
 
 export const link = (str: string, param?: string): string => {
 	if (!str.trim()) {
@@ -8,7 +8,7 @@ export const link = (str: string, param?: string): string => {
 
 	let linkText = 'link';
 	if (param) {
-		linkText = cleanScalarParam(param) ?? linkText;
+		linkText = unquoteScalarParam(param) ?? linkText;
 	}
 
 	const encodeUrl = (url: string): string => {
