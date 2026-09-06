@@ -25,6 +25,7 @@ import {
 	isLiteralFilterArgument,
 	parse,
 } from './parser';
+import { parseTypedParams } from './parser-utils';
 import { TemplateRuntimeError, type TemplateError } from './errors';
 
 type ApplyFilterFn = (
@@ -34,6 +35,7 @@ type ApplyFilterFn = (
 	line: number,
 	column: number,
 	rawValue?: any,
+	rawArguments?: any[],
 	validateResolvedParams?: boolean,
 ) => any | Promise<any>;
 
@@ -521,6 +523,13 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		}
 		args.push(argValue);
 	}
+	const rawArguments = args.map((argument, index) => {
+		const expression = expr.args[index];
+		const literal = expression.type === 'literal' ||
+			(expression.type === 'group' && expression.expression.type === 'literal');
+		if (!literal || typeof argument !== 'string') return argument;
+		return isQuotedString(argument) ? parseTypedParams(argument)?.[0] ?? argument : argument;
+	});
 
 	const stringValue = valueToString(value);
 
@@ -557,6 +566,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		expr.line,
 		expr.column,
 		value,
+		rawArguments,
 		expr.args.some(argument => !isLiteralFilterArgument(argument)),
 	);
 }

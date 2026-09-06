@@ -1,20 +1,27 @@
-import type { ParamValidationResult } from '../filters';
-import { splitParamPair, splitParams } from '../parser-utils';
+import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
+import { splitParamPair, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
+import { ownPropertyAtPath } from './property_utils';
+import { collectionInputValue } from './value_utils';
 
 export const validateMapParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
-		return { valid: false, error: 'requires an arrow function (e.g., map:x => x.name)' };
+		return { valid: false, error: 'requires a property path or arrow function (e.g., map:"name")' };
 	}
 
 	const match = param.match(/^\s*(\w+)\s*=>\s*(.+)$/);
-	if (!match) {
-		return { valid: false, error: 'invalid syntax. Use arrow function format (e.g., x => x.name)' };
-	}
+	if (match) return { valid: true };
 
+	const parts = splitParams(unwrapParamList(param));
+	if (parts.length !== 1 || unquoteParamToken(parts[0]) === '') {
+		return { valid: false, error: 'requires a property path or arrow function (e.g., map:"name")' };
+	}
+	if (unquoteParamToken(parts[0]).split('.').some(segment => segment === '')) {
+		return { valid: false, error: 'property path cannot contain empty segments' };
+	}
 	return { valid: true };
 };
 
-export const map = (str: string, param?: string): string => {
+function mapWithArrow(str: string, param: string): string {
 	let array;
 	try {
 		array = JSON.parse(str);
@@ -72,6 +79,26 @@ export const map = (str: string, param?: string): string => {
 		return JSON.stringify(mappedArray);
 	}
 	return str;
+}
+
+function propertyPath(param: string, context?: FilterContext): string | undefined {
+	const argument = context?.rawArguments?.[0];
+	if (argument !== undefined) return typeof argument === 'string' ? argument : undefined;
+	return unquoteParamToken(unwrapParamList(param));
+}
+
+export const map = (str: string, param?: string, context?: FilterContext): TemplateValue => {
+	if (!param) return str;
+	if (/^\s*\w+\s*=>\s*(.+)$/.test(param)) return mapWithArrow(str, param);
+
+	const path = propertyPath(param, context);
+	if (!path) return collectionInputValue(str, context);
+	const input = collectionInputValue(str, context);
+	if (!Array.isArray(input)) return input;
+	return input.map(item => {
+		const property = ownPropertyAtPath(item, path);
+		return property.exists ? property.value : null;
+	});
 };
 
 function evaluateExpression(expression: string, item: any, argName: string): any {

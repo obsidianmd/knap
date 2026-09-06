@@ -82,7 +82,7 @@ export function createEngine<TContext = unknown>(
 					}
 				}
 				: undefined,
-			applyFilter: async (value, filterName, param, line, column, rawValue, validateResolvedParams) => {
+			applyFilter: async (value, filterName, param, line, column, rawValue, rawArguments, validateResolvedParams) => {
 				const filter = filters[filterName];
 				if (!filter) {
 					return value;
@@ -100,6 +100,7 @@ export function createEngine<TContext = unknown>(
 					return await filter(value, param, {
 						...resolverContext,
 						rawValue,
+						rawArguments,
 						reportWarning: (warning: FilterWarning) => {
 							const templateWarning = {
 								message: warning.message,

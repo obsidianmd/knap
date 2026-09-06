@@ -38,9 +38,9 @@ describe('built-in filter parameter spellings', () => {
 	});
 
 	test('accepts quoted comma-separated options', async () => {
-		await expect(engine.renderOrThrow('{{ value | truncate:(2,"words") }}', {
+		await expect(engine.renderOrThrow('{{ value | truncatewords:(2,"...") }}', {
 			variables: { value: 'one two three' },
-		})).resolves.toBe('one two…');
+		})).resolves.toBe('one two...');
 		await expect(engine.renderOrThrow('{{ value | table:("Last, first", "Role") }}', {
 			variables: { value: [["Lovelace, Ada", 'Writer']] },
 		})).resolves.toContain('| Last, first | Role |');

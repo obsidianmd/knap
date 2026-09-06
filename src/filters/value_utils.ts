@@ -30,6 +30,29 @@ export function inputValue(
 	return value;
 }
 
+/** Read typed collection input while preserving non-collection values unchanged. */
+export function collectionInputValue(
+	value: string,
+	context?: FilterContext,
+): TemplateValue {
+	if (context && Object.prototype.hasOwnProperty.call(context, 'rawValue')) {
+		const rawValue = context.rawValue;
+		if (Array.isArray(rawValue) || isPlainObject(rawValue)) return rawValue;
+		if (typeof rawValue !== 'string') return rawValue;
+	}
+
+	if (value.startsWith('[') || value.startsWith('{')) {
+		try {
+			const parsed: TemplateValue = JSON.parse(value);
+			if (Array.isArray(parsed) || isPlainObject(parsed)) return parsed;
+		} catch {
+			// Use the string input when it is not a serialized collection.
+		}
+	}
+
+	return value;
+}
+
 export function mapStringValues(value: TemplateValue, formatter: StringFormatter): TemplateValue {
 	if (typeof value === 'string') return formatter(value);
 	if (Array.isArray(value)) return value.map(item => mapStringValues(item, formatter));

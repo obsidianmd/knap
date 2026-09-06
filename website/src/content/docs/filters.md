@@ -76,4 +76,4 @@ const engine = createEngine({
 
 A filter can call `context.reportWarning()` when it preserves a fallback value but wants the host to surface a non-fatal diagnostic.
 
-Filters receive a serialized string as their first argument for compatibility. The original typed value is available as `context.rawValue` when a custom filter needs to distinguish arrays or objects from text containing JSON.
+Filters receive a serialized string as their first argument for compatibility. The original typed value is available as `context.rawValue` when a custom filter needs to distinguish arrays or objects from text containing JSON. Evaluated arguments are available as `context.rawArguments`; the existing serialized parameter string remains unchanged.

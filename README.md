@@ -161,7 +161,7 @@ turns JSON text into a typed value for collection-aware filter chains.
 | `length` | Return the length of a value. |
 | `link`, `wikilink` | Format Markdown links or wikilinks. |
 | `list` | Format array-like data as a list. |
-| `map` | Map fields from structured array data. |
+| `map` | Select a property from each array item or map items with an expression. |
 | `math`, `math_block` | Format inline or block math. |
 | `merge` | Merge structured values. |
 | `number_format`, `round` | Format or round numeric values. |
@@ -174,13 +174,15 @@ turns JSON text into a typed value for collection-aware filter chains.
 | `reverse`, `unique` | Reverse or deduplicate array-like data. |
 | `safe_name` | Sanitize text for use as a file name. |
 | `sort` | Sort an array by value or object property. |
+| `sum` | Add numeric array values or numeric object properties. |
 | `strip_md` | Remove Markdown formatting. |
 | `table`, `table_pretty` | Format structured data as a compact or padded Markdown table. |
 | `template` | Apply a small value-substitution template to structured data. |
 | `trim` | Remove surrounding whitespace. |
-| `truncate` | Shorten text to a character or word limit. |
+| `truncate`, `truncatewords` | Shorten text to a character or word limit. |
 | `uncamel` | Convert camel-cased text into words. |
 | `unescape` | Unescape encoded text. |
+| `where` | Filter array items by an exact property value. |
 | `yaml` | Serialize scalars, arrays, or objects as YAML; use `yaml:flow` for compact collections. |
 | `yaml_property` | Serialize a named YAML property with automatic indentation. |
 
@@ -284,7 +286,9 @@ The filter parameter is passed in its serialized Knap form so filters that
 accept multiple parameters can preserve delimiters and quoting. A custom filter
 that expects one scalar parameter can normalize surrounding quotes as above.
 The original typed input is available as `context.rawValue` when a filter needs
-to distinguish an array or object from text containing JSON.
+to distinguish an array or object from text containing JSON. Evaluated filter
+arguments are available as `context.rawArguments`; the serialized `param`
+string remains available for compatibility.
 
 Host data needed by a custom filter belongs in the generic engine context:
 

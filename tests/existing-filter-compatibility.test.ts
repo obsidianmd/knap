@@ -122,4 +122,20 @@ describe('existing filter compatibility with main', () => {
 			variables: { value: ['a', 'b'] },
 		})).resolves.toBe('{"value":"[\\"a\\",\\"b\\"]","param":"\\"x,y\\"","rawValue":["a","b"]}');
 	});
+
+	test('exposes typed arguments without changing custom-filter parameter strings', async () => {
+		const inspect = (value: string, param?: string, context?: { rawArguments?: unknown[] }) =>
+			JSON.stringify({ value, param, rawArguments: context?.rawArguments });
+		const customEngine = createEngine({ filters: { inspect } });
+		await expect(customEngine.renderOrThrow('{{ value | inspect:("1", 1, true, null) }}', {
+			variables: { value: 'x' },
+		})).resolves.toBe('{"value":"x","param":"1,1,true,null","rawArguments":["1",1,true,null]}');
+
+		expect(applyFiltersWithRegistry(
+			'x',
+			'inspect:("1",1,true,null)',
+			{ inspect },
+			{ variables: {} },
+		)).toBe('{"value":"x","param":"(\\"1\\",1,true,null)","rawArguments":["1",1,true,null]}');
+	});
 });

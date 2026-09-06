@@ -21,11 +21,11 @@ describe('website syntax highlighting', () => {
 			.toContain('<span class="syn-variable">blue</span>');
 	});
 
-	test('highlights bare property and mode arguments as literal values', () => {
+	test('highlights bare property and quoted suffix arguments as literal values', () => {
 		expect(highlightLine('{{ people | sort:(details.rank, desc) }}', 'knap'))
 			.toContain('<span class="syn-string">details</span><span class="syn-punctuation">.</span><span class="syn-string">rank</span>');
-		expect(highlightLine('{{ text | truncate:(20, words) }}', 'knap'))
-			.toContain('<span class="syn-string">words</span>');
+		expect(highlightLine('{{ text | truncatewords:(20, "…") }}', 'knap'))
+			.toContain('<span class="syn-string">…</span>');
 	});
 
 	test('keeps map expression identifiers as variables', () => {

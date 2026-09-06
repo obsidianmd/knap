@@ -162,6 +162,27 @@ export function normalizeParamList(value: string): string[] {
 		.map(token => unquoteParamToken(token).replace(/\\(["'])/g, '$1'));
 }
 
+function parseTypedParamToken(value: string): unknown {
+	const token = value.trim();
+	if (token.length >= 2 && (token[0] === '"' || token[0] === "'") && token.at(-1) === token[0]) {
+		return decodeParamEscapes(token.slice(1, -1));
+	}
+	if (token === 'true') return true;
+	if (token === 'false') return false;
+	if (token === 'null') return null;
+	if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(token)) {
+		const number = Number(token);
+		if (Number.isFinite(number)) return number;
+	}
+	return token;
+}
+
+/** Parse direct filter-chain arguments without changing the legacy parameter string. */
+export function parseTypedParams(value: string | undefined): unknown[] | undefined {
+	if (value === undefined || value === '') return undefined;
+	return splitParams(unwrapParamList(value)).map(parseTypedParamToken);
+}
+
 /** Split once on a colon outside quotes or nested expressions. */
 export function splitParamPair(value: string): [string, string?] {
 	let quote = '';

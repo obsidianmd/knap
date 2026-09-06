@@ -9,7 +9,7 @@ describe('dynamic filter argument validation', () => {
 		expect(engine.validate('{{ value | truncate:limit }}')).toEqual([]);
 		await expect(engine.renderOrThrow('{{ value | truncate:limit }}', {
 			variables: { value: 'abcdef', limit: 3 },
-		})).resolves.toBe('abc…');
+		})).resolves.toBe('ab…');
 	});
 
 	test('validates resolved variable values', async () => {

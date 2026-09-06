@@ -1,4 +1,4 @@
-import { createParserState, processCharacter } from '../parser-utils';
+import { createParserState, parseTypedParams, processCharacter } from '../parser-utils';
 import type {
 	FilterMetadata,
 	FilterContext,
@@ -75,6 +75,7 @@ import { slice, validateSliceParams } from './slice';
 import { snake } from './snake';
 import { sort, validateSortParams } from './sort';
 import { split } from './split';
+import { sum, validateSumParams } from './sum';
 import { strip_attr } from './strip_attr';
 import { strip_md } from './strip_md';
 import { strip_tags } from './strip_tags';
@@ -82,7 +83,12 @@ import { table, table_pretty } from './table';
 import { template, validateTemplateParams } from './template';
 import { title } from './title';
 import { trim } from './trim';
-import { truncate, validateTruncateParams } from './truncate';
+import {
+	truncate,
+	truncatewords,
+	validateTruncateParams,
+	validateTruncatewordsParams,
+} from './truncate';
 import { uncamel } from './uncamel';
 import { unescape } from './unescape';
 import { unique } from './unique';
@@ -90,6 +96,7 @@ import { upper } from './upper';
 import { embed, wikilink } from './wikilink';
 import { duration } from './duration';
 import { yaml, yaml_property, validateYamlParams, validateYamlPropertyParams } from './yaml';
+import { validateWhereParams, where } from './where';
 
 type FilterFunction = (
 	value: string,
@@ -113,8 +120,11 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	replace: { example: 'replace:"old":"new"', validateParams: validateReplaceParams },
 	slice: { example: 'slice:0,5', validateParams: validateSliceParams },
 	sort: { example: 'sort:("name", "desc")', validateParams: validateSortParams },
+	sum: { example: 'sum:"amount"', validateParams: validateSumParams },
 	template: { example: 'template:"${name}"', validateParams: validateTemplateParams },
-	truncate: { example: 'truncate:(100, "words")', validateParams: validateTruncateParams },
+	truncate: { example: 'truncate:(100, "…")', validateParams: validateTruncateParams },
+	truncatewords: { example: 'truncatewords:(20, "…")', validateParams: validateTruncatewordsParams },
+	where: { example: 'where:("published", true)', validateParams: validateWhereParams },
 
 	// Filters with optional parameters (examples for documentation)
 	blockquote: {},
@@ -250,6 +260,7 @@ const filters: Record<string, FilterFunction> = {
 	snake,
 	sort,
 	split,
+	sum,
 	strip_attr,
 	strip_md,
 	strip_tags,
@@ -261,6 +272,7 @@ const filters: Record<string, FilterFunction> = {
 	title,
 	trim,
 	truncate,
+	truncatewords,
 	uncamel,
 	unescape,
 	unique,
@@ -268,6 +280,7 @@ const filters: Record<string, FilterFunction> = {
 	wikilink,
 	yaml,
 	yaml_property,
+	where,
 };
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {
@@ -371,6 +384,7 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 		const output = filter(stringInput, params.join(':'), {
 			...context,
 			rawValue: processedValue,
+			rawArguments: parseTypedParams(params.join(':')),
 		});
 		if (isThenable(output)) {
 			throw new TypeError(`Filter "${name}" is asynchronous; use engine.render() for async filters`);
