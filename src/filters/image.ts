@@ -1,4 +1,5 @@
 import { escapeMarkdown } from '../string-utils';
+import { cleanScalarParam } from '../parser-utils';
 
 export const image = (str: string, param?: string): string | string[] => {
 	if (!str.trim()) {
@@ -7,10 +8,7 @@ export const image = (str: string, param?: string): string | string[] => {
 
 	let altText = '';
 	if (param) {
-		// Remove outer parentheses if present
-		param = param.replace(/^\((.*)\)$/, '$1');
-		// Remove surrounding quotes (both single and double)
-		altText = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+		altText = cleanScalarParam(param) ?? altText;
 	}
 
 	try {

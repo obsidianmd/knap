@@ -56,11 +56,11 @@ describe('Markdown formatting filters', () => {
 	});
 
 	test('rejects unsupported emphasis markers during validation', () => {
-		expect(engine.validate('{{ value | bold:__ }}')[0]).toMatchObject({
+		expect(engine.validate('{{ value | bold:"__" }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid marker "__"'),
 		});
-		expect(engine.validate('{{ value | italic:__ }}')[0]).toMatchObject({
+		expect(engine.validate('{{ value | italic:"__" }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid marker "__"'),
 		});
@@ -91,7 +91,7 @@ describe('Markdown formatting filters', () => {
 	});
 
 	test('rejects unknown highlight colors during validation', () => {
-		expect(engine.validate('{{ value | highlight:pink }}')[0]).toMatchObject({
+		expect(engine.validate('{{ value | highlight:"pink" }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid color "pink"'),
 		});
@@ -172,9 +172,9 @@ describe('Markdown formatting filters', () => {
 });
 
 describe('parse_json filter', () => {
-	test('explicitly parses JSON for collection-aware filter chains', async () => {
+	test('accepts serialized collections without requiring explicit parsing', async () => {
 		await expect(render('{{ value | bold }}', { value: '["one","two"]' }))
-			.resolves.toBe('**["one","two"]**');
+			.resolves.toBe('["**one**","**two**"]');
 		await expect(render('{{ value | parse_json | bold | join:", " }}', { value: '["one","two"]' }))
 			.resolves.toBe('**one**, **two**');
 	});

@@ -11,20 +11,22 @@ export function isPlainObject(value: TemplateValue): value is Record<string, Tem
 export function inputValue(
 	value: string,
 	context?: FilterContext,
-	parseSerialized = false,
 ): TemplateValue {
 	if (context && Object.prototype.hasOwnProperty.call(context, 'rawValue')) {
-		return Array.isArray(context.rawValue) || isPlainObject(context.rawValue)
-			? context.rawValue
-			: value;
-	}
-	if (parseSerialized) {
-		try {
-			return JSON.parse(value);
-		} catch {
-			// Use the filter's string input when it is not serialized JSON.
+		if (Array.isArray(context.rawValue) || isPlainObject(context.rawValue)) {
+			return context.rawValue;
 		}
 	}
+
+	if (value.startsWith('[') || value.startsWith('{')) {
+		try {
+			const parsed: TemplateValue = JSON.parse(value);
+			if (Array.isArray(parsed) || isPlainObject(parsed)) return parsed;
+		} catch {
+			// Use the string input when it is not a serialized collection.
+		}
+	}
+
 	return value;
 }
 

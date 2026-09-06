@@ -5,6 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
+import { cleanScalarParam } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 dayjs.extend(customParseFormat);
@@ -19,9 +20,7 @@ export const validateDateModifyParams = (param: string | undefined): ParamValida
 		return { valid: false, error: 'requires a modifier (e.g., date_modify:"+1 day", "-2 weeks")' };
 	}
 
-	// Remove outer parentheses and quotes if present
-	let cleanParam = param.replace(/^\((.*)\)$/, '$1');
-	cleanParam = cleanParam.replace(/^(['"])([\s\S]*)\1$/, '$2').trim();
+	const cleanParam = cleanScalarParam(param) ?? '';
 
 	const regex = /^([+-])\s*(\d+)\s*(\w+)s?$/;
 	const match = cleanParam.match(regex);
@@ -56,11 +55,7 @@ export const date_modify = (str: string, param?: string, context?: FilterContext
 		return str;
 	}
 
-	// Remove outer parentheses if present
-	param = param.replace(/^\((.*)\)$/, '$1');
-
-	// Remove any surrounding quotes and trim whitespace
-	param = param.replace(/^(['"])([\s\S]*)\1$/, '$2').trim();
+	param = cleanScalarParam(param) ?? '';
 
 	// Updated regex to allow for optional spaces and plural units
 	const regex = /^([+-])\s*(\d+)\s*(\w+)s?$/;

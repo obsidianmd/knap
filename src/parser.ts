@@ -1787,6 +1787,12 @@ function argsToParamString(args: Expression[]): string | undefined {
 	return args.map(expressionToString).join(',');
 }
 
+export function isLiteralFilterArgument(expression: Expression): boolean {
+	if (expression.type === 'literal') return true;
+	if (expression.type === 'group') return isLiteralFilterArgument(expression.expression);
+	return false;
+}
+
 /**
  * Find the closest matching filter name for suggestions
  */
@@ -1905,7 +1911,7 @@ export function validateFilters(
 
 		// Run param validator if available
 		const meta = registryMetadata[usage.name];
-		if (meta?.validateParams) {
+		if (meta?.validateParams && usage.args.every(isLiteralFilterArgument)) {
 			const paramString = usage.hasArgs ? argsToParamString(usage.args) : undefined;
 			const result = meta.validateParams(paramString);
 			if (!result.valid && result.error) {

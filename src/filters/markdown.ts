@@ -1,4 +1,5 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
+import { cleanScalarParam } from '../parser-utils';
 import { inputValue, mapStringValues, type StringFormatter } from './value_utils';
 
 function markdownFilter(formatter: StringFormatter) {
@@ -56,7 +57,7 @@ function validateMarkerParam(
 	param: string | undefined,
 	markers: readonly string[],
 ): ParamValidationResult {
-	const marker = cleanParam(param);
+	const marker = cleanScalarParam(param);
 	if (marker === undefined || markers.includes(marker)) return { valid: true };
 	return {
 		valid: false,
@@ -71,12 +72,12 @@ export const validateItalicParams = (param: string | undefined): ParamValidation
 	validateMarkerParam(param, ['*', '_']);
 
 export const bold = (value: string, param?: string, context?: FilterContext): TemplateValue => {
-	const marker = cleanParam(param) ?? '*';
+	const marker = cleanScalarParam(param) ?? '*';
 	return mapStringValues(inputValue(value, context), item => wrapInline(item, marker.repeat(2)));
 };
 
 export const italic = (value: string, param?: string, context?: FilterContext): TemplateValue => {
-	const marker = cleanParam(param) ?? '*';
+	const marker = cleanScalarParam(param) ?? '*';
 	return mapStringValues(inputValue(value, context), item => wrapInline(item, marker));
 };
 
@@ -94,7 +95,7 @@ const highlightColorMarkers = {
 const highlightMarkers = new Set<string>(Object.values(highlightColorMarkers));
 
 function resolveHighlightMarker(param: string | undefined): string | undefined {
-	const color = cleanParam(param);
+	const color = cleanScalarParam(param);
 	if (color === undefined) return '';
 	if (Object.prototype.hasOwnProperty.call(highlightColorMarkers, color)) {
 		return highlightColorMarkers[color as keyof typeof highlightColorMarkers];
@@ -103,7 +104,7 @@ function resolveHighlightMarker(param: string | undefined): string | undefined {
 }
 
 export const validateHighlightParams = (param: string | undefined): ParamValidationResult => {
-	const color = cleanParam(param);
+	const color = cleanScalarParam(param);
 	if (resolveHighlightMarker(param) !== undefined) {
 		return { valid: true };
 	}
@@ -134,16 +135,8 @@ function prependBlock(value: string, block: string): string {
 	return `${block}\n\n${value}`;
 }
 
-function cleanParam(param: string | undefined): string | undefined {
-	if (param === undefined) return undefined;
-	return param.trim()
-		.replace(/^\(([\s\S]*)\)$/, '$1')
-		.trim()
-		.replace(/^(['"])([\s\S]*)\1$/, '$2');
-}
-
 export const validateHrParams = (param: string | undefined): ParamValidationResult => {
-	const position = cleanParam(param);
+	const position = cleanScalarParam(param);
 	if (position === undefined || ['after', 'before', 'both'].includes(position)) {
 		return { valid: true };
 	}
@@ -151,7 +144,7 @@ export const validateHrParams = (param: string | undefined): ParamValidationResu
 };
 
 export const hr = (value: string, param?: string, context?: FilterContext): TemplateValue => {
-	const position = (cleanParam(param) ?? 'after') as HrPosition;
+	const position = (cleanScalarParam(param) ?? 'after') as HrPosition;
 	return mapStringValues(inputValue(value, context), item => {
 		if (position === 'before') return prependBlock(item, '---');
 		if (position === 'both') return appendBlock(prependBlock(item, '---'), '---');
@@ -181,13 +174,13 @@ function formatCodeBlock(value: string, language = ''): string {
 }
 
 export const validateCodeParams = (param: string | undefined): ParamValidationResult => {
-	const language = cleanParam(param);
+	const language = cleanScalarParam(param);
 	if (language === undefined || (!/[\r\n`]/.test(language))) return { valid: true };
 	return { valid: false, error: 'language cannot contain newlines or backticks' };
 };
 
 export const code = (value: string, param?: string, context?: FilterContext): TemplateValue => {
-	const language = cleanParam(param);
+	const language = cleanScalarParam(param);
 	return mapStringValues(inputValue(value, context), item =>
 		language !== undefined || isMultiline(item)
 			? formatCodeBlock(item, language ?? '')
@@ -196,7 +189,7 @@ export const code = (value: string, param?: string, context?: FilterContext): Te
 };
 
 export const code_block = (value: string, param?: string, context?: FilterContext): TemplateValue => {
-	const language = cleanParam(param) ?? '';
+	const language = cleanScalarParam(param) ?? '';
 	return mapStringValues(inputValue(value, context), item => formatCodeBlock(item, language));
 };
 

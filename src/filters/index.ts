@@ -111,9 +111,9 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	map: { example: 'map:x => x.name', validateParams: validateMapParams },
 	replace: { example: 'replace:"old":"new"', validateParams: validateReplaceParams },
 	slice: { example: 'slice:0,5', validateParams: validateSliceParams },
-	sort: { example: 'sort:(name, desc)', validateParams: validateSortParams },
+	sort: { example: 'sort:("name", "desc")', validateParams: validateSortParams },
 	template: { example: 'template:"${name}"', validateParams: validateTemplateParams },
-	truncate: { example: 'truncate:(100, words)', validateParams: validateTruncateParams },
+	truncate: { example: 'truncate:(100, "words")', validateParams: validateTruncateParams },
 
 	// Filters with optional parameters (examples for documentation)
 	blockquote: {},
@@ -153,7 +153,7 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	merge: {},
 	nth: { example: 'nth:2', validateParams: validateNthParams },
 	number_format: {},
-	object: { example: 'object:keys', validateParams: validateObjectParams },
+	object: { example: 'object:"keys"', validateParams: validateObjectParams },
 	pascal: {},
 	parse_json: {},
 	remove_attr: {},
@@ -266,7 +266,8 @@ const filters: Record<string, FilterFunction> = {
 };
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {
-	const wrapped: TemplateFilter = (value, param, context) => filter(value, param, context);
+	const wrapped: TemplateFilter = (value, param, context) =>
+		filter(value, param === '' ? undefined : param, context);
 	wrapped.metadata = standardFilterMetadata[name] ?? {};
 	return wrapped;
 }
@@ -283,15 +284,12 @@ function splitFilterString(filterString: string): string[] {
 	const filters: string[] = [];
 	const state = createParserState();
 
-	// Remove all spaces before and after | that are not within quotes or parentheses
-	filterString = filterString.replace(/\s*\|\s*(?=(?:[^"'()]*["'][^"'()]*["'])*[^"'()]*$)/g, '|');
-
 	// Iterate through each character in the filterString
 	for (let i = 0; i < filterString.length; i++) {
 		const char = filterString[i];
 
 		// Split filters on pipe character when not in quotes, regex, or parentheses
-		if (char === '|' && !state.inQuote && !state.inRegex &&
+		if (char === '|' && !state.escapeNext && !state.inQuote && !state.inRegex &&
 			state.curlyDepth === 0 && state.parenDepth === 0) {
 			filters.push(state.current.trim());
 			state.current = '';
@@ -317,7 +315,7 @@ function parseFilterString(filterString: string): string[] {
 	for (let i = 0; i < filterString.length; i++) {
 		const char = filterString[i];
 
-		if (char === ':' && !state.inQuote && !state.inRegex &&
+		if (char === ':' && !state.escapeNext && !state.inQuote && !state.inRegex &&
 			state.parenDepth === 0 && parts.length === 0) {
 			parts.push(state.current.trim());
 			state.current = '';

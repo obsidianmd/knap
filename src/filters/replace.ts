@@ -1,4 +1,4 @@
-import { createParserState, processCharacter, parseRegexPattern } from '../parser-utils';
+import { cleanParamToken, parseRegexPattern, splitParams, unwrapParamList } from '../parser-utils';
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
 import { errorMessage, reportFilterWarning } from './warnings';
@@ -8,16 +8,22 @@ export const validateReplaceParams = (param: string | undefined): ParamValidatio
 		return { valid: false, error: 'requires search and replacement (e.g., replace:"old":"new")' };
 	}
 
-	// Remove outer parentheses if present
-	const cleanParam = param.replace(/^\((.*)\)$/, '$1');
+	const replacements = splitParams(unwrapParamList(param));
+	const allValid = replacements.length > 0 && replacements.every(replacement => {
+		const pair = splitReplacementPair(replacement);
+		if (!pair) return false;
+		const [search, replacementValue] = pair;
+		const quotedSearch = /^(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')$/.test(search.trim());
+		const regexSearch = /^\/(?:\\.|[^/\\])+\/[gimsuy]*$/.test(search.trim());
+		const quotedReplacement = replacementValue.trim() === '' ||
+			/^(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')$/.test(replacementValue.trim());
+		return (quotedSearch || regexSearch) && quotedReplacement;
+	});
+	const legacyValid = /["'][^"']*["']\s*:\s*["'][^"']*["']/.test(unwrapParamList(param)) ||
+		/["'][^"']*["']\s*:/.test(unwrapParamList(param)) ||
+		/\/[^/]+\/[gimsuy]*\s*:/.test(unwrapParamList(param));
 
-	// Check for at least one quoted string pattern
-	// Valid formats: "search":"replace" or 'search':'replace' or /regex/:"replace"
-	const hasQuotedPair = /["'][^"']*["']\s*:\s*["'][^"']*["']/.test(cleanParam) ||
-		/["'][^"']*["']\s*:/.test(cleanParam) || // "search": with implicit empty replacement
-		/\/[^/]+\/[gimsuy]*\s*:/.test(cleanParam); // regex pattern
-
-	if (!hasQuotedPair) {
+	if (!allValid && !legacyValid) {
 		return {
 			valid: false,
 			error: 'values must be quoted (e.g., replace:"old":"new" or replace:"text":"")'
@@ -27,40 +33,40 @@ export const validateReplaceParams = (param: string | undefined): ParamValidatio
 	return { valid: true };
 };
 
+function splitReplacementPair(value: string): [string, string] | null {
+	let quote = '';
+	let escaped = false;
+	for (let index = 0; index < value.length; index++) {
+		const character = value[index];
+		if (escaped) {
+			escaped = false;
+		} else if (character === '\\') {
+			escaped = true;
+		} else if (quote) {
+			if (character === quote) quote = '';
+		} else if (character === '"' || character === "'") {
+			quote = character;
+		} else if (character === ':') {
+			return [value.slice(0, index), value.slice(index + 1)];
+		}
+	}
+	return null;
+}
+
 export const replace = (str: string, param?: string, context?: FilterContext): string => {
 	if (!param) {
 		return str;
 	}
 
-	// Remove outer parentheses if present
-	param = param.replace(/^\((.*)\)$/, '$1');
-
-	// Split into multiple replacements if commas are present
-	const replacements = [];
-	const state = createParserState();
-
-	for (let i = 0; i < param.length; i++) {
-		const char = param[i];
-
-		if (char === ',' && !state.inQuote && !state.inRegex &&
-			state.curlyDepth === 0 && state.parenDepth === 0) {
-			replacements.push(state.current.trim());
-			state.current = '';
-		} else {
-			processCharacter(char, state);
-		}
-	}
-
-	if (state.current) {
-		replacements.push(state.current.trim());
-	}
+	const replacements = splitParams(unwrapParamList(param));
 
 	// Apply each replacement in sequence
 	return replacements.reduce((acc, replacement) => {
-		let [search, replace] = replacement.split(/(?<=[^\\]["']):(?=["'])/).map(p => {
-			// Remove surrounding quotes but preserve escaped characters
-			return p.trim().replace(/^["']|["']$/g, '');
-		});
+		const legacyPair = replacement.split(/(?<=[^\\]["']):(?=["'])/);
+		const pair = splitReplacementPair(replacement) ??
+			(legacyPair.length >= 2 ? [legacyPair[0], legacyPair.slice(1).join(':')] : null);
+		if (!pair) return acc;
+		let [search, replace] = pair.map(cleanParamToken);
 
 		// Use an empty string if replace is undefined
 		replace = replace || '';

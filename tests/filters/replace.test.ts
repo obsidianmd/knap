@@ -50,6 +50,11 @@ describe('replace filter', () => {
 	test('handles special characters in replacement', () => {
 		expect(replace('hello:world', '"\\:":"-"')).toBe('hello-world');
 	});
+
+	test('handles apostrophes and escaped commas inside double quotes', () => {
+		expect(replace("don't stop", '"don\'t":"do not"')).toBe('do not stop');
+		expect(replace('a,b and a,b', '"a\\,b":"x"')).toBe('x and x');
+	});
 });
 
 describe('replace filter via renderer', () => {
@@ -76,6 +81,13 @@ describe('replace filter via renderer', () => {
 		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('hall0 w0rld');
+	});
+
+	test('preserves apostrophes inside double-quoted pairs', async () => {
+		const result = await engine.render('{{msg|replace:"don\'t":"do not"}}', {
+			variables: { msg: "don't stop" },
+		});
+		expect(result).toEqual({ output: 'do not stop', errors: [], warnings: [] });
 	});
 });
 

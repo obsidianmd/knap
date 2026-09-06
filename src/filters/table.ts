@@ -1,10 +1,10 @@
 import type { FilterContext } from '../types';
-import { cleanParamToken, splitParams } from '../parser-utils';
+import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 function parseHeaders(params: string | undefined): string[] {
 	if (!params) return [];
-	return splitParams(params.replace(/^\(([\s\S]*)\)$/, '$1'))
+	return splitParams(unwrapParamList(params))
 		.map(cleanParamToken);
 }
 

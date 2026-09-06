@@ -1,3 +1,5 @@
+import { cleanScalarParam } from '../parser-utils';
+
 const wikiReference = (str: string, param: string | undefined, prefix: string): string => {
 	if (!str.trim()) {
 		return str;
@@ -5,10 +7,7 @@ const wikiReference = (str: string, param: string | undefined, prefix: string): 
 
 	let alias = '';
 	if (param) {
-		// Remove outer parentheses if present
-		param = param.replace(/^\((.*)\)$/, '$1');
-		// Remove surrounding quotes (both single and double)
-		alias = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+		alias = cleanScalarParam(param) ?? alias;
 	}
 
 	try {

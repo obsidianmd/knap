@@ -1,12 +1,12 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
-import { cleanParamToken, splitParams } from '../parser-utils';
+import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
 import { inputValue } from './value_utils';
 
 type SortDirection = 'asc' | 'desc';
 
 function parseParams(param: string | undefined): { property?: string; direction: SortDirection } {
 	if (!param) return { direction: 'asc' };
-	const parts = splitParams(param.replace(/^\(([\s\S]*)\)$/, '$1')).map(cleanParamToken);
+	const parts = splitParams(unwrapParamList(param)).map(cleanParamToken);
 	if (parts.length === 1 && (parts[0] === 'asc' || parts[0] === 'desc')) {
 		return { direction: parts[0] };
 	}
@@ -18,7 +18,7 @@ function parseParams(param: string | undefined): { property?: string; direction:
 
 export const validateSortParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) return { valid: true };
-	const parts = splitParams(param.replace(/^\(([\s\S]*)\)$/, '$1')).map(cleanParamToken);
+	const parts = splitParams(unwrapParamList(param)).map(cleanParamToken);
 	if (parts.length > 2) return { valid: false, error: 'accepts at most a property and direction' };
 	if (parts.length === 2 && !parts[0]) return { valid: false, error: 'property cannot be empty' };
 	const direction = parts.length === 1 && (parts[0] === 'asc' || parts[0] === 'desc')
@@ -54,7 +54,7 @@ export const sort = (
 	param?: string,
 	context?: FilterContext,
 ): TemplateValue => {
-	const input = inputValue(value, context, true);
+	const input = inputValue(value, context);
 	if (!Array.isArray(input)) return input;
 	const { property, direction } = parseParams(param);
 	return [...input].sort((left, right) => {

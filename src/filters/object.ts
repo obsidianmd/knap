@@ -1,5 +1,6 @@
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
+import { cleanScalarParam } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 const validObjectParams = ['array', 'keys', 'values'];
@@ -9,10 +10,11 @@ export const validateObjectParams = (param: string | undefined): ParamValidation
 		return { valid: false, error: 'requires a parameter: "array", "keys", or "values"' };
 	}
 
-	if (!validObjectParams.includes(param)) {
+	const option = cleanScalarParam(param);
+	if (!option || !validObjectParams.includes(option)) {
 		return {
 			valid: false,
-			error: `invalid parameter "${param}". Use "array", "keys", or "values"`
+			error: `invalid parameter "${option ?? ''}". Use "array", "keys", or "values"`
 		};
 	}
 
@@ -20,10 +22,11 @@ export const validateObjectParams = (param: string | undefined): ParamValidation
 };
 
 export const object = (str: string, param?: string, context?: FilterContext): string => {
+	const option = cleanScalarParam(param);
 	try {
 		const obj = JSON.parse(str);
 		if (typeof obj === 'object' && obj !== null) {
-			switch (param) {
+			switch (option) {
 				case 'array':
 					return JSON.stringify(Object.entries(obj));
 				case 'keys':

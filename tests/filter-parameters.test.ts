@@ -1,0 +1,92 @@
+import { describe, expect, test } from 'vitest';
+import { createEngine } from '../src/engine';
+import { applyFiltersWithRegistry, standardFilters } from '../src/filters';
+import type { FilterRegistry } from '../src/types';
+
+const engine = createEngine({ filters: standardFilters });
+
+describe('built-in filter parameter spellings', () => {
+	test.each([
+		'{{ value | object:keys | join:"," }}',
+		'{{ value | object:"keys" | join:"," }}',
+		'{{ value | object:("keys") | join:"," }}',
+	])('accepts object keys as %s', async template => {
+		await expect(engine.renderOrThrow(template, { variables: { value: { a: 1, b: 2 } } }))
+			.resolves.toBe('a,b');
+	});
+
+	test.each(['object:keys', 'object:"keys"', 'object:("keys")'])
+		('accepts object keys as %s through the synchronous helper', filterString => {
+			expect(applyFiltersWithRegistry(
+				{ a: 1, b: 2 },
+				`${filterString} | join:","`,
+				standardFilters,
+				{ variables: {} },
+			)).toBe('a,b');
+		});
+
+	test('accepts quoted scalar options', async () => {
+		await expect(engine.renderOrThrow('{{ value | sort:"desc" | join:"," }}', {
+			variables: { value: ['a', 'c', 'b'] },
+		})).resolves.toBe('c,b,a');
+		await expect(engine.renderOrThrow('{{ value | list:("numbered") }}', {
+			variables: { value: ['a', 'b'] },
+		})).resolves.toBe('1. a\n2. b');
+		await expect(engine.renderOrThrow('{{ value | hr:"before" }}', {
+			variables: { value: 'hello' },
+		})).resolves.toBe('---\n\nhello');
+	});
+
+	test('accepts quoted comma-separated options', async () => {
+		await expect(engine.renderOrThrow('{{ value | truncate:(2,"words") }}', {
+			variables: { value: 'one two three' },
+		})).resolves.toBe('one two…');
+		await expect(engine.renderOrThrow('{{ value | table:("Last, first", "Role") }}', {
+			variables: { value: [["Lovelace, Ada", 'Writer']] },
+		})).resolves.toContain('| Last, first | Role |');
+	});
+
+	test('preserves apostrophes inside double-quoted arguments', async () => {
+		await expect(engine.renderOrThrow('{{ value | callout:("info", "Don\'t panic") }}', {
+			variables: { value: 'Read this' },
+		})).resolves.toBe("> [!info] Don't panic\n> Read this");
+	});
+
+	test('accepts escaped pipe delimiters in both execution paths', async () => {
+		const template = '{{ value | split:"\\|" | sort | join:"," }}';
+		await expect(engine.renderOrThrow(template, { variables: { value: 'b|a' } }))
+			.resolves.toBe('a,b');
+		expect(applyFiltersWithRegistry(
+			'b|a',
+			'split:\\| | sort | join:","',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('a,b');
+	});
+});
+
+describe('custom filter parameter compatibility', () => {
+	const filters: FilterRegistry = {
+		inspect: (_value, param) => param ?? '',
+	};
+
+	test('does not normalize custom filter parameter strings', async () => {
+		const customEngine = createEngine({ filters });
+		await expect(customEngine.renderOrThrow('{{ value | inspect:"Don\'t | normalize" }}', {
+			variables: { value: 'x' },
+		})).resolves.toBe('"Don\'t | normalize"');
+
+		expect(applyFiltersWithRegistry(
+			'x',
+			'inspect:"Don\'t | normalize"',
+			filters,
+			{ variables: {} },
+		)).toBe('"Don\'t | normalize"');
+		expect(applyFiltersWithRegistry(
+			'x',
+			'inspect:a\\|b',
+			filters,
+			{ variables: {} },
+		)).toBe('a\\|b');
+	});
+});

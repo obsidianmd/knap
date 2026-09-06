@@ -45,7 +45,7 @@ describe('truncate filter', () => {
 		expect(engine.validate('{{ value | truncate }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 		});
-		expect(engine.validate('{{ value | truncate:(3, lines) }}')[0]).toMatchObject({
+		expect(engine.validate('{{ value | truncate:(3, "lines") }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid mode "lines"'),
 		});

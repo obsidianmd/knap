@@ -22,6 +22,7 @@ import {
 	UnaryExpression,
 	FilterExpression,
 	MemberExpression,
+	isLiteralFilterArgument,
 	parse,
 } from './parser';
 import { TemplateRuntimeError, type TemplateError } from './errors';
@@ -33,6 +34,7 @@ type ApplyFilterFn = (
 	line: number,
 	column: number,
 	rawValue?: any,
+	validateResolvedParams?: boolean,
 ) => any | Promise<any>;
 
 // ============================================================================
@@ -548,7 +550,15 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		paramString = formattedArgs.join(',');
 	}
 
-	return await state.context.applyFilter(stringValue, expr.name, paramString, expr.line, expr.column, value);
+	return await state.context.applyFilter(
+		stringValue,
+		expr.name,
+		paramString,
+		expr.line,
+		expr.column,
+		value,
+		expr.args.some(argument => !isLiteralFilterArgument(argument)),
+	);
 }
 
 function evaluateContains(left: any, right: any): boolean {

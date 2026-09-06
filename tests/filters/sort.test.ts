@@ -25,14 +25,17 @@ describe('sort filter', () => {
 		})).resolves.toBe(JSON.stringify([value[0], value[1], value[2]]));
 	});
 
-	test('leaves scalars and JSON text unchanged', async () => {
+	test('sorts serialized arrays while leaving scalars unchanged', async () => {
 		await expect(engine.renderOrThrow('{{ value | sort }}', {
 			variables: { value: '[3,1,2]' },
-		})).resolves.toBe('[3,1,2]');
+		})).resolves.toBe('[1,2,3]');
+		await expect(engine.renderOrThrow('{{ value | sort }}', {
+			variables: { value: '3' },
+		})).resolves.toBe('3');
 	});
 
 	test('validates sort direction', () => {
-		expect(engine.validate('{{ value | sort:(name, sideways) }}')[0]).toMatchObject({
+		expect(engine.validate('{{ value | sort:("name", "sideways") }}')[0]).toMatchObject({
 			code: 'INVALID_FILTER_ARGUMENTS',
 			message: expect.stringContaining('invalid direction "sideways"'),
 		});

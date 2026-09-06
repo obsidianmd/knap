@@ -10,7 +10,7 @@ export const compact = (
 	_param?: string,
 	context?: FilterContext,
 ): TemplateValue => {
-	const input = inputValue(value, context, true);
+	const input = inputValue(value, context);
 	if (Array.isArray(input)) return input.filter(item => !isEmpty(item));
 	if (isPlainObject(input)) {
 		return Object.fromEntries(Object.entries(input).filter(([, item]) => !isEmpty(item)));

@@ -1,4 +1,5 @@
 import type { FilterContext } from '../types';
+import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const number_format = (input: string, param?: string, context?: FilterContext): string => {
@@ -34,41 +35,11 @@ export const number_format = (input: string, param?: string, context?: FilterCon
 		let thousandsSep = ',';
 
 		if (param) {
-			// Remove outer parentheses if present
-			const cleanParam = param.replace(/^\((.*)\)$/, '$1');
-
-			// Split parameters, respecting quotes and escapes
-			const params: string[] = [];
-			let current = '';
-			let inQuote = false;
-			let escapeNext = false;
-
-			for (let i = 0; i < cleanParam.length; i++) {
-				const char = cleanParam[i];
-				if (escapeNext) {
-					current += char;
-					escapeNext = false;
-				} else if (char === '\\') {
-					current += char;
-					escapeNext = true;
-				} else if (char === '"' && !inQuote) {
-					inQuote = true;
-				} else if (char === '"' && inQuote) {
-					inQuote = false;
-				} else if (char === ',' && !inQuote) {
-					params.push(current.trim());
-					current = '';
-				} else {
-					current += char;
-				}
-			}
-			if (current) {
-				params.push(current.trim());
-			}
+			const params = splitParams(unwrapParamList(param)).map(cleanParamToken);
 
 			if (params.length >= 1) decimals = parseInt(params[0], 10);
-			if (params.length >= 2) decPoint = unescapeString(params[1].replace(/^["'](.*)["']$/, '$1'));
-			if (params.length >= 3) thousandsSep = unescapeString(params[2].replace(/^["'](.*)["']$/, '$1'));
+			if (params.length >= 2) decPoint = unescapeString(params[1]);
+			if (params.length >= 3) thousandsSep = unescapeString(params[2]);
 		}
 
 		if (isNaN(decimals)) decimals = 0;

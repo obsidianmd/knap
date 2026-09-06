@@ -1,5 +1,5 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
-import { cleanParamToken, splitParams } from '../parser-utils';
+import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
 import { inputValue, mapStringValues } from './value_utils';
 
 type TruncateMode = 'chars' | 'words';
@@ -12,7 +12,7 @@ interface TruncateOptions {
 
 function paramParts(param: string | undefined): string[] {
 	return param
-		? splitParams(param.replace(/^\(([\s\S]*)\)$/, '$1')).map(cleanParamToken)
+		? splitParams(unwrapParamList(param)).map(cleanParamToken)
 		: [];
 }
 

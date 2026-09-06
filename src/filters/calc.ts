@@ -1,5 +1,6 @@
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
+import { cleanScalarParam } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const validateCalcParams = (param: string | undefined): ParamValidationResult => {
@@ -8,7 +9,7 @@ export const validateCalcParams = (param: string | undefined): ParamValidationRe
 	}
 
 	// Remove outer quotes if present
-	const operation = param.replace(/^['"](.*)['"]$/, '$1').trim();
+	const operation = cleanScalarParam(param) ?? '';
 
 	if (!operation) {
 		return { valid: false, error: 'operation cannot be empty' };
@@ -45,7 +46,7 @@ export const calc = (str: string, param?: string, context?: FilterContext): stri
 		}
 
 		// Remove outer quotes if present
-		const operation = param.replace(/^['"](.*)['"]$/, '$1').trim();
+		const operation = cleanScalarParam(param) ?? '';
 
 		// Parse the operation
 		const operator = operation.slice(0, 2) === '**' ? '**' : operation.charAt(0);
