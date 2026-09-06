@@ -2,7 +2,7 @@
   min-height: 100vh;
 }
 .docs-layout {
-  width: min(calc(100% - 48px), var(--reading));
+  width: min(88vw, var(--reading));
   margin-inline: auto;
   padding-block: 64px 72px;
 }
@@ -286,7 +286,7 @@
   }
 }
 .not-found {
-  width: min(calc(100% - 48px), var(--reading));
+  width: min(88vw, var(--reading));
   margin: 12vh auto;
 
   > p {
@@ -311,7 +311,7 @@
 
 @media (max-width: 760px) {
   .docs-layout {
-    width: min(calc(100% - 32px), var(--reading));
+    width: min(88vw, var(--reading));
     display: block;
     padding-top: 44px;
   }

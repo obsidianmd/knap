@@ -5,7 +5,11 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Install from '../components/Install.astro';
 
-const movieTemplate = `---
+const examples = [
+  {
+    key: 'movie',
+    label: 'Movie',
+    template: `---
 year: {{ year }}
 director: {{ directors | wikilink }}
 genre: {{ genres }}
@@ -19,9 +23,8 @@ genre: {{ genres }}
 ## Cast
 
 {{ cast | slice:0,4 | table }}
-{% endif %}`;
-
-const markdownOutput = `---
+{% endif %}`,
+    markdown: `---
 year: 1999
 director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
 genre: ["Action","Sci-fi"]
@@ -38,7 +41,122 @@ genre: ["Action","Sci-fi"]
 | Keanu Reeves | Neo |
 | Laurence Fishburne | Morpheus |
 | Carrie-Anne Moss | Trinity |
-| Hugo Weaving | Agent Smith |`;
+| Hugo Weaving | Agent Smith |`,
+  },
+  {
+    key: 'recipe',
+    label: 'Recipe',
+    template: `---
+author: {{ author | wikilink }}
+servings: {{ servings }}
+source: {{ url }}
+---
+
+# {{ title }}
+
+{{ description | blockquote }}
+
+## Ingredients
+
+{% for ingredient in ingredients %}
+- {{ ingredient }}
+{% endfor %}
+
+## Instructions
+
+{{ instructions | list:numbered }}`,
+    markdown: `---
+author: "[[Eric Kim]]"
+servings: 8
+source: https://example.com/gochujang-cookies
+---
+
+# Gochujang caramel cookies
+
+> Chewy sugar cookies with a ribbon of spicy caramel.
+
+## Ingredients
+
+- Unsalted butter
+- Dark brown sugar
+- Gochujang
+- All-purpose flour
+
+## Instructions
+
+1. Mix the caramel ingredients until smooth.
+2. Make and chill the cookie dough.
+3. Swirl in the caramel, shape, and bake.`,
+  },
+  {
+    key: 'article',
+    label: 'Article',
+    template: `---
+author: {{ author | wikilink }}
+published: {{ published | date:"YYYY-MM-DD" }}
+source: {{ url }}
+tags: {{ tags }}
+---
+
+# {{ title ?? "Untitled" }}
+
+{{ description | blockquote }}
+
+{{ content }}`,
+    markdown: `---
+author: "[[Steph Ango]]"
+published: 2023-06-30
+source: https://stephango.com/file-over-app
+tags: ["clippings","articles"]
+---
+
+# File over app
+
+> If you want to create digital artifacts that last, they must be files you can control.
+
+In the fullness of time, the files you create are more important than the tools you use to create them.`,
+  },
+  {
+    key: 'research',
+    label: 'Research',
+    template: `---
+authors: {{ authors | wikilink }}
+published: {{ published | date:"YYYY-MM-DD" }}
+doi: {{ doi }}
+source: {{ url }}
+---
+
+# {{ title }}
+
+## Abstract
+
+{{ abstract }}
+
+{% if highlights %}
+## Highlights
+
+{{ highlights | list }}
+{% endif %}`,
+    markdown: `---
+authors: ["[[Ashish Vaswani]]","[[Noam Shazeer]]","[[Niki Parmar]]"]
+published: 2017-06-12
+doi: 10.48550/arXiv.1706.03762
+source: https://arxiv.org/abs/1706.03762
+---
+
+# Attention Is All You Need
+
+## Abstract
+
+The Transformer is a network architecture based solely on attention mechanisms.
+
+## Highlights
+
+- Replaces recurrence with self-attention
+- Enables more parallel training
+- Improves machine translation results`,
+  },
+];
 ---
 
 <BaseLayout markdownPath="/index.md" description="Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with variables, filters, and logic.">
@@ -58,7 +176,7 @@ genre: ["Action","Sci-fi"]
       <header class="markdown-native-heading">
         <h2 id="markdown-native-title">Example</h2>
       </header>
-      <TemplateExample template={movieTemplate} markdown={markdownOutput} />
+      <TemplateExample examples={examples} defaultExample="movie" />
     </section>
 
     <Install />

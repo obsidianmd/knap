@@ -1,5 +1,5 @@
 .site-header {
-  width: min(calc(100% - 48px), var(--reading));
+  width: min(88vw, var(--reading));
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -69,7 +69,7 @@
 
 @media (max-width: 760px) {
   .site-header {
-    width: min(calc(100% - 32px), var(--reading));
+    width: min(88vw, var(--reading));
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
