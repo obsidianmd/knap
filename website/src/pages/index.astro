@@ -10,9 +10,9 @@ const examples = [
     key: 'movie',
     label: 'Movie',
     template: `---
-year: {{ year }}
-director: {{ directors | wikilink }}
-genre: {{ genres }}
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"director" }}
+{{ genres | yaml_property:"genre" }}
 ---
 
 {{ title | h1 }}
@@ -26,8 +26,12 @@ genre: {{ genres }}
 {% endif %}`,
     markdown: `---
 year: 1999
-director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
-genre: ["Action","Sci-fi"]
+director:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+genre:
+  - "Action"
+  - "Sci-fi"
 ---
 
 # The Matrix
@@ -47,9 +51,9 @@ genre: ["Action","Sci-fi"]
     key: 'recipe',
     label: 'Recipe',
     template: `---
-author: {{ author | wikilink }}
-servings: {{ servings }}
-source: {{ url }}
+{{ author | wikilink | yaml_property:"author" }}
+{{ servings | yaml_property:"servings" }}
+{{ url | yaml_property:"source" }}
 ---
 
 {{ title | h1 }}
@@ -66,7 +70,7 @@ source: {{ url }}
     markdown: `---
 author: "[[Eric Kim]]"
 servings: 8
-source: https://example.com/gochujang-cookies
+source: "https://example.com/gochujang-cookies"
 ---
 
 # Gochujang caramel cookies
@@ -92,10 +96,10 @@ source: https://example.com/gochujang-cookies
     key: 'article',
     label: 'Article',
     template: `---
-author: {{ author | wikilink }}
+{{ author | wikilink | yaml_property:"author" }}
 published: {{ published | date:"YYYY-MM-DD" }}
-source: {{ url }}
-tags: {{ tags }}
+{{ url | yaml_property:"source" }}
+{{ tags | yaml_property:"tags" }}
 ---
 
 {{ (title ?? "Untitled") | h1 }}
@@ -106,8 +110,10 @@ tags: {{ tags }}
     markdown: `---
 author: "[[Steph Ango]]"
 published: 2023-06-30
-source: https://stephango.com/file-over-app
-tags: ["clippings","articles"]
+source: "https://stephango.com/file-over-app"
+tags:
+  - "clippings"
+  - "articles"
 ---
 
 # File over app
@@ -120,10 +126,7 @@ In the fullness of time, the files you create are more important than the tools 
     key: 'research',
     label: 'Research',
     template: `---
-authors: {{ authors | wikilink }}
-published: {{ published | date:"YYYY-MM-DD" }}
-doi: {{ doi }}
-source: {{ url }}
+{{ metadata | yaml }}
 ---
 
 {{ title | h1 }}
@@ -138,10 +141,13 @@ source: {{ url }}
 {{ highlights | list }}
 {% endif %}`,
     markdown: `---
-authors: ["[[Ashish Vaswani]]","[[Noam Shazeer]]","[[Niki Parmar]]"]
-published: 2017-06-12
-doi: 10.48550/arXiv.1706.03762
-source: https://arxiv.org/abs/1706.03762
+authors:
+  - "[[Ashish Vaswani]]"
+  - "[[Noam Shazeer]]"
+  - "[[Niki Parmar]]"
+published: "2017-06-12"
+doi: "10.48550/arXiv.1706.03762"
+source: "https://arxiv.org/abs/1706.03762"
 ---
 
 # Attention Is All You Need

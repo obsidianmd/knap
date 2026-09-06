@@ -1,4 +1,5 @@
 import { unquoteScalarParam } from '../parser-utils';
+import type { FilterContext } from '../types';
 
 const wikiReference = (str: string, param: string | undefined, prefix: string): string => {
 	if (!str.trim()) {
@@ -40,6 +41,8 @@ const wikiReference = (str: string, param: string | undefined, prefix: string): 
 	return str;
 };
 
-export const wikilink = (str: string, param?: string): string => wikiReference(str, param, '');
+export const wikilink = (str: string, param?: string, context?: FilterContext): string =>
+	wikiReference(Array.isArray(context?.rawValue) ? JSON.stringify(context.rawValue) : str, param, '');
 
-export const embed = (str: string, param?: string): string => wikiReference(str, param, '!');
+export const embed = (str: string, param?: string, context?: FilterContext): string =>
+	wikiReference(Array.isArray(context?.rawValue) ? JSON.stringify(context.rawValue) : str, param, '!');

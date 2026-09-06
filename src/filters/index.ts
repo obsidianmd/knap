@@ -49,6 +49,7 @@ import { first } from './first';
 import { footnote } from './footnote';
 import { fragment_link } from './fragment_link';
 import { image } from './image';
+import { indent, validateIndentParams } from './indent';
 import { join } from './join';
 import { kebab } from './kebab';
 import { last } from './last';
@@ -88,7 +89,7 @@ import { unique } from './unique';
 import { upper } from './upper';
 import { embed, wikilink } from './wikilink';
 import { duration } from './duration';
-import { yaml } from './yaml';
+import { yaml, yaml_property, validateYamlParams, validateYamlPropertyParams } from './yaml';
 
 type FilterFunction = (
 	value: string,
@@ -140,6 +141,7 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	h6: {},
 	hard_break: {},
 	image: {},
+	indent: { example: 'indent:2', validateParams: validateIndentParams },
 	italic: { example: 'italic:_', validateParams: validateItalicParams },
 	join: { example: 'join:", "' },
 	kebab: {},
@@ -178,7 +180,8 @@ const filterMetadata: Record<string, FilterMetadata> = {
 	unique: {},
 	upper: {},
 	wikilink: {},
-	yaml: {},
+	yaml: { example: 'yaml:flow', validateParams: validateYamlParams },
+	yaml_property: { example: 'yaml_property:"director"', validateParams: validateYamlPropertyParams },
 };
 
 export const standardFilterMetadata: Readonly<Record<string, FilterMetadata>> = Object.freeze(
@@ -218,6 +221,7 @@ const filters: Record<string, FilterFunction> = {
 	highlight,
 	hr,
 	image,
+	indent,
 	italic,
 	join,
 	kebab,
@@ -263,6 +267,7 @@ const filters: Record<string, FilterFunction> = {
 	upper,
 	wikilink,
 	yaml,
+	yaml_property,
 };
 
 function asTemplateFilter(name: string, filter: FilterFunction): TemplateFilter {

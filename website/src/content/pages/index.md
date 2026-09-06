@@ -13,9 +13,9 @@ Knap is a simple language that lets you generate Markdown content from structure
 
 ```knap
 ---
-year: {{ year }}
-director: {{ directors | wikilink }}
-genre: {{ genres }}
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"director" }}
+{{ genres | yaml_property:"genre" }}
 ---
 
 {{ title | h1 }}
@@ -34,8 +34,12 @@ genre: {{ genres }}
 ```md
 ---
 year: 1999
-director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
-genre: ["Action","Sci-fi"]
+director:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+genre:
+  - "Action"
+  - "Sci-fi"
 ---
 
 # The Matrix

@@ -185,6 +185,12 @@ const docs: FilterDoc[] = [
   { slug: 'safe-name', name: 'safe_name', category: 'Text', summary: 'Remove characters that are unsafe in file names.', syntax: ['safe_name', 'safe_name:windows'], parameters: ['Optionally choose `windows`, `mac`, or `linux` rules. The default is conservative.'], examples: [example({ title: 'notes/2024: recap?' }, '{{ title | safe_name }}', 'notes2024 recap')] },
   { slug: 'snake', name: 'snake', category: 'Text', summary: 'Convert text to snake_case.', syntax: ['snake'], related: ['camel', 'kebab', 'pascal'], examples: [example({ title: 'Hello World' }, '{{ title | snake }}', 'hello_world')] },
   { slug: 'title', name: 'title', category: 'Text', summary: 'Convert text to Title Case.', syntax: ['title'], related: ['capitalize', 'lower', 'upper'], examples: [example({ title: 'hello world' }, '{{ title | title }}', 'Hello World')] },
+  {
+    slug: 'indent', name: 'indent', category: 'Text', summary: 'Indent each non-empty line with spaces.', syntax: ['indent', 'indent:2'],
+    parameters: ['The optional width is an integer from 0 to 1000. It defaults to two spaces; zero leaves the text unchanged.'],
+    notes: ['Indents the first line as well as subsequent lines. Existing indentation, empty lines, and line endings are preserved.'], related: ['yaml', 'trim'],
+    examples: [example({ text: 'First\nSecond' }, '{{ text | indent }}', '  First\n  Second'), example({ text: '- One\n- Two' }, '{{ text | indent:4 }}', '    - One\n    - Two', 'Choose a width')],
+  },
   { slug: 'trim', name: 'trim', category: 'Text', summary: 'Remove whitespace from both ends of a value.', syntax: ['trim'], examples: [example({ title: '  hello world  ' }, '{{ title | trim }}', 'hello world')] },
   { slug: 'truncate', name: 'truncate', category: 'Text', summary: 'Shorten text to a character or word limit.', syntax: ['truncate:100', 'truncate:(20, "words")', 'truncate:(100, "chars", "...")'], parameters: ['The required first parameter is a non-negative limit.', 'The mode is `chars` by default. Pass `words` to count words instead.', 'The suffix defaults to `…` and can be replaced with an optional third parameter.'], notes: ['The suffix is added after the requested number of characters or words.', recursiveMarkdownValues], examples: [example({ text: 'A concise introduction to Knap' }, '{{ text | truncate:9 }}', 'A concise…', 'Characters'), example({ text: 'A concise introduction to Knap' }, '{{ text | truncate:(3, "words") }}', 'A concise introduction…', 'Words'), example({ text: 'A concise introduction' }, '{{ text | truncate:(9, "chars", "...") }}', 'A concise...', 'Custom suffix')] },
   { slug: 'uncamel', name: 'uncamel', category: 'Text', summary: 'Convert camelCase or PascalCase to spaced lowercase text.', syntax: ['uncamel'], related: ['camel'], examples: [example({ name: 'camelCase' }, '{{ name | uncamel }}', 'camel case', 'camelCase'), example({ name: 'PascalCase' }, '{{ name | uncamel }}', 'pascal case', 'PascalCase'), example({ name: 'myHTMLParser' }, '{{ name | uncamel }}', 'my html parser', 'Initialism')] },
@@ -306,7 +312,29 @@ const docs: FilterDoc[] = [
       example({ pages: { 'Project Atlas': 'Atlas', 'Daily Notes': 'Journal' } }, '{{ pages | wikilink }}', '["[[Project Atlas|Atlas]]","[[Daily Notes|Journal]]"]', 'Object input'),
     ],
   },
-  { slug: 'yaml', name: 'yaml', category: 'Markdown', summary: 'Quote a value safely for a YAML scalar.', syntax: ['yaml'], notes: ['Canonical numbers, booleans, and `null` are preserved. Ambiguous strings are quoted.'], examples: [example({ title: 'A: value #1' }, '{{ title | yaml }}', '"A: value #1"')] },
+  {
+    slug: 'yaml', name: 'yaml', searchTerms: ['frontmatter', 'properties', 'block list', 'flow'], category: 'Markdown', summary: 'Serialize a value as YAML.', syntax: ['yaml', 'yaml:flow'],
+    parameters: ['Arrays and objects use block style with two-space nesting by default. Pass `flow` for compact inline collections.'],
+    notes: ['Accepts typed arrays and objects or serialized JSON collections, including output from filters such as `wikilink`.', 'Within collections, strings stay quoted and numbers, booleans, and null retain their types. Empty arrays and objects use `[]` and `{}` in either style.', 'For standalone scalars, canonical numbers, booleans, and `null` are preserved; other text is quoted. Multiline strings use escaped newlines.', 'Output has no trailing newline or frontmatter delimiters. Place block collections on the line below a property and use `indent:2` to indent them, or use `yaml_property` to format a complete property.'], related: ['yaml_property', 'indent', 'wikilink'],
+    examples: [
+      example({ title: 'A: value #1' }, '{{ title | yaml }}', '"A: value #1"', 'Scalar'),
+      example({ genres: ['Action', 'Sci-fi'] }, 'genre:\n{{ genres | yaml | indent:2 }}', 'genre:\n  - "Action"\n  - "Sci-fi"', 'Block list'),
+      example({ genres: ['Action', 'Sci-fi'] }, 'genre: {{ genres | yaml:flow }}', 'genre: ["Action","Sci-fi"]', 'Flow list'),
+      example({ metadata: { year: 1999, genre: ['Action', 'Sci-fi'] } }, '---\n{{ metadata | yaml }}\n---', '---\nyear: 1999\ngenre:\n  - "Action"\n  - "Sci-fi"\n---', 'Frontmatter from an object'),
+      example({ directors: ['Lana Wachowski', 'Lilly Wachowski'] }, 'director:\n{{ directors | wikilink | yaml | indent:2 }}', 'director:\n  - "[[Lana Wachowski]]"\n  - "[[Lilly Wachowski]]"', 'Wikilink list'),
+    ],
+  },
+  {
+    slug: 'yaml-property', name: 'yaml_property', searchTerms: ['frontmatter', 'properties', 'yaml key'], category: 'Markdown', summary: 'Serialize a complete YAML property.', syntax: ['yaml_property:"name"'],
+    parameters: ['One non-empty property name is required. Quote names that contain spaces or punctuation.'],
+    notes: ['Scalars appear beside the key. Non-empty arrays and objects use block style beneath the key with two-space indentation; empty collections stay inline as `[]` or `{}`.', 'Uses the same value serialization as `yaml` and quotes keys when needed. Typed and serialized JSON collections are supported.', 'Apply transformations such as `wikilink` before this filter. No separate `yaml` or `indent` filter is needed.', 'Output has no trailing newline or frontmatter delimiters.'], related: ['yaml', 'wikilink', 'indent'],
+    examples: [
+      example({ year: 1999 }, '{{ year | yaml_property:"year" }}', 'year: 1999', 'Scalar'),
+      example({ directors: ['Lana Wachowski', 'Lilly Wachowski'] }, '{{ directors | wikilink | yaml_property:"director" }}', 'director:\n  - "[[Lana Wachowski]]"\n  - "[[Lilly Wachowski]]"', 'Wikilink list'),
+      example({ details: { year: 1999, genre: ['Action', 'Sci-fi'] } }, '{{ details | yaml_property:"movie" }}', 'movie:\n  year: 1999\n  genre:\n    - "Action"\n    - "Sci-fi"', 'Nested object'),
+      example({ tags: [] }, '{{ tags | yaml_property:"tags" }}', 'tags: []', 'Empty list'),
+    ],
+  },
 
   { slug: 'calc', name: 'calc', category: 'Numbers', summary: 'Apply a simple arithmetic operation to a number.', syntax: ['calc:"+10"', 'calc:"*2"', 'calc:"**3"'], parameters: ['Supported operators are `+`, `-`, `*`, `/`, `**`, and `^`.'], notes: ['Non-numeric input is returned unchanged.'], related: ['round', 'number_format'], examples: [example({ count: 5 }, '{{ count | calc:"+10" }}', '15', 'Addition'), example({ count: 2 }, '{{ count | calc:"**3" }}', '8', 'Exponentiation')] },
   {
@@ -356,8 +384,8 @@ export const filterDocs = docs.map((filter) => ({
 
 export const filterGroups: FilterGroup[] = [
   { id: 'dates', label: 'Dates and time', intro: 'Parse, adjust, and format dates or durations.', filters: ['date', 'date_modify', 'duration'] },
-  { id: 'text', label: 'Text', intro: 'Normalize case, spacing, file names, and encoded text.', filters: ['camel', 'capitalize', 'decode_uri', 'encode_uri', 'kebab', 'lower', 'pascal', 'replace', 'safe_name', 'snake', 'title', 'trim', 'truncate', 'uncamel', 'unescape', 'upper'] },
-  { id: 'markdown', label: 'Markdown', intro: 'Create links, callouts, lists, tables, and other Markdown structures.', filters: ['blockquote', 'bold', 'callout', 'code', 'code_block', 'comment', 'embed', 'escape_md', 'footnote', 'fragment_link', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hard_break', 'highlight', 'hr', 'image', 'italic', 'link', 'list', 'math', 'math_block', 'strike', 'table', 'table_pretty', 'wikilink', 'yaml'] },
+  { id: 'text', label: 'Text', intro: 'Normalize case, spacing, file names, and encoded text.', filters: ['camel', 'capitalize', 'decode_uri', 'encode_uri', 'indent', 'kebab', 'lower', 'pascal', 'replace', 'safe_name', 'snake', 'title', 'trim', 'truncate', 'uncamel', 'unescape', 'upper'] },
+  { id: 'markdown', label: 'Markdown', intro: 'Create links, callouts, lists, tables, and other Markdown structures.', filters: ['blockquote', 'bold', 'callout', 'code', 'code_block', 'comment', 'embed', 'escape_md', 'footnote', 'fragment_link', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hard_break', 'highlight', 'hr', 'image', 'italic', 'link', 'list', 'math', 'math_block', 'strike', 'table', 'table_pretty', 'wikilink', 'yaml', 'yaml_property'] },
   { id: 'numbers', label: 'Numbers', intro: 'Calculate, round, and format numeric values.', filters: ['calc', 'number_format', 'round'] },
   { id: 'collections', label: 'Collections', intro: 'Select, reshape, combine, and render arrays and objects.', filters: ['compact', 'first', 'join', 'last', 'length', 'map', 'merge', 'nth', 'object', 'parse_json', 'reverse', 'slice', 'sort', 'split', 'template', 'unique'] },
   { id: 'html-cleanup', label: 'HTML cleanup', intro: 'Clean markup while preserving the pieces a Markdown workflow needs.', filters: ['remove_attr', 'remove_tags', 'replace_tags', 'strip_attr', 'strip_md', 'strip_tags'] },

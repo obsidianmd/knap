@@ -156,6 +156,7 @@ turns JSON text into a typed value for collection-aware filter chains.
 | `hard_break` | Turn single newlines into Markdown hard line breaks. |
 | `hr` | Place a horizontal rule before or after a value. |
 | `image` | Format a URL as a Markdown image. |
+| `indent` | Indent each non-empty line with spaces. |
 | `join`, `split` | Join arrays or split strings. |
 | `length` | Return the length of a value. |
 | `link`, `wikilink` | Format Markdown links or wikilinks. |
@@ -180,11 +181,29 @@ turns JSON text into a typed value for collection-aware filter chains.
 | `truncate` | Shorten text to a character or word limit. |
 | `uncamel` | Convert camel-cased text into words. |
 | `unescape` | Unescape encoded text. |
-| `yaml` | Format a value as a YAML-safe scalar. |
+| `yaml` | Serialize scalars, arrays, or objects as YAML; use `yaml:flow` for compact collections. |
+| `yaml_property` | Serialize a named YAML property with automatic indentation. |
 
 Filter metadata, including parameter validation and examples, is exported as
 `standardFilterMetadata`. Invalid filter names and invalid parameters are
 reported by `engine.validate()` and `engine.render()`.
+
+The `yaml_property` filter formats a complete frontmatter property. Scalars stay
+beside the key, and collections use block style with automatic indentation:
+
+```liquid
+---
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"director" }}
+{{ genres | yaml_property:"genre" }}
+---
+```
+
+For manual placement, use `yaml` followed by `indent:2` below a property name.
+Use `genre: {{ genres | yaml:flow }}` for an inline list. An entire metadata
+object can be serialized with `{{ metadata | yaml }}` between the `---` lines.
+Collection string values remain quoted, including wikilinks, while numbers,
+booleans, and null retain their types.
 
 When a filter cannot use runtime input but preserves that input for
 compatibility, `engine.render()` reports a non-fatal structured warning. This
