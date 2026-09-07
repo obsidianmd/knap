@@ -248,6 +248,24 @@ describe('Renderer', () => {
 	});
 
 	describe('For Loops', () => {
+		test.each(['\n', '\r\n'])('preserves blank lines between loop iterations with %j line endings', async (newline) => {
+			const ctx = createContext({ items: ['a', 'b', 'c'] });
+			const template = `{% for item in items %}${newline}{{item}}${newline}${newline}{% endfor %}`;
+			const result = await render(template, ctx);
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe(`a${newline}${newline}b${newline}${newline}c${newline}`);
+		});
+
+		test('preserves multiple intentional blank lines', async () => {
+			const result = await render('{% for item in items %}\n{{item}}\n\n\n{% endfor %}', createContext({ items: ['a', 'b'] }));
+			expect(result.output).toBe('a\n\n\nb\n\n');
+		});
+
+		test('does not add blank lines to ordinary multiline lists', async () => {
+			const result = await render('{% for item in items %}\n- {{item}}\n{% endfor %}', createContext({ items: ['a', 'b'] }));
+			expect(result.output).toBe('- a\n- b');
+		});
+
 		test('renders simple for loop', async () => {
 			const ctx = createContext({ items: ['a', 'b', 'c'] });
 			const result = await render('{% for item in items %}{{item}}{% endfor %}', ctx);

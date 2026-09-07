@@ -68,6 +68,8 @@ Use `{% for %}` to render a block once for every value in an array.
 
 Loops can iterate over variables supplied by the host, values created with `set`, and arrays found in nested data.
 
+Iterations are separated by a line break. Extra blank lines before `{% endfor %}` are preserved, so you can separate repeated paragraphs or tables by leaving a blank line inside the loop.
+
 ## Loop values
 
 | Value | Description |

@@ -316,14 +316,20 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 			};
 
 			const itemResult = await renderNodes(node.body, loopState);
-			results.push(itemResult.trim());
+			// Remove the opening tag's line break, preserving additional blank lines.
+			results.push(trimLeadingWhitespace(itemResult));
 		}
 
 		if (node.trimRight) {
 			state.pendingTrimRight = true;
 		}
 
-		return results.join('\n');
+		return results.map((result, index) => {
+			// The closing tag's line break separates iterations. Only remove it
+			// after the last iteration; retain any intentionally added blank lines.
+			if (index === results.length - 1) return trimTrailingWhitespace(result);
+			return result.endsWith('\n') ? result : result + '\n';
+		}).join('');
 	} catch (error) {
 		state.errors.push(toRenderError(error, 'Error in for loop', node.line, node.column));
 		return '';
