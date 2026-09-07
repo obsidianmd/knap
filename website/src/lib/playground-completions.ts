@@ -1,9 +1,12 @@
+import { tokenize } from '../../../src/tokenizer';
+
 export interface TemplateSuggestion {
   label: string;
   type: string;
   detail?: string;
   info?: string;
   boost?: number;
+  parameterValues?: string[];
 }
 
 const logic = [
@@ -12,6 +15,37 @@ const logic = [
   ['else', 'Use a fallback branch'], ['endif', 'Close a condition'],
   ['endfor', 'Close a loop'],
 ].map(([label, detail], index) => ({ label, detail, type: 'keyword', boost: 7 - index }));
+
+const operators = [
+  ['==', 'Equal to'], ['!=', 'Not equal to'],
+  ['>', 'Greater than'], ['<', 'Less than'],
+  ['>=', 'Greater than or equal to'], ['<=', 'Less than or equal to'],
+  ['contains', 'String substring or array member'],
+  ['and', 'Both sides are true'], ['or', 'Either side is true'],
+  ['&&', 'Both sides are true'], ['||', 'Either side is true'],
+  ['??', 'Fallback value'], ['|', 'Apply a filter'],
+].map(([label, detail], index) => ({ label, detail, type: /^[a-z]/.test(label) ? 'keyword' : 'operator', boost: 13 - index }));
+
+const conditionValues: TemplateSuggestion[] = [
+  { label: 'not', type: 'keyword', detail: 'Negate an expression', boost: -2 },
+  { label: '!', type: 'operator', detail: 'Negate an expression', boost: -3 },
+  ...['true', 'false', 'null'].map((label) => ({ label, type: 'keyword', boost: -1 })),
+];
+
+function conditionOperatorRange(body: string, position: number, source: string) {
+  const condition = body.match(/^\s*(?:if|elseif)\s+([\s\S]*)$/)?.[1];
+  if (condition === undefined) return undefined;
+  const partial = condition.match(/[\w$]+$|[!<>=&|?]+$/)?.[0] ?? '';
+  const prefix = condition.slice(0, condition.length - partial.length);
+  if (prefix.trimEnd().endsWith('.')) return null;
+  // Use Knap's tokenizer so strings, numbers, property access, and grouped
+  // expressions all have the same boundaries as the actual template language.
+  const tokens = tokenize('{{' + prefix + '}}').tokens;
+  const last = tokens.at(-3);
+  if (!last || !['identifier', 'string', 'number', 'boolean', 'null', 'rparen', 'rbracket', 'rbrace'].includes(last.type)) return null;
+  const suffix = source.slice(position).match(/^[\w$]+|^[!<>=&|?]+/)?.[0] ?? '';
+  return { from: position - partial.length, to: position + suffix.length, options: operators };
+}
 
 // Scan delimiters outside strings, including unfinished tags while typing.
 export function templateTags(source: string) {
@@ -77,11 +111,37 @@ function scopeAt(source: string, variables: Record<string, unknown>) {
   return scope;
 }
 
+function filterParameterCompletions(body: string, position: number, source: string, filters: TemplateSuggestion[]) {
+  let pipe = -1;
+  let quote = '';
+  for (let index = 0; index < body.length; index++) {
+    const char = body[index];
+    if (quote) {
+      if (char === '\\') index++;
+      else if (char === quote) quote = '';
+    } else if (char === '"' || char === "'") quote = char;
+    else if (char === '|' && body[index - 1] !== '|' && body[index + 1] !== '|') pipe = index;
+  }
+  if (pipe < 0) return null;
+  const argument = body.slice(pipe + 1).match(/^\s*(\w+)\s*:\s*(?:\(\s*)?["']?([\w-]*)$/);
+  if (!argument) return null;
+  const values = filters.find((filter) => filter.label === argument[1])?.parameterValues;
+  if (!values?.length) return null;
+  return {
+    from: position - argument[2].length,
+    to: position + (source.slice(position).match(/^[\w-]*/)?.[0].length ?? 0),
+    options: values.map((label, index) => ({ label, type: 'enum', boost: values.length - index })),
+  };
+}
+
 export function templateCompletions(source: string, position: number, variables: Record<string, unknown>, filters: TemplateSuggestion[]) {
   const before = source.slice(0, position);
   const tag = templateTags(before).at(-1);
-  if (!tag || tag.closed || tag.quoted) return null;
+  if (!tag || tag.closed) return null;
   const body = tag.body;
+  const parameters = filterParameterCompletions(body, position, source, filters);
+  if (parameters) return parameters;
+  if (tag.quoted) return null;
   const word = body.match(/[\w$]*$/)![0];
   const from = position - word.length;
   const to = position + source.slice(position).match(/^[\w$]*/)![0].length;
@@ -89,6 +149,9 @@ export function templateCompletions(source: string, position: number, variables:
   // A single pipe introduces a filter; || is a logical expression.
   if (/(?:^|[^|])\|\s*\w*$/.test(body)) return { from, to, options: filters };
   if (tag.kind === '{%' && /^\s*(?:for|set)\s+\w*\s*$/.test(body)) return null;
+
+  const operatorResult = tag.kind === '{%' ? conditionOperatorRange(body, position, source) : undefined;
+  if (operatorResult) return operatorResult;
 
   const scope = scopeAt(source.slice(0, tag.from - 2), variables);
   const path = body.match(/([\w$]+(?:\[\d+\]|\.[\w$]+)*)\.[\w$]*$/);
@@ -104,6 +167,7 @@ export function templateCompletions(source: string, position: number, variables:
   } else {
     options = [...scope.keys()].filter((key) => /^[a-zA-Z_$][\w$]*$/.test(key))
       .map((label) => ({ label, type: 'variable' }));
+    if (operatorResult === null) options.push(...conditionValues);
   }
   return { from, to, options };
 }

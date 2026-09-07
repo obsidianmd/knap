@@ -15,6 +15,7 @@ export type FilterDoc = {
   summary: string;
   syntax: string[];
   parameters?: string[];
+  parameterValues?: string[];
   notes?: string[];
   referenceTables?: {
     title: string;
@@ -240,12 +241,14 @@ const docs: FilterDoc[] = [
   { slug: 'hard-break', name: 'hard_break', searchTerms: ['line break', 'newline'], category: 'Markdown', summary: 'Turn single newlines into Markdown hard line breaks.', syntax: ['hard_break'], notes: ['Two trailing spaces are added before single newlines. Blank lines between paragraphs are preserved.', recursiveMarkdownValues], examples: [example({ text: 'First line\nSecond line\n\nNew paragraph' }, '{{ text | hard_break }}', 'First line  \nSecond line\n\nNew paragraph')] },
   {
     slug: 'highlight', name: 'highlight', searchTerms: ['mark', 'color'], category: 'Markdown', summary: 'Wrap text in highlight markers.', syntax: ['highlight', 'highlight:blue'],
+    parameterValues: ['red', 'orange', 'yellow', 'green', 'blue', 'purple'],
     parameters: ['Optionally pass `red`, `orange`, `yellow`, `green`, `blue`, or `purple` to add a color marker.'],
     notes: [inlineWhitespace, recursiveMarkdownValues], related: ['bold', 'italic', 'strike'],
     examples: [example({ text: 'Remember this' }, '{{ text | highlight }}', '==Remember this==', 'Default'), example({ text: 'Remember this' }, '{{ text | highlight:blue }}', '==🔵Remember this==', 'Color')],
   },
   {
     slug: 'hr', name: 'hr', category: 'Markdown', summary: 'Place a horizontal rule around text.', syntax: ['hr', 'hr:before', 'hr:both'],
+    parameterValues: ['after', 'before', 'both'],
     searchTerms: ['horizontal rule', 'thematic break', 'separator'], parameters: ['Use `after` (the default), `before`, or `both` to choose the rule position.'], notes: ['The filter emits `---` and separates it from content with a blank line.', recursiveMarkdownValues],
     examples: [example({ text: 'Section end' }, '{{ text | hr }}', 'Section end\n\n---', 'After'), example({ text: 'Section start' }, '{{ text | hr:before }}', '---\n\nSection start', 'Before')],
   },
@@ -272,6 +275,7 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'list', name: 'list', category: 'Markdown', summary: 'Convert a value or array to a Markdown list.', syntax: ['list', 'list:numbered', 'list:task', 'list:numbered-task'],
+    parameterValues: ['numbered', 'task', 'numbered-task'],
     parameters: ['Choose `bullet` (default), `numbered`, `task`, or `numbered-task`.'], related: ['table'],
     examples: [
       example({ items: ['Apple', 'Pear'] }, '{{ items | list }}', '- Apple\n- Pear', 'Bullet list'),
@@ -315,6 +319,7 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'yaml', name: 'yaml', searchTerms: ['frontmatter', 'properties', 'block list', 'flow'], category: 'Markdown', summary: 'Serialize a value as YAML.', syntax: ['yaml', 'yaml:flow'],
+    parameterValues: ['flow'],
     parameters: ['Arrays and objects use block style with two-space nesting by default. Pass `flow` for compact inline collections.'],
     notes: ['Accepts typed arrays and objects or serialized JSON collections, including output from filters such as `wikilink`.', 'Within collections, strings stay quoted and numbers, booleans, and null retain their types. Empty arrays and objects use `[]` and `{}` in either style.', 'For standalone scalars, canonical numbers, booleans, and `null` are preserved; other text is quoted. Multiline strings use escaped newlines.', 'Output has no trailing newline or frontmatter delimiters. Place block collections on the line below a property and use `indent:2` to indent them, or use `yaml_property` to format a complete property.'], related: ['yaml_property', 'indent', 'wikilink'],
     examples: [

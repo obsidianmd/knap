@@ -5,6 +5,8 @@ import { autocompletion, completionKeymap, acceptCompletion } from '@codemirror/
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import { templateCompletions, type TemplateSuggestion } from '../lib/playground-completions';
+import { emptyTemplatePair, pairTemplateInput } from '../lib/playground-pairs';
+import { markdownPunctuationAt } from '../lib/markdown-punctuation';
 
 const language = StreamLanguage.define({
   startState: () => ({ close: '', quote: '', filter: false }),
@@ -12,7 +14,12 @@ const language = StreamLanguage.define({
     if (!state.close) {
       if (stream.match('{{')) state.close = '}}';
       else if (stream.match('{%')) state.close = '%}';
-      else { stream.next(); return null; }
+      else {
+        const length = markdownPunctuationAt(stream.string, stream.pos);
+        if (length) { stream.pos += length; return 'punctuation'; }
+        stream.next();
+        return null;
+      }
       return 'punctuation';
     }
     if (!state.quote && stream.match(state.close)) {
@@ -57,6 +64,18 @@ export function createTemplateEditor(variables: () => Record<string, unknown>) {
       extensions: [
         lineNumbers(), history(), drawSelection(), language,
         EditorState.tabSize.of(2),
+        EditorView.inputHandler.of((view, from, to, text, insert) => {
+          if (view.composing || view.state.selection.ranges.length !== 1 || !insert().isUserEvent('input.type')) return false;
+          const paired = pairTemplateInput(view.state.doc.toString(), from, to, text);
+          if (!paired) return false;
+          view.dispatch({
+            changes: { from: paired.from, to: paired.to, insert: paired.insert },
+            selection: { anchor: paired.anchor },
+            userEvent: paired.insert ? 'input.type' : 'select',
+            scrollIntoView: true,
+          });
+          return true;
+        }),
         EditorView.contentAttributes.of({ id: 'playground-template', 'aria-label': 'Template', 'aria-describedby': 'template-status template-file-status', spellcheck: 'false', autocapitalize: 'off' }),
         syntaxHighlighting(HighlightStyle.define([
           { tag: tags.variableName, class: 'syn-variable' },
@@ -71,12 +90,22 @@ export function createTemplateEditor(variables: () => Record<string, unknown>) {
           optionClass: (completion) => {
             if (completion.type === 'variable' || completion.type === 'property') return 'playground-completion-variable';
             if (completion.type === 'function') return 'playground-completion-filter';
+            if (completion.type === 'enum') return 'playground-completion-parameter';
             return completion.type === 'keyword' ? 'playground-completion-keyword' : '';
           },
           activateOnTypingDelay: 80,
           override: [(context) => templateCompletions(context.state.doc.toString(), context.pos, variables(), filters)],
         }),
-        keymap.of([...completionKeymap, { key: 'Tab', run: acceptCompletion }, ...defaultKeymap, ...historyKeymap, indentWithTab]),
+        keymap.of([...completionKeymap, { key: 'Tab', run: acceptCompletion }, {
+          key: 'Backspace',
+          run(view) {
+            if (!view.state.selection.main.empty || view.state.selection.ranges.length !== 1) return false;
+            const pair = emptyTemplatePair(view.state.doc.toString(), view.state.selection.main.head);
+            if (!pair) return false;
+            view.dispatch({ changes: pair, selection: { anchor: pair.from }, userEvent: 'delete.backward' });
+            return true;
+          },
+        }, ...defaultKeymap, ...historyKeymap, indentWithTab]),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             root.dispatchEvent(new Event('playground-change', { bubbles: true }));

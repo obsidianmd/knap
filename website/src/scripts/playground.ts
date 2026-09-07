@@ -1,9 +1,11 @@
-import { highlightLine, type CodeLanguage } from '../lib/highlight';
+import { highlightLines, type CodeLanguage } from '../lib/highlight';
 import type { PlaygroundResult } from '../lib/playground';
 import { createPlaygroundInputValidator, type PlaygroundInput } from '../lib/playground-input';
 import { setupPlaygroundColumns } from './playground-columns';
 import { setupPlaygroundFiles } from './playground-files';
 import { createTemplateEditor } from './playground-template-editor';
+import { setStatus } from './playground-status';
+import { setupPlaygroundCopy } from './playground-copy';
 
 function editor(name: string, language: CodeLanguage) {
   const root = document.querySelector<HTMLElement>(`[data-editor="${name}"]`)!;
@@ -18,7 +20,7 @@ function editor(name: string, language: CodeLanguage) {
   };
   const paint = () => {
     const lines = textarea.value.split('\n');
-    highlight.innerHTML = lines.map((line) => highlightLine(line, language)).join('\n') + '\n';
+    highlight.innerHTML = highlightLines(lines, language).join('\n') + '\n';
     numbers.textContent = lines.map((_, index) => index + 1).join('\n') + '\n';
     syncScroll();
   };
@@ -35,17 +37,13 @@ const template = createTemplateEditor(() => validatedInput?.variables ?? {});
 const output = editor('output', 'md');
 const initialInput = input.textarea.value;
 const initialTemplate = template.value;
-const copy = document.querySelector<HTMLButtonElement>('#copy-output')!;
+const inputCopy = setupPlaygroundCopy('input', () => input.textarea.value);
+const templateCopy = setupPlaygroundCopy('template', () => template.value);
+const outputCopy = setupPlaygroundCopy('output', () => output.textarea.value);
 const validateInput = createPlaygroundInputValidator();
 let validatedInput: PlaygroundInput | undefined;
 let worker: Worker | undefined;
 let deadline: number | undefined;
-let copyTimer: number | undefined;
-
-function setStatus(element: HTMLElement, text: string, state = '') {
-  element.textContent = text;
-  element.dataset.state = state;
-}
 
 function stopWorker() {
   worker?.terminate();
@@ -58,7 +56,7 @@ function showFailure(message: string) {
   output.textarea.removeAttribute('aria-busy');
   output.textarea.value = template.value;
   output.paint();
-  copy.disabled = !output.textarea.value;
+  outputCopy.refresh();
   setStatus(template.status, 'Validation could not finish.', 'error');
   setStatus(output.status, message, 'error');
 }
@@ -74,14 +72,14 @@ function showResult(result: PlaygroundResult) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'playground-diagnostic';
-      button.textContent = `${'filter' in diagnostic ? 'Warning · ' : ''}Line ${diagnostic.line}, column ${diagnostic.column}: ${diagnostic.message}`;
+      setStatus(button, `${'filter' in diagnostic ? 'Warning · ' : ''}Line ${diagnostic.line}, column ${diagnostic.column}: ${diagnostic.message}`, 'filter' in diagnostic ? 'warning' : 'error');
       button.addEventListener('click', () => {
         template.selectDiagnostic(diagnostic.line, diagnostic.column);
       });
       template.status.append(button);
     }
   } else {
-    template.status.textContent = 'Valid template';
+    setStatus(template.status, 'Valid template', 'success');
   }
 
   output.textarea.removeAttribute('aria-busy');
@@ -91,10 +89,8 @@ function showResult(result: PlaygroundResult) {
     output.textarea.scrollTop = scrollTop;
     output.textarea.scrollLeft = scrollLeft;
     output.paint();
-    window.clearTimeout(copyTimer);
-    copy.textContent = 'Copy';
   }
-  copy.disabled = !output.textarea.value;
+  outputCopy.refresh();
   setStatus(output.status, result.output ? `${result.output.length.toLocaleString()} characters` : 'The template rendered an empty result.');
 }
 
@@ -125,6 +121,8 @@ function render() {
 }
 
 function updateOutput() {
+  inputCopy.refresh();
+  templateCopy.refresh();
   stopWorker();
   output.textarea.setAttribute('aria-busy', 'true');
   render();
@@ -140,17 +138,6 @@ document.getElementById('reset-example')!.addEventListener('click', () => {
     field.paint();
   }
   template.setValue(initialTemplate);
-});
-copy.addEventListener('click', async () => {
-  const value = output.textarea.value;
-  try {
-    await navigator.clipboard.writeText(value);
-    if (output.textarea.value === value) copy.textContent = 'Copied';
-  } catch {
-    copy.textContent = 'Copy failed';
-  }
-  window.clearTimeout(copyTimer);
-  copyTimer = window.setTimeout(() => { copy.textContent = 'Copy'; }, 2000);
 });
 setupPlaygroundColumns();
 setupPlaygroundFiles({

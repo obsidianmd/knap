@@ -1,7 +1,28 @@
 import { describe, expect, test } from 'vitest';
-import { highlightLine } from '../website/src/lib/highlight';
+import { highlightLine, highlightLines } from '../website/src/lib/highlight';
+import { markdownPunctuationAt } from '../website/src/lib/markdown-punctuation';
 
 describe('website syntax highlighting', () => {
+	test('colors quoted YAML list strings without recoloring Markdown quotes outside frontmatter', () => {
+		const lines = highlightLines(['---', 'genre:', '- "Action"', "- 'Sci-fi'", '- "[[Lana Wachowski]]"', '---', '- "A quotation"'], 'md');
+		expect(lines[2]).toBe('<span class="syn-punctuation">-</span> <span class="syn-punctuation">&quot;</span><span class="syn-string">Action</span><span class="syn-punctuation">&quot;</span>');
+		expect(lines[3]).toContain('<span class="syn-string">Sci-fi</span>');
+		expect(lines[4]).toContain('<span class="syn-string">[[Lana Wachowski]]</span>');
+		expect(lines[6]).not.toContain('syn-string');
+	});
+	test.each(['md', 'knap'] as const)('highlights Markdown markers in %s', (language) => {
+		expect(highlightLine('---', language)).toBe('<span class="syn-punctuation">---</span>');
+		expect(highlightLine('- **Cast**', language)).toBe('<span class="syn-punctuation">-</span> <span class="syn-punctuation">**</span>Cast<span class="syn-punctuation">**</span>');
+		expect(highlightLine('1. _First_', language)).toContain('<span class="syn-punctuation">1.</span>');
+		expect(highlightLine('movie_title and sci-fi', language)).toBe('movie_title and sci-fi');
+		expect(highlightLine('\\*literal', language)).toBe('\\*literal');
+		expect(highlightLine('**<script>**', language)).toContain('&lt;script&gt;');
+	});
+
+	test.each([['---', 0, 3], ['  - **Cast**', 2, 1], ['  - **Cast**', 4, 2], ['  - **Cast**', 10, 2], ['## Cast', 0, 2], ['> Quote', 0, 1], ['```md', 0, 3], ['movie_title', 5, 0], ['sci-fi', 3, 0], ['\\*literal', 1, 0]] as const)('recognizes shared editor punctuation in %s at %i', (line, position, length) => {
+		expect(markdownPunctuationAt(line, position)).toBe(length);
+	});
+
 	test('highlights bare color filter arguments as literal values', () => {
 		expect(highlightLine('{{ text | highlight:blue }}', 'knap'))
 			.toContain('<span class="syn-string">blue</span>');

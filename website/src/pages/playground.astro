@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PlaygroundEditor from '../components/PlaygroundEditor.astro';
+import Search from '../components/Search.astro';
 import { exampleInput, exampleTemplate } from '../lib/playground';
 import { storageKey, minimumWidth } from '../scripts/playground-columns';
 import '../styles/playground.scss';
@@ -9,7 +10,7 @@ import { standardFilters } from '../../../src/filters';
 
 const filters = Object.keys(standardFilters).map((name) => {
   const doc = filterDocs.find((filter) => filter.name === name || filter.aliases?.includes(name));
-  return { label: name, type: 'function', detail: doc?.syntax[0]?.slice(doc.name.length) || undefined, info: doc?.summary };
+  return { label: name, type: 'function', detail: doc?.syntax[0]?.slice(doc.name.length) || undefined, info: doc?.summary, parameterValues: doc?.parameterValues };
 });
 ---
 
@@ -36,6 +37,7 @@ const filters = Object.keys(standardFilters).map((name) => {
         <button type="button" id="reset-example">Reset</button>
         <a href="/variables">Docs <span aria-hidden="true">↗</span></a>
       </nav>
+      <Search />
     </header>
     <div class="playground-columns">
       <PlaygroundEditor name="input" label="Input" language="JSON" value={exampleInput} />

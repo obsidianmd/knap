@@ -1,3 +1,5 @@
+import { setStatus } from './playground-status';
+
 export function setupPlaygroundFiles(editors: Record<string, (text: string) => void>) {
   const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files');
 
@@ -19,8 +21,7 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
       status.textContent = '';
     };
     const showMessage = (message: string, state = '') => {
-      status.textContent = message;
-      status.dataset.state = state;
+      setStatus(status, message, state);
       status.hidden = false;
     };
     const clearDrop = () => {

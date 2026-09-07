@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { templateCompletions } from '../website/src/lib/playground-completions';
+import { filterDocs } from '../website/lib/filter-docs';
+import { standardFilters } from '../src/filters';
 
 const input = { title: 'Example', author: { name: 'Sam', address: { city: 'Paris' } }, cast: [{ actor: 'A' }, { role: 'B' }] };
 const filters = [{ label: 'upper', type: 'function', info: 'Uppercase text' }];
@@ -19,6 +21,8 @@ describe('playground template completion', () => {
     expect(labels('{{ cast[0].')).toEqual(['actor']);
     expect(labels('{{ unknown.')).toEqual([]);
     expect(labels('{{ author.__proto__.')).toEqual([]);
+    expect(labels('{% if author.na')).toEqual(['name', 'address']);
+    expect(labels('{% if author.address.')).toEqual(['city']);
   });
 
   test('suggests filters after a single pipe and variables in arguments', () => {
@@ -26,6 +30,28 @@ describe('playground template completion', () => {
     expect(labels('{{ title | replace:')).toContain('author');
     expect(labels('{% if title || ')).toContain('title');
     expect(labels('{{ title | replace:"|":')).toContain('title');
+  });
+
+  test.each(['{{ cast | list:', '{{ cast | wikilink | list:n', '{{ cast | list:numbered-', '{{ cast | list:"n', "{{ cast | list:'n", '{{ cast | list:(n', '{% set items = cast | list:'])('suggests list parameters in %s', (source) => {
+    const result = templateCompletions(source, source.length, input, [{ label: 'list', type: 'function', parameterValues: ['numbered', 'task', 'numbered-task'] }]);
+    expect(result?.options.map((option) => option.label)).toEqual(['numbered', 'task', 'numbered-task']);
+    expect(source.slice(result?.from)).toBe(source.match(/[\w-]*$/)![0]);
+  });
+
+  test('keeps parameter replacement within existing quotes and handles hyphenated values', () => {
+    const source = '{{ cast | list:"numbered-task" }}';
+    const position = source.indexOf('numbered') + 3;
+    const result = templateCompletions(source, position, input, [{ label: 'list', type: 'function', parameterValues: ['numbered-task'] }])!;
+    expect(source.slice(0, result.from) + 'numbered-task' + source.slice(result.to)).toBe(source);
+    expect(templateCompletions('{{ title | replace:"text | list:n', 32, input, [{ label: 'list', type: 'function', parameterValues: ['numbered'] }])).toBeNull();
+  });
+
+  test('documented parameter suggestions pass the actual filter validators', () => {
+    for (const filter of filterDocs) {
+      for (const value of filter.parameterValues ?? []) {
+        expect(standardFilters[filter.name].metadata?.validateParams?.(value).valid, `${filter.name}:${value}`).toBe(true);
+      }
+    }
   });
 
   test('suggests logic tags and their expression variables', () => {
@@ -44,6 +70,23 @@ describe('playground template completion', () => {
     expect(labels(loop + '{% for member in cast %}{% endfor %}{{ member.')).toEqual(['actor', 'role']);
     expect(labels(loop + '{% endfor %}{{ ')).not.toContain('member');
     expect(labels(loop + '{% endfor %}{{ ')).not.toContain('loop');
+  });
+
+  test.each(['{% if cast ', '{% elseif cast ', '{% if author.name ', '{% if cast[0] ', '{% if (cast or title) ', '{% if title == "a b" ', '{% if cast | length '])('suggests operators after an expression: %s', (source) => {
+    expect(labels(source)).toEqual(expect.arrayContaining(['==', '!=', '>', '<', '>=', '<=', 'contains', 'and', 'or', '&&', '||']));
+    expect(labels(source)).not.toContain('cast');
+    expect(labels(source)).not.toContain('not');
+  });
+
+  test.each(['{% if ', '{% if cast == ', '{% if cast contains ', '{% if cast and ', '{% if cast || ', '{% if not ', '{% if ('])('suggests operands where the expression needs a value: %s', (source) => {
+    expect(labels(source)).toEqual(expect.arrayContaining(['cast', 'title', 'true', 'false', 'null', 'not', '!']));
+    expect(labels(source)).not.toContain('==');
+  });
+
+  test('replaces only the typed operator prefix', () => {
+    expect(complete('{% if cast co')).toMatchObject({ from: 11, to: 13 });
+    expect(complete('{% if cast >')).toMatchObject({ from: 11, to: 12 });
+    expect(templateCompletions('{% if cast >= %}', 12, input, filters)).toMatchObject({ from: 11, to: 13 });
   });
 
   test('includes assigned variables and infers their properties', () => {
