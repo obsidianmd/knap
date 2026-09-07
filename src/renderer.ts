@@ -321,7 +321,10 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 
 			const itemResult = await renderNodes(node.body, loopState);
 			// Remove the opening tag's line break, preserving additional blank lines.
-			results.push(trimLeadingWhitespace(itemResult));
+			const result = trimLeadingWhitespace(itemResult);
+			// A false conditional can leave an iteration completely empty.
+			// It must not create a separator or become the final visible item.
+			if (result !== '') results.push(result);
 		}
 
 		if (node.trimRight) {
