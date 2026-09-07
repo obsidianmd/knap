@@ -23,6 +23,11 @@ describe('callout filter', () => {
 		expect(result).toContain('My Title');
 	});
 
+	test('preserves backslashes in titles', () => {
+		const result = callout('content', String.raw`("note", "C:\\title")`);
+		expect(result).toBe(`> [!note] ${String.raw`C:\\title`}\n> content`);
+	});
+
 	test('handles empty content', () => {
 		const result = callout('');
 		expect(result).toContain('[!info]');
@@ -52,6 +57,13 @@ describe('callout filter via renderer', () => {
 		});
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toContain('[!warning]');
+	});
+
+	test('preserves title backslashes through the template parser', async () => {
+		const template = String.raw`{{msg|callout:("note","C:\\\\title")}}`;
+		await expect(engine.renderOrThrow(template, {
+			variables: { msg: 'content' },
+		})).resolves.toBe(`> [!note] ${String.raw`C:\\title`}\n> content`);
 	});
 
 	test('applies a callout filter to a string literal', async () => {

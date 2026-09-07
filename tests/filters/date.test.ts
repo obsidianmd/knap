@@ -27,6 +27,11 @@ describe('date filter', () => {
 		expect(result).toBe('December');
 	});
 
+	test('preserves backslashes in format strings', () => {
+		expect(date('2024-12-01', String.raw`"YYYY\\MM"`))
+			.toBe(String.raw`2024\\12`);
+	});
+
 	test('handles empty string', () => {
 		const result = date('');
 		expect(result).toBe('');

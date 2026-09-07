@@ -13,19 +13,19 @@ Knap is a simple language that lets you generate Markdown content from structure
 
 ```knap
 ---
-year: {{ year }}
-director: {{ directors | wikilink }}
-genre: {{ genres }}
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"director" }}
+{{ genres | yaml_property:"genre" }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ plot | blockquote }}
 
 {% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table }}
+{{ cast | slice:0,4 | table_pretty }}
 {% endif %}
 ```
 
@@ -34,8 +34,12 @@ genre: {{ genres }}
 ```md
 ---
 year: 1999
-director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
-genre: ["Action","Sci-fi"]
+director:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+genre:
+  - "Action"
+  - "Sci-fi"
 ---
 
 # The Matrix
@@ -44,12 +48,12 @@ genre: ["Action","Sci-fi"]
 
 ## Cast
 
-| Actor | Role |
-| - | - |
-| Keanu Reeves | Neo |
-| Laurence Fishburne | Morpheus |
-| Carrie-Anne Moss | Trinity |
-| Hugo Weaving | Agent Smith |
+| Actor              | Role        |
+| ------------------ | ----------- |
+| Keanu Reeves       | Neo         |
+| Laurence Fishburne | Morpheus    |
+| Carrie-Anne Moss   | Trinity     |
+| Hugo Weaving       | Agent Smith |
 ```
 
 ## Install

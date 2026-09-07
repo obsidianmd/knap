@@ -1,3 +1,5 @@
+import { unquoteScalarParam } from '../parser-utils';
+
 export const join = (str: string, param?: string): string => {
 	// Return early if input is empty or invalid
 	if (!str || str === 'undefined' || str === 'null') {
@@ -17,8 +19,7 @@ export const join = (str: string, param?: string): string => {
 
 	let separator = ',';
 	if (param) {
-		// Remove outer quotes if present (use [\s\S] instead of . to handle newlines)
-		separator = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+		separator = unquoteScalarParam(param) ?? separator;
 		// Replace \n with actual newline character
 		separator = separator.replace(/\\n/g, '\n');
 	}

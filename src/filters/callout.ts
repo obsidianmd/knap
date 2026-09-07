@@ -1,17 +1,12 @@
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
+
 export const callout = (str: string, param?: string): string => {
 	let type = 'info';
 	let title = '';
 	let foldState: string | null = null;
 
 	if (param) {
-		// Remove outer parentheses if present
-		param = param.replace(/^\((.*)\)$/, '$1');
-
-		// Split by comma, but respect both single and double quoted strings
-		const params = param.split(/,(?=(?:(?:[^"']*["'][^"']*["'])*[^"']*$))/).map(p => {
-			// Trim whitespace and remove surrounding quotes (both single and double)
-			return p.trim().replace(/^(['"])([\s\S]*)\1$/, '$2');
-		});
+		const params = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 		if (params.length > 0) type = params[0] || type;
 		if (params.length > 1) title = params[1] || title;

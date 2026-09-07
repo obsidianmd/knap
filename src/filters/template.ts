@@ -1,4 +1,5 @@
 import type { ParamValidationResult } from '../filters';
+import { unquoteScalarParam } from '../parser-utils';
 
 export const validateTemplateParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -13,10 +14,7 @@ export const template = (input: string | any[], param?: string): string => {
 		return typeof input === 'string' ? input : JSON.stringify(input);
 	}
 
-	// Remove outer parentheses if present
-	param = param.replace(/^\((.*)\)$/, '$1');
-	// Remove surrounding quotes (both single and double)
-	param = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+	param = unquoteScalarParam(param) ?? '';
 
 	let obj: any[] = [];
 	if (typeof input === 'string') {

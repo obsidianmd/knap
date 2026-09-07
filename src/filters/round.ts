@@ -1,5 +1,6 @@
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
+import { cleanScalarParam } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const validateRoundParams = (param: string | undefined): ParamValidationResult => {
@@ -8,7 +9,7 @@ export const validateRoundParams = (param: string | undefined): ParamValidationR
 		return { valid: true };
 	}
 
-	const num = parseInt(param, 10);
+	const num = parseInt(cleanScalarParam(param) ?? '', 10);
 	if (isNaN(num)) {
 		return { valid: false, error: 'decimal places must be a number (e.g., round:2)' };
 	}
@@ -48,8 +49,9 @@ export const round = (input: string, param?: string, context?: FilterContext): s
 	};
 
 	try {
-		const decimalPlaces = param ? parseInt(param, 10) : undefined;
-		if (param !== undefined && isNaN(Number(param))) {
+		const cleanParam = cleanScalarParam(param);
+		const decimalPlaces = cleanParam ? parseInt(cleanParam, 10) : undefined;
+		if (cleanParam !== undefined && isNaN(Number(cleanParam))) {
 			return input; // Return the original input if the parameter is not a valid number
 		}
 

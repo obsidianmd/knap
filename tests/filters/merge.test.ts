@@ -33,4 +33,9 @@ describe('merge filter', () => {
 		const parsed = JSON.parse(result);
 		expect(parsed).toEqual(['a', 'b', 'c']);
 	});
+
+	test('preserves backslashes in merged strings', () => {
+		const result = merge('[]', String.raw`("C:\\value")`);
+		expect(JSON.parse(result)).toEqual([String.raw`C:\\value`]);
+	});
 });

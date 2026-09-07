@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { wikilink } from '../../src/filters/wikilink';
+import { embed, wikilink } from '../../src/filters/wikilink';
 
 describe('wikilink filter', () => {
 	test('creates wikilink from string', () => {
@@ -35,5 +35,23 @@ describe('wikilink filter', () => {
 
 	test('removes quotes from alias parameter', () => {
 		expect(wikilink('page', '"alias"')).toBe('[[page|alias]]');
+	});
+
+	test('preserves backslashes in aliases', () => {
+		expect(wikilink('page', String.raw`"C:\\alias"`))
+			.toBe(String.raw`[[page|C:\\alias]]`);
+	});
+});
+
+describe('embed filter', () => {
+	test('creates embeds from strings with an optional alias', () => {
+		expect(embed('image.png')).toBe('![[image.png]]');
+		expect(embed('note', 'Preview')).toBe('![[note|Preview]]');
+	});
+
+	test('creates embeds from arrays and objects like wikilink', () => {
+		expect(JSON.parse(embed('["one","two"]'))).toEqual(['![[one]]', '![[two]]']);
+		expect(JSON.parse(embed('{"one":"First","two":"Second"}')))
+			.toEqual(['![[one|First]]', '![[two|Second]]']);
 	});
 });

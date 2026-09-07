@@ -36,6 +36,10 @@ describe('nth filter', () => {
 		expect(result).toBe('[]');
 	});
 
+	test('preserves null in its existing array return shape', () => {
+		expect(nth('[null,"x"]', '1')).toBe('[null]');
+	});
+
 	test('returns original for non-JSON', () => {
 		expect(nth('hello', '3')).toBe('hello');
 	});

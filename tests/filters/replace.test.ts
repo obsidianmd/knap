@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { createEngine } from '../../src/engine';
 import { replace, validateReplaceParams } from '../../src/filters/replace';
-import { standardFilterMetadata, standardFilters } from '../../src/filters';
+import { applyFiltersWithRegistry, standardFilterMetadata, standardFilters } from '../../src/filters';
 import { parse, validateFilters } from '../../src/parser';
 
 const engine = createEngine({ filters: standardFilters });
@@ -35,6 +35,18 @@ describe('replace filter', () => {
 		expect(replace('HELLO world', '"/hello/i":"hi"')).toBe('hi world');
 	});
 
+	test('preserves escapes in regular expressions', () => {
+		expect(replace('a|b a b', '"/a\\|b/g":"x"')).toBe('x a b');
+	});
+
+	test('handles colons inside bare regular expressions', () => {
+		expect(replace('a:b a', '/a:b/g:"x"')).toBe('x a');
+	});
+
+	test('decodes replacement escapes once', () => {
+		expect(replace('x', '"x":"\\\\n"')).toBe('\\n');
+	});
+
 	test('returns original if no params', () => {
 		expect(replace('hello')).toBe('hello');
 	});
@@ -49,6 +61,15 @@ describe('replace filter', () => {
 
 	test('handles special characters in replacement', () => {
 		expect(replace('hello:world', '"\\:":"-"')).toBe('hello-world');
+	});
+
+	test('escapes pipes in literal search strings', () => {
+		expect(replace('a|b', '"a|b":"c"')).toBe('c');
+	});
+
+	test('handles apostrophes and escaped commas inside double quotes', () => {
+		expect(replace("don't stop", '"don\'t":"do not"')).toBe('do not stop');
+		expect(replace('a,b and a,b', '"a\\,b":"x"')).toBe('x and x');
 	});
 });
 
@@ -77,6 +98,49 @@ describe('replace filter via renderer', () => {
 		expect(result.errors).toHaveLength(0);
 		expect(result.output).toBe('hall0 w0rld');
 	});
+
+	test('preserves apostrophes inside double-quoted pairs', async () => {
+		const result = await engine.render('{{msg|replace:"don\'t":"do not"}}', {
+			variables: { msg: "don't stop" },
+		});
+		expect(result).toEqual({ output: 'do not stop', errors: [], warnings: [] });
+	});
+
+	test('replaces literal pipes through both execution paths', async () => {
+		await expect(engine.renderOrThrow('{{msg|replace:"a|b":"c"}}', {
+			variables: { msg: 'a|b' },
+		})).resolves.toBe('c');
+
+		expect(applyFiltersWithRegistry(
+			'a|b',
+			'replace:"a|b":"c"',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('c');
+	});
+
+	test('preserves colons in bare regexes through the synchronous filter path', () => {
+		expect(applyFiltersWithRegistry(
+			'a:b a',
+			'replace:/a:b/g:"x"',
+			standardFilters,
+			{ variables: {} },
+		)).toBe('x a');
+	});
+
+	test('preserves regex escapes through the template parser', async () => {
+		const template = String.raw`{{msg|replace:"/a\\|b/g":"x"}}`;
+		const result = await engine.render(template, {
+			variables: { msg: 'a|b a b' },
+		});
+		expect(result).toEqual({ output: 'x a b', errors: [], warnings: [] });
+	});
+
+	test('decodes replacement escapes once through the template parser', async () => {
+		const template = String.raw`{{msg|replace:"x":"\\\\n"}}`;
+		const result = await engine.render(template, { variables: { msg: 'x' } });
+		expect(result).toEqual({ output: String.raw`\n`, errors: [], warnings: [] });
+	});
 });
 
 describe('replace param validation', () => {
@@ -85,6 +149,7 @@ describe('replace param validation', () => {
 		expect(validateReplaceParams('"a":"b","c":"d"').valid).toBe(true);
 		expect(validateReplaceParams('"/regex/g":"text"').valid).toBe(true);
 		expect(validateReplaceParams('"text":').valid).toBe(true);
+		expect(validateReplaceParams('/a:b/g:"text"').valid).toBe(true);
 	});
 
 	test('missing params returns error', () => {

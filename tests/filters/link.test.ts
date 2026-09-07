@@ -1,5 +1,9 @@
 import { describe, test, expect } from 'vitest';
+import { createEngine } from '../../src/engine';
+import { standardFilters } from '../../src/filters';
 import { link } from '../../src/filters/link';
+
+const engine = createEngine({ filters: standardFilters });
 
 describe('link filter', () => {
 	test('converts string to markdown link', () => {
@@ -30,5 +34,15 @@ describe('link filter', () => {
 	test('escapes special markdown characters', () => {
 		const result = link('https://example.com', 'Test [link]');
 		expect(result).toContain('Test');
+	});
+
+	test('preserves backslashes in labels', async () => {
+		expect(link('https://example.com', String.raw`"C:\\label"`))
+			.toBe(String.raw`[C:\\label](https://example.com)`);
+
+		const template = String.raw`{{ url | link:"C:\\\\label" }}`;
+		await expect(engine.renderOrThrow(template, {
+			variables: { url: 'https://example.com' },
+		})).resolves.toBe(String.raw`[C:\\label](https://example.com)`);
 	});
 });

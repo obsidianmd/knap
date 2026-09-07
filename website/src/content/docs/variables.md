@@ -67,7 +67,7 @@ File: {{ slug }}.md
 Assignments are evaluated in order and can be used by later output, conditions, and loops.
 
 
-## Use human-readable names
+## Human-readable names
 
 Variable output supports names with spaces, so imported column headings can remain readable without preprocessing.
 

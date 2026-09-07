@@ -82,14 +82,25 @@ export function createEngine<TContext = unknown>(
 					}
 				}
 				: undefined,
-			applyFilter: async (value, filterName, param, line, column) => {
+			applyFilter: async (value, filterName, param, line, column, rawValue, rawArguments, validateResolvedParams) => {
 				const filter = filters[filterName];
 				if (!filter) {
 					return value;
 				}
 				try {
+					if (validateResolvedParams) {
+						const validation = filterMetadata[filterName]?.validateParams?.(param);
+						if (validation && !validation.valid) {
+							throw new TemplateRuntimeError(
+								`Filter "${filterName}" ${validation.error ?? 'has invalid arguments'}`,
+								'INVALID_FILTER_ARGUMENTS',
+							);
+						}
+					}
 					return await filter(value, param, {
 						...resolverContext,
+						rawValue,
+						rawArguments,
 						reportWarning: (warning: FilterWarning) => {
 							const templateWarning = {
 								message: warning.message,

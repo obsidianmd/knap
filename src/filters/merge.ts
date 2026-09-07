@@ -1,4 +1,5 @@
 import type { FilterContext } from '../types';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
 
 export const merge = (str: string, param?: string, context?: FilterContext): string => {
@@ -22,18 +23,8 @@ export const merge = (str: string, param?: string, context?: FilterContext): str
 		return JSON.stringify(array);
 	}
 
-	// Remove outer parentheses if present
-	param = param.replace(/^\((.*)\)$/, '$1');
-
 	try {
-		// Split the parameter by commas, but not within quotes
-		const additionalItems = param.match(/(?:[^,"']+|"[^"]*"|'[^']*')+/g) || [];
-
-		// Process each item to remove quotes
-		const processedItems = additionalItems.map(item => {
-			item = item.trim();
-			return item.replace(/^(['"])([\s\S]*)\1$/, '$2');
-		});
+		const processedItems = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 		return JSON.stringify([...array, ...processedItems]);
 	} catch (error) {

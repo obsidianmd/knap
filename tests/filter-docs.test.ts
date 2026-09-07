@@ -3,6 +3,7 @@ import { createEngine } from '../src/engine';
 import { standardFilters } from '../src/filters';
 import { htmlFilters } from '../src/html';
 import { filterDocs, filterDocsByName } from '../website/lib/filter-docs';
+import { filterMarkdown } from '../website/src/lib/filter-markdown';
 
 describe('filter documentation catalog', () => {
   test('documents every registered filter and alias', () => {
@@ -24,5 +25,11 @@ describe('filter documentation catalog', () => {
     const result = await engine.render(example.template, { variables: example.variables });
     expect(result.errors).toEqual([]);
     expect(result.output).toBe(example.expected);
+  });
+
+  test('uses a longer outer fence when exported examples contain code fences', () => {
+    const code = filterDocsByName.get('code');
+    expect(code).toBeDefined();
+    expect(filterMarkdown(code!)).toContain('````md title="Output"\n```typescript\nconst answer = 42\n```\n````');
   });
 });

@@ -134,9 +134,6 @@
   > p + p {
     margin-top: -5px;
   }
-  a {
-    color: var(--link-color, var(--paper));
-  }
 }
 .doc-section :not(pre) > code, .doc-note code, .api-list code {
   background: var(--panel);
@@ -240,9 +237,6 @@
   }
   > p + p {
     margin-top: -5px;
-  }
-  a {
-    color: var(--link-color, var(--paper));
   }
   :not(pre) > code {
     border-radius: 0.38em;

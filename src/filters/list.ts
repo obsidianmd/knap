@@ -1,4 +1,5 @@
 import type { ParamValidationResult } from '../filters';
+import { cleanScalarParam } from '../parser-utils';
 
 type ListType = 'bullet' | 'numbered' | 'task' | 'numbered-task';
 
@@ -10,10 +11,11 @@ export const validateListParams = (param: string | undefined): ParamValidationRe
 		return { valid: true };
 	}
 
-	if (!validListTypes.includes(param)) {
+	const option = cleanScalarParam(param);
+	if (!option || !validListTypes.includes(option)) {
 		return {
 			valid: false,
-			error: `invalid list type "${param}". Use "numbered", "task", or "numbered-task"`
+			error: `invalid list type "${option ?? ''}". Use "numbered", "task", or "numbered-task"`
 		};
 	}
 
@@ -21,6 +23,7 @@ export const validateListParams = (param: string | undefined): ParamValidationRe
 };
 
 export const list = (input: string | any[], param?: string): string => {
+	const option = cleanScalarParam(param);
 	// Return empty string as-is without attempting to parse
 	if (input === '') {
 		return input;
@@ -76,13 +79,13 @@ export const list = (input: string | any[], param?: string): string => {
 	try {
 		const parsedInput = typeof input === 'string' ? JSON.parse(input) : input;
 		if (Array.isArray(parsedInput)) {
-			const listType = determineListType(param);
+			const listType = determineListType(option);
 			return processArray(parsedInput, listType);
 		}
 		// If it's an object or a single value, wrap it in an array
-		return processArray([parsedInput], determineListType(param));
+		return processArray([parsedInput], determineListType(option));
 	} catch {
 		// If parsing fails, treat it as a single string
-		return processListItem(input, determineListType(param));
+		return processListItem(input, determineListType(option));
 	}
 };

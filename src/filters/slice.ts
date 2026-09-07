@@ -1,13 +1,16 @@
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
+import { cleanParamToken, splitParams, unwrapParamList } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
+
+const paramParts = (param: string) => splitParams(unwrapParamList(param)).map(cleanParamToken);
 
 export const validateSliceParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
 		return { valid: false, error: 'requires at least a start index (e.g., slice:0,5)' };
 	}
 
-	const parts = param.split(',').map(p => p.trim());
+	const parts = paramParts(param);
 	if (parts.length > 2) {
 		return { valid: false, error: 'accepts at most 2 parameters: start and end' };
 	}
@@ -31,7 +34,7 @@ export const slice = (str: string, param?: string, context?: FilterContext): str
 		return str;
 	}
 
-	const [start, end] = param.split(',').map(p => p.trim()).map(p => {
+	const [start, end] = paramParts(param).map(p => {
 		if (p === '') return undefined;
 		const num = parseInt(p, 10);
 		return isNaN(num) ? undefined : num;
@@ -51,7 +54,7 @@ export const slice = (str: string, param?: string, context?: FilterContext): str
 	if (Array.isArray(value)) {
 		const slicedArray = value.slice(start, end);
 		if (slicedArray.length === 1) {
-			return slicedArray[0].toString();
+			return slicedArray[0] == null ? '' : slicedArray[0].toString();
 		}
 		return JSON.stringify(slicedArray);
 	} else {

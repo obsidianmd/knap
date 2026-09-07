@@ -1,4 +1,5 @@
 import { escapeMarkdown } from '../string-utils';
+import { unquoteScalarParam } from '../parser-utils';
 
 export const link = (str: string, param?: string): string => {
 	if (!str.trim()) {
@@ -7,10 +8,7 @@ export const link = (str: string, param?: string): string => {
 
 	let linkText = 'link';
 	if (param) {
-		// Remove outer parentheses if present
-		param = param.replace(/^\((.*)\)$/, '$1');
-		// Remove surrounding quotes (both single and double)
-		linkText = param.replace(/^(['"])([\s\S]*)\1$/, '$2');
+		linkText = unquoteScalarParam(param) ?? linkText;
 	}
 
 	const encodeUrl = (url: string): string => {

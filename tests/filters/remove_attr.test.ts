@@ -15,6 +15,12 @@ describe('remove_attr filter', () => {
 		expect(result).not.toContain('style');
 	});
 
+	test.each(['class, style', '"class, style"', '"class", "style"', '("class", "style")'])
+		('accepts equivalent argument spelling %s', params => {
+			expect(remove_attr('<p class="x" style="y" id="z">text</p>', params))
+				.toBe('<p id="z">text</p>');
+		});
+
 	test('handles empty string', () => {
 		expect(remove_attr('')).toBe('');
 	});

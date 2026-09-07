@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { table } from '../../src/filters/table';
+import { table, table_pretty } from '../../src/filters/table';
 
 describe('table filter', () => {
 	test('converts array of objects to markdown table', () => {
@@ -25,11 +25,61 @@ describe('table filter', () => {
 		expect(result).toContain('| Col1 | Col2 |');
 	});
 
+	test('pretty-prints tables with padded columns and separators', () => {
+		const result = table_pretty('[{"name":"Alice","age":30},{"name":"Bob","age":25}]');
+		expect(result).toBe([
+			'| name  | age |',
+			'| ----- | --- |',
+			'| Alice | 30  |',
+			'| Bob   | 25  |',
+		].join('\n'));
+	});
+
+	test('combines pretty formatting with custom headers', () => {
+		const result = table_pretty('["Ada","Engineer","Lin","Designer"]', '("Name", "Role")');
+		expect(result).toBe([
+			'| Name | Role     |',
+			'| ---- | -------- |',
+			'| Ada  | Engineer |',
+			'| Lin  | Designer |',
+		].join('\n'));
+	});
+
+	test('keeps pretty available as a normal table header', () => {
+		expect(table('["value"]', 'pretty')).toBe('| pretty |\n| - |\n| value |');
+	});
+
 	test('converts arrays of arrays into rows', () => {
 		const result = table('[["Alice",30],["Bob",25]]', '("Name", "Age")');
 		expect(result).toContain('| Name | Age |');
 		expect(result).toContain('| Alice | 30 |');
 		expect(result).toContain('| Bob | 25 |');
+	});
+
+	test('preserves cells beyond the supplied custom headers', () => {
+		expect(table('[["Alice",30,"Admin"]]', '("Name", "Age")')).toBe([
+			'| Name | Age |  |',
+			'| - | - | - |',
+			'| Alice | 30 | Admin |',
+		].join('\n'));
+	});
+
+	test('preserves zero and false in object rows', () => {
+		expect(table('[{"count":0,"enabled":false}]')).toBe([
+			'| count | enabled |',
+			'| - | - |',
+			'| 0 | false |',
+		].join('\n'));
+	});
+
+	test('supports commas inside quoted custom headers', () => {
+		expect(table('[["Ada","Writer"]]', '("Name, full", "Role")'))
+			.toContain('| Name, full | Role |');
+	});
+
+	test('preserves backslashes in custom headers', () => {
+		expect(table('["value"]', String.raw`("C:\\header")`))
+			.toContain(`| ${String.raw`C:\\header`} |`);
 	});
 
 	test('handles empty array', () => {
@@ -40,5 +90,12 @@ describe('table filter', () => {
 
 	test('returns original for non-JSON', () => {
 		expect(table('plain text')).toBe('plain text');
+	});
+
+	test('pretty-prints large tables without exceeding the function argument limit', () => {
+		const rows = Array.from({ length: 200_000 }, () => ['x']);
+		const result = table_pretty(JSON.stringify(rows));
+		expect(result.startsWith('|     |\n| --- |\n')).toBe(true);
+		expect(result.endsWith('| x   |')).toBe(true);
 	});
 });

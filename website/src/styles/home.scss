@@ -27,11 +27,6 @@
 .lede {
   margin: 20px 0 0;
   font-size: inherit;
-
-  a {
-    color: var(--link-color, var(--accent));
-  }
-
 }
 
 .markdown-native-heading, .used-by-heading, .install-heading {
@@ -47,10 +42,6 @@
     margin: 16px 0 0;
     font-size: inherit;
   }
-}
-
-.used-by-heading a {
-  color: var(--paper);
 }
 
 .markdown-transform {

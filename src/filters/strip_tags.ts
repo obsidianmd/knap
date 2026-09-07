@@ -1,11 +1,7 @@
+import { normalizeParamList } from '../parser-utils';
+
 export const strip_tags = (html: string, keepTags: string = ''): string => {
-	// Remove outer parentheses if present
-	keepTags = keepTags.replace(/^\((.*)\)$/, '$1');
-
-	// Remove any surrounding quotes (both single and double) and unescape internal quotes
-	keepTags = keepTags.replace(/^(['"])([\s\S]*)\1$/, '$2').replace(/\\(['"])/g, '$1');
-
-	const keepTagsList = keepTags.split(',').map(tag => tag.trim()).filter(Boolean);
+	const keepTagsList = normalizeParamList(keepTags).filter(Boolean);
 
 	let result: string;
 

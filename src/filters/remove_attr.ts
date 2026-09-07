@@ -1,16 +1,14 @@
+import { normalizeParamList } from '../parser-utils';
+
 export const remove_attr = (html: string, removeAttributes: string = ''): string => {
 	// If no attributes specified, return unchanged
 	if (!removeAttributes) {
 		return html;
 	}
 
-	// Remove outer parentheses if present
-	removeAttributes = removeAttributes.replace(/^\((.*)\)$/, '$1');
-
-	// Remove any surrounding quotes (both single and double) and unescape internal quotes
-	removeAttributes = removeAttributes.replace(/^(['"])([\s\S]*)\1$/, '$2').replace(/\\(['"])/g, '$1');
-
-	const removeAttributesList = removeAttributes.split(',').map(attr => attr.trim().toLowerCase()).filter(Boolean);
+	const removeAttributesList = normalizeParamList(removeAttributes)
+		.map(attr => attr.toLowerCase())
+		.filter(Boolean);
 
 	if (removeAttributesList.length === 0) {
 		return html;

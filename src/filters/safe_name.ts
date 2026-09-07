@@ -1,4 +1,5 @@
 import type { ParamValidationResult } from '../filters';
+import { cleanScalarParam } from '../parser-utils';
 
 const validOsParams = ['windows', 'mac', 'linux'];
 
@@ -8,10 +9,11 @@ export const validateSafeNameParams = (param: string | undefined): ParamValidati
 		return { valid: true };
 	}
 
-	if (!validOsParams.includes(param.toLowerCase().trim())) {
+	const os = cleanScalarParam(param)?.toLowerCase();
+	if (!os || !validOsParams.includes(os)) {
 		return {
 			valid: false,
-			error: `invalid OS "${param}". Use "windows", "mac", or "linux"`
+			error: `invalid OS "${os ?? ''}". Use "windows", "mac", or "linux"`
 		};
 	}
 
@@ -19,7 +21,7 @@ export const validateSafeNameParams = (param: string | undefined): ParamValidati
 };
 
 export const safe_name = (str: string, param?: string): string => {
-	const os = param ? param.toLowerCase().trim() : 'default';
+	const os = cleanScalarParam(param)?.toLowerCase() ?? 'default';
 
 	let sanitized = str;
 

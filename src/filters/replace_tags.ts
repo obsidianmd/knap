@@ -1,14 +1,18 @@
+import { splitParamList, splitParamPair, unquoteParamToken } from '../parser-utils';
+
+const cleanTag = (value: string): string => unquoteParamToken(value).replace(/\\(.)/g, '$1');
+
 export const replace_tags = (html: string, params: string = ''): string => {
-	// Remove outer parentheses if present
-	params = params.replace(/^\((.*)\)$/, '$1');
+	const tokens = splitParamList(params).filter(Boolean);
+	const transformations: Array<[string, string]> = [];
 
-	// Remove any surrounding quotes and unescape internal quotes
-	params = params.replace(/^(['"])([\s\S]*)\1$/, '$2').replace(/\\(['"])/g, '$1');
-
-	// Split by comma, but respect quoted strings
-	const transformations = params.split(/,(?=(?:(?:[^"']*["'][^"']*["'])*[^"']*$))/)
-		.map(transform => transform.trim())
-		.filter(Boolean);
+	for (const token of tokens) {
+		const [rawSource, rawTarget] = splitParamPair(token);
+		transformations.push([
+			cleanTag(rawSource),
+			rawTarget === undefined ? '' : cleanTag(rawTarget),
+		]);
+	}
 
 	// If no transformations specified, return the original HTML
 	if (transformations.length === 0) {
@@ -17,11 +21,7 @@ export const replace_tags = (html: string, params: string = ''): string => {
 
 	let result = html;
 
-	transformations.forEach(transform => {
-		const [source, target] = transform.split(/(?<!\\)":"/).map(tag => {
-			return tag.trim().replace(/^["']|["']$/g, '').replace(/\\(.)/g, '$1');
-		});
-
+	transformations.forEach(([source, target]) => {
 		if (!source) {
 			return;
 		}

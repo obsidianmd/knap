@@ -4,6 +4,7 @@ import weekOfYear from 'dayjs/plugin/weekOfYear.js';
 import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 import advancedFormat from 'dayjs/plugin/advancedFormat.js';
 import type { FilterContext } from '../types';
+import { splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import { reportFilterWarning } from './warnings';
 
 dayjs.extend(customParseFormat);
@@ -24,14 +25,7 @@ export const date = (str: string, param?: string, context?: FilterContext): stri
 		return dayjs(inputDate).format('YYYY-MM-DD');
 	}
 
-	// Remove outer parentheses if present
-	param = param.replace(/^\((.*)\)$/, '$1');
-
-	// Split by comma, but respect both single and double quoted strings
-	const params = param.split(/,(?=(?:(?:[^"']*["'][^"']*["'])*[^"']*$))/).map(p => {
-		// Trim whitespace and remove surrounding quotes (both single and double)
-		return p.trim().replace(/^(['"])([\s\S]*)\1$/, '$2');
-	});
+	const params = splitParams(unwrapParamList(param)).map(unquoteParamToken);
 
 	const [outputFormat, inputFormat] = params;
 

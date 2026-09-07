@@ -1,8 +1,16 @@
-export const decode_uri = (str: string): string => {
+import type { FilterContext, TemplateValue } from '../types';
+import { inputValue, mapStringValues } from './value_utils';
+
+function decodeValue(value: string): string {
 	try {
-		return decodeURIComponent(str);
+		return decodeURIComponent(value);
 	} catch {
-		// If decoding fails (e.g., malformed URI), return the original string
-		return str;
+		return value;
 	}
-};
+}
+
+export const decode_uri = (
+	value: string,
+	_param?: string,
+	context?: FilterContext,
+): TemplateValue => mapStringValues(inputValue(value, context), decodeValue);

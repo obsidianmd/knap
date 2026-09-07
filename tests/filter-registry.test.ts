@@ -7,6 +7,10 @@ import {
 } from '../src';
 
 describe('applyFiltersWithRegistry', () => {
+	test('returns an empty string when an unfiltered value cannot be serialized', () => {
+		expect(applyFiltersWithRegistry(undefined, '', standardFilters, { variables: {} })).toBe('');
+	});
+
 	test('uses a custom registry and passes the host context', () => {
 		const filters: FilterRegistry<{ origin: string }> = {
 			upper: standardFilters.upper,
@@ -21,6 +25,15 @@ describe('applyFiltersWithRegistry', () => {
 		);
 
 		expect(output).toBe('KNAP@https://obsidian.md');
+	});
+
+	test('passes the current typed value through rawValue while preserving string arguments', () => {
+		const filters: FilterRegistry = {
+			inspect: (value, _param, context) => JSON.stringify({ value, rawValue: context?.rawValue }),
+		};
+		const output = applyFiltersWithRegistry(['one', 'two'], 'inspect', filters, { variables: {} });
+
+		expect(output).toBe('{"value":"[\\"one\\",\\"two\\"]","rawValue":["one","two"]}');
 	});
 
 	test('rejects asynchronous filters in the synchronous helper', () => {

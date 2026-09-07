@@ -37,6 +37,10 @@ describe('slice filter', () => {
 		const parsed = JSON.parse(result);
 		expect(parsed).toEqual([2, 3, 4]);
 	});
+
+	test('renders a single selected null as empty text', () => {
+		expect(slice('[null,"x"]', '0,1')).toBe('');
+	});
 });
 
 describe('slice param validation', () => {

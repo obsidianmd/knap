@@ -10,24 +10,28 @@ const examples = [
     key: 'movie',
     label: 'Movie',
     template: `---
-year: {{ year }}
-director: {{ directors | wikilink }}
-genre: {{ genres }}
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"director" }}
+{{ genres | yaml_property:"genre" }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ plot | blockquote }}
 
 {% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table }}
+{{ cast | slice:0,4 | table_pretty }}
 {% endif %}`,
     markdown: `---
 year: 1999
-director: ["[[Lana Wachowski]]","[[Lilly Wachowski]]"]
-genre: ["Action","Sci-fi"]
+director:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+genre:
+  - "Action"
+  - "Sci-fi"
 ---
 
 # The Matrix
@@ -36,31 +40,29 @@ genre: ["Action","Sci-fi"]
 
 ## Cast
 
-| Actor | Role |
-| - | - |
-| Keanu Reeves | Neo |
-| Laurence Fishburne | Morpheus |
-| Carrie-Anne Moss | Trinity |
-| Hugo Weaving | Agent Smith |`,
+| Actor              | Role        |
+| ------------------ | ----------- |
+| Keanu Reeves       | Neo         |
+| Laurence Fishburne | Morpheus    |
+| Carrie-Anne Moss   | Trinity     |
+| Hugo Weaving       | Agent Smith |`,
   },
   {
     key: 'recipe',
     label: 'Recipe',
     template: `---
-author: {{ author | wikilink }}
-servings: {{ servings }}
-source: {{ url }}
+{{ author | wikilink | yaml_property:"author" }}
+{{ servings | yaml_property:"servings" }}
+{{ url | yaml_property:"source" }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 {{ description | blockquote }}
 
 ## Ingredients
 
-{% for ingredient in ingredients %}
-- {{ ingredient }}
-{% endfor %}
+{{ ingredients | table:("Ingredient", "Quantity") }}
 
 ## Instructions
 
@@ -68,7 +70,7 @@ source: {{ url }}
     markdown: `---
 author: "[[Eric Kim]]"
 servings: 8
-source: https://example.com/gochujang-cookies
+source: "https://example.com/gochujang-cookies"
 ---
 
 # Gochujang caramel cookies
@@ -77,10 +79,12 @@ source: https://example.com/gochujang-cookies
 
 ## Ingredients
 
-- Unsalted butter
-- Dark brown sugar
-- Gochujang
-- All-purpose flour
+| Ingredient | Quantity |
+| - | - |
+| Unsalted butter | 1/2 cup |
+| Dark brown sugar | 1/4 cup |
+| Gochujang | 1 tablespoon |
+| All-purpose flour | 1 1/2 cups |
 
 ## Instructions
 
@@ -92,13 +96,13 @@ source: https://example.com/gochujang-cookies
     key: 'article',
     label: 'Article',
     template: `---
-author: {{ author | wikilink }}
+{{ author | wikilink | yaml_property:"author" }}
 published: {{ published | date:"YYYY-MM-DD" }}
-source: {{ url }}
-tags: {{ tags }}
+{{ url | yaml_property:"source" }}
+{{ tags | yaml_property:"tags" }}
 ---
 
-# {{ title ?? "Untitled" }}
+{{ (title ?? "Untitled") | h1 }}
 
 {{ description | blockquote }}
 
@@ -106,8 +110,10 @@ tags: {{ tags }}
     markdown: `---
 author: "[[Steph Ango]]"
 published: 2023-06-30
-source: https://stephango.com/file-over-app
-tags: ["clippings","articles"]
+source: "https://stephango.com/file-over-app"
+tags:
+  - "clippings"
+  - "articles"
 ---
 
 # File over app
@@ -120,13 +126,10 @@ In the fullness of time, the files you create are more important than the tools 
     key: 'research',
     label: 'Research',
     template: `---
-authors: {{ authors | wikilink }}
-published: {{ published | date:"YYYY-MM-DD" }}
-doi: {{ doi }}
-source: {{ url }}
+{{ metadata | yaml }}
 ---
 
-# {{ title }}
+{{ title | h1 }}
 
 ## Abstract
 
@@ -138,10 +141,13 @@ source: {{ url }}
 {{ highlights | list }}
 {% endif %}`,
     markdown: `---
-authors: ["[[Ashish Vaswani]]","[[Noam Shazeer]]","[[Niki Parmar]]"]
-published: 2017-06-12
-doi: 10.48550/arXiv.1706.03762
-source: https://arxiv.org/abs/1706.03762
+authors:
+  - "[[Ashish Vaswani]]"
+  - "[[Noam Shazeer]]"
+  - "[[Niki Parmar]]"
+published: "2017-06-12"
+doi: "10.48550/arXiv.1706.03762"
+source: "https://arxiv.org/abs/1706.03762"
 ---
 
 # Attention Is All You Need
