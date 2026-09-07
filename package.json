@@ -1,6 +1,6 @@
 {
 	"name": "knap",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"description": "A flexible template engine for creating Markdown.",
 	"keywords": [
 		"template",

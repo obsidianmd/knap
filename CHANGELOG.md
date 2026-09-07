@@ -2,7 +2,7 @@
 
 All notable changes to Knap will be documented in this file.
 
-## Unreleased
+## 0.3.0
 
 - Revise `truncate` so its suffix counts toward the character limit, and add
   `truncatewords` for word-based truncation.
