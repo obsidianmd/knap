@@ -391,7 +391,7 @@ function parseIfStatement(state: ParserState, startToken: Token, trimLeft: boole
 	}
 
 	// Parse consequent body
-	const consequent = parseBody(state, ['keyword_elseif', 'keyword_else', 'keyword_endif']);
+	const consequent = parseBody(state, ['keyword_elseif', 'keyword_else', 'keyword_endif'], true);
 
 	// Parse elseif chains
 	const elseifs: { condition: Expression; body: ASTNode[] }[] = [];
@@ -411,7 +411,7 @@ function parseIfStatement(state: ParserState, startToken: Token, trimLeft: boole
 		}
 
 		consumeTagEnd(state);
-		const elseifBody = parseBody(state, ['keyword_elseif', 'keyword_else', 'keyword_endif']);
+		const elseifBody = parseBody(state, ['keyword_elseif', 'keyword_else', 'keyword_endif'], true);
 		elseifs.push({ condition: elseifCondition, body: elseifBody });
 	}
 
@@ -421,7 +421,7 @@ function parseIfStatement(state: ParserState, startToken: Token, trimLeft: boole
 		consumeTagStart(state);
 		advance(state); // consume 'else'
 		consumeTagEnd(state);
-		alternate = parseBody(state, ['keyword_endif']);
+		alternate = parseBody(state, ['keyword_endif'], true);
 	}
 
 	// Consume endif
@@ -603,12 +603,23 @@ function parseSetStatement(state: ParserState, startToken: Token, trimLeft: bool
 // Body Parsing (content between tags)
 // ============================================================================
 
-function parseBody(state: ParserState, stopKeywords: TokenType[]): ASTNode[] {
+function parseBody(state: ParserState, stopKeywords: TokenType[], trimClosingLine = false): ASTNode[] {
 	const nodes: ASTNode[] = [];
 
 	while (!isAtEnd(state)) {
 		// Check if we've hit a stop keyword
 		if (checkTagKeyword(state, ...stopKeywords)) {
+			if (trimClosingLine) {
+				// Remove only the source newline before a standalone branch/closing
+				// tag. Trimming rendered output would also erase generated newlines
+				// and could remove intentional blank lines in nested conditionals.
+				let end = state.pos;
+				while (end < state.tokens.length && state.tokens[end].type !== 'tag_end') end++;
+				const after = state.tokens[end + 1];
+				const standalone = after?.type === 'eof' || (after?.type === 'text' && /^[\t ]*(?:\r?\n|$)/.test(after.value));
+				const last = nodes[nodes.length - 1];
+				if (standalone && last?.type === 'text') last.value = last.value.replace(/\r?\n[\t ]*$/, '');
+			}
 			break;
 		}
 

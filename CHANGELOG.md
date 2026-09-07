@@ -4,6 +4,7 @@ All notable changes to Knap will be documented in this file.
 
 ## Unreleased
 
+- Remove the extra output line before standalone conditional closing tags, preserving intentional blank lines.
 - Preserve intentional blank lines between loop iterations, including separate Markdown tables.
 
 ## 0.3.0

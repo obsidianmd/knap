@@ -344,6 +344,32 @@ describe('Renderer', () => {
 	});
 
 	describe('Whitespace Control', () => {
+		test.each(['\n', '\r\n'])('standalone endif does not leave a trailing line with %j line endings', async (newline) => {
+			const result = await render(`{% if cast %}${newline}## Cast${newline}{% endif %}`, createContext({ cast: ['Actor'] }));
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe('## Cast');
+		});
+
+		test.each([1, 2, 3])('standalone conditional branches remove their tag lines for branch %i', async (value) => {
+			const template = 'Before\n{% if value == 1 %}\nOne\n{% elseif value == 2 %}\nTwo\n{% else %}\nThree\n{% endif %}\nAfter';
+			const result = await render(template, createContext({ value }));
+			expect(result.output).toBe(`Before\n${['One', 'Two', 'Three'][value - 1]}\nAfter`);
+		});
+
+		test.each([
+			['{% if show %}\nText\n\n{% endif %}', 'Text\n'],
+			['{% if show %}\nText\n  {% endif %}  ', 'Text  '],
+			['{% if show %}\n{% if show %}\nText\n\n{% endif %}\n{% endif %}', 'Text\n'],
+			['{% if show %}{{ value }}{% endif %}', 'Generated\n'],
+			['{% if show %}\n{{ value }}\n{% endif %}', 'Generated\n'],
+			['{% if show %}\nText\n{% endif %}After', 'Text\nAfter'],
+			['Before\n{% if missing %}\nText\n{% endif %}\nAfter', 'Before\nAfter'],
+		])('preserves content whitespace in %j', async (template, expected) => {
+			const result = await render(template, createContext({ show: true, value: 'Generated\n' }));
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe(expected);
+		});
+
 		test('renders tags with whitespace trimming', async () => {
 			const result = await render('Hello\n{% set x = 1 %}\nWorld', createContext());
 			expect(result.errors).toHaveLength(0);

@@ -226,13 +226,17 @@ async function renderIf(node: IfNode, state: RenderState): Promise<string> {
 		for (const elseif of node.elseifs) {
 			const elseifValue = await evaluateExpression(elseif.condition, state);
 			if (isTruthy(elseifValue)) {
-				return renderNodes(elseif.body, state);
+				const result = await renderNodes(elseif.body, state);
+				if (node.trimRight) state.pendingTrimRight = true;
+				return result;
 			}
 		}
 
 		// Fall back to else
 		if (node.alternate) {
-			return renderNodes(node.alternate, state);
+			const result = await renderNodes(node.alternate, state);
+			if (node.trimRight) state.pendingTrimRight = true;
+			return result;
 		}
 
 		if (node.trimRight) {
