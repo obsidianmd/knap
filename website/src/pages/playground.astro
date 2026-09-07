@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PlaygroundEditor from '../components/PlaygroundEditor.astro';
+import { exampleInput, exampleTemplate } from '../lib/playground';
+import { storageKey, minimumWidth } from '../scripts/playground-columns';
+import '../styles/playground.scss';
+import { filterDocs } from '../../lib/filter-docs';
+import { standardFilters } from '../../../src/filters';
+
+const filters = Object.keys(standardFilters).map((name) => {
+  const doc = filterDocs.find((filter) => filter.name === name || filter.aliases?.includes(name));
+  return { label: name, type: 'function', detail: doc?.syntax[0]?.slice(doc.name.length) || undefined, info: doc?.summary };
+});
+---
+
+<BaseLayout title="Playground" description="Try Knap in your browser. Edit JSON input and a template to generate Markdown with live template validation.">
+  <main class="playground">
+    <script is:inline define:vars={{ storageKey, minimumWidth }}>
+      // Restore column widths before their markup can paint, without waiting for modules.
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) ?? 'null');
+        if (Array.isArray(saved) && saved.length === 3 && saved.every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0 && value <= 1)) {
+          const total = saved.reduce((sum, value) => sum + value, 0);
+          const tracks = saved.map((value) => `minmax(${minimumWidth}px, ${value / total}fr)`).join(' 1px ');
+          document.currentScript.parentElement.style.setProperty('--playground-tracks', tracks);
+        }
+      } catch {
+        // Unavailable storage or invalid preferences keep the default equal columns.
+      }
+    </script>
+    <script is:inline type="application/json" id="playground-filter-completions" set:html={JSON.stringify(filters).replaceAll('<', '\\u003c')} />
+    <header class="playground-header">
+      <a class="wordmark" href="/" aria-label="Knap home">Knap</a>
+      <h1>Playground</h1>
+      <nav aria-label="Playground navigation">
+        <button type="button" id="reset-example">Reset</button>
+        <a href="/variables">Docs <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <div class="playground-columns">
+      <PlaygroundEditor name="input" label="Input" language="JSON" value={exampleInput} />
+      <div
+        class="playground-resizer"
+        role="separator"
+        tabindex="0"
+        aria-label="Resize input and template columns"
+        aria-orientation="vertical"
+        aria-controls="input-panel template-panel"
+        aria-valuenow="50"
+        title="Drag to resize. Use arrow keys when focused. Double-click to equalize."
+      ></div>
+      <PlaygroundEditor name="template" label="Template" language="Knap" value={exampleTemplate} />
+      <div
+        class="playground-resizer"
+        role="separator"
+        tabindex="0"
+        aria-label="Resize template and output columns"
+        aria-orientation="vertical"
+        aria-controls="template-panel output-panel"
+        aria-valuenow="50"
+        title="Drag to resize. Use arrow keys when focused. Double-click to equalize."
+      ></div>
+      <PlaygroundEditor name="output" label="Output" language="Markdown" readonly />
+    </div>
+    <noscript>Enable JavaScript to render and validate templates in the playground.</noscript>
+  </main>
+</BaseLayout>
+
+<script>
+  import '../scripts/playground';
+</script>

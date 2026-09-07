@@ -1,0 +1,48 @@
+---
+interface Props {
+  name: 'input' | 'template' | 'output';
+  label: string;
+  language: string;
+  value?: string;
+  readonly?: boolean;
+}
+
+const { name, label, language, value = '', readonly = false } = Astro.props;
+const accept = name === 'input' ? '.json' : '.md,.txt';
+const fileTypes = name === 'input' ? '.json' : '.md or .txt';
+---
+
+<section class="playground-panel" id={`${name}-panel`} aria-labelledby={`${name}-heading`}>
+  <header class="playground-panel-header">
+    <h2 id={`${name}-heading`}>{label}</h2>
+    <span class="playground-language">{language}</span>
+    {!readonly && <>
+      <button type="button" class="playground-open" data-open-file aria-label={`Open ${label.toLowerCase()} file`} title={`Open a ${fileTypes} file`}>Open file</button>
+      <input type="file" data-file-input accept={accept} aria-label={`Choose ${label.toLowerCase()} file`} hidden />
+    </>}
+    {readonly && <button type="button" class="playground-copy" id="copy-output" disabled>Copy</button>}
+  </header>
+  {!readonly && <>
+    <div class="playground-drop-hint" aria-hidden="true" hidden>Drop a {fileTypes} file</div>
+    <div class="playground-file-status" id={`${name}-file-status`} role="status" aria-atomic="true" hidden></div>
+  </>}
+  <div class="playground-editor" data-editor={name}>
+    <pre class="playground-line-numbers" aria-hidden="true"></pre>
+    <div class="playground-editor-content">
+      <pre class="playground-highlight" aria-hidden="true"></pre>
+      <textarea
+        id={`playground-${name}`}
+        aria-label={label}
+        aria-describedby={readonly ? `${name}-status` : `${name}-status ${name}-file-status`}
+        readonly={readonly}
+        spellcheck="false"
+        autocapitalize="off"
+        autocomplete="off"
+        wrap="off"
+      >{value}</textarea>
+    </div>
+  </div>
+  <div class="playground-status" id={`${name}-status`} role="status" aria-atomic="true">
+    {readonly ? 'Preparing output…' : 'Checking…'}
+  </div>
+</section>
