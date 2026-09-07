@@ -112,7 +112,7 @@ export interface MemberExpression extends BaseNode {
 	type: 'member';
 	object: Expression;
 	property: Expression;
-	computed: true; // Always true for bracket notation
+	computed: boolean; // Bracket access is computed; dot access uses literal property names.
 }
 
 export type Expression =
@@ -1132,13 +1132,39 @@ function parseComparisonExpression(state: ParserState): Expression | null {
 	return left;
 }
 
-// Postfix: primary followed by bracket access [index]
+// Postfix: primary followed by bracket or dot access.
 function parsePostfixExpression(state: ParserState): Expression | null {
 	let left = parsePrimaryExpression(state);
 	if (!left) return null;
 
-	// Handle bracket notation: expr[index]
-	while (check(state, 'lbracket')) {
+	while (check(state, 'lbracket') || check(state, 'dot')) {
+		if (check(state, 'dot')) {
+			const dot = advance(state);
+			const property = peek(state);
+			// Identifiers may contain an entire dotted path in one token. Treat
+			// each segment as a literal property, including keyword-named keys.
+			const parts = property.value.split('.');
+			if (property.type === 'string' || !parts.every((part) => /^[A-Za-z_@][A-Za-z0-9_@-]*$/.test(part))) {
+				state.errors.push({ message: 'Expected a property name after .', line: dot.line, column: dot.column });
+				break;
+			}
+			advance(state);
+			let column = property.column;
+			for (const part of parts) {
+				left = {
+					type: 'member',
+					object: left,
+					property: { type: 'literal', value: part, raw: part, line: property.line, column },
+					computed: false,
+					line: property.line,
+					column,
+				};
+				column += part.length + 1;
+			}
+			continue;
+		}
+
+		// Bracket notation: expr[index].
 		const bracketToken = advance(state); // consume '['
 
 		const property = parseOrExpression(state);

@@ -40,6 +40,32 @@ function createContext(variables: Record<string, any> = {}): RenderContext {
 }
 
 describe('Renderer', () => {
+	describe('Mixed property access', () => {
+		const variables = {
+			cast: [{ actor: 'Keanu Reeves', details: { name: 'Neo' }, roles: [{ title: 'Neo' }, { title: 'John' }], if: 'keyword property' }],
+			index: 0,
+		};
+		test.each([
+			['{{cast[0].actor}}', 'Keanu Reeves'],
+			['{{ cast[0].details.name }}', 'Neo'],
+			['{{ cast[0].roles[1].title }}', 'John'],
+			['{{ (cast[0]).actor }}', 'Keanu Reeves'],
+			['{{ cast[0]["actor"] }}', 'Keanu Reeves'],
+			['{{ cast[index].actor | upper }}', 'KEANU REEVES'],
+			['{{ cast[0].if }}', 'keyword property'],
+			['{{ cast[3].actor }}', ''],
+			['{% if cast[0].actor == "Keanu Reeves" %}Yes{% endif %}', 'Yes'],
+			['{% set name = cast[0].actor %}{{ name }}', 'Keanu Reeves'],
+		])('renders %s', async (template, expected) => {
+			expect(await renderTemplate(template, { ...variables })).toBe(expected);
+		});
+
+		test.each(['{{ cast[0]. }}', '{{ cast[0]..actor }}', '{{ cast[0].123 }}', '{{ cast[0]."actor" }}'])('rejects incomplete property access: %s', async (template) => {
+			const result = await render(template, createContext(variables));
+			expect(result.errors.some((error) => error.message === 'Expected a property name after .')).toBe(true);
+		});
+	});
+
 	describe('Text Content', () => {
 		test('renders plain text', async () => {
 			const result = await render('Hello, world!', createContext());
