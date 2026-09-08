@@ -6,7 +6,7 @@
 // - Variable tags: {{ variable|filter }} (preserves whitespace)
 // - Logic tags: {% if condition %}, {% for item in array %}, etc. (trims whitespace)
 
-import { decodeStringEscape } from './parser-utils';
+import { decodeStringEscape, parseRegexPattern } from './parser-utils';
 
 // ============================================================================
 // Token Types
@@ -586,6 +586,7 @@ function tokenizeString(state: TokenizerState): void {
 	const startLine = state.line;
 	const startColumn = state.column;
 	let value = '';
+	let rawValue = '';
 
 	advanceChar(state); // Skip opening quote
 
@@ -595,6 +596,9 @@ function tokenizeString(state: TokenizerState): void {
 
 		if (char === quote) {
 			advanceChar(state); // Skip closing quote
+			// Regex arguments have their own escapes. Preserve \s, \d, etc.,
+			// while still decoding escaped quotes and doubled backslashes.
+			if (parseRegexPattern(rawValue)) value = rawValue.replace(/\\([\\"'])/g, '$1');
 			state.tokens.push({
 				type: 'string',
 				value,
@@ -625,12 +629,14 @@ function tokenizeString(state: TokenizerState): void {
 			// Escape sequence
 			advanceChar(state);
 			const escaped = state.input[state.pos];
+			rawValue += '\\' + escaped;
 			value += decodeStringEscape(escaped);
 			advanceChar(state);
 			continue;
 		}
 
 		value += char;
+		rawValue += char;
 		advanceChar(state);
 	}
 

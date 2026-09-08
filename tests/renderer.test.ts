@@ -40,6 +40,32 @@ function createContext(variables: Record<string, any> = {}): RenderContext {
 }
 
 describe('Renderer', () => {
+	describe('Mixed property access', () => {
+		const variables = {
+			cast: [{ actor: 'Keanu Reeves', details: { name: 'Neo' }, roles: [{ title: 'Neo' }, { title: 'John' }], if: 'keyword property' }],
+			index: 0,
+		};
+		test.each([
+			['{{cast[0].actor}}', 'Keanu Reeves'],
+			['{{ cast[0].details.name }}', 'Neo'],
+			['{{ cast[0].roles[1].title }}', 'John'],
+			['{{ (cast[0]).actor }}', 'Keanu Reeves'],
+			['{{ cast[0]["actor"] }}', 'Keanu Reeves'],
+			['{{ cast[index].actor | upper }}', 'KEANU REEVES'],
+			['{{ cast[0].if }}', 'keyword property'],
+			['{{ cast[3].actor }}', ''],
+			['{% if cast[0].actor == "Keanu Reeves" %}Yes{% endif %}', 'Yes'],
+			['{% set name = cast[0].actor %}{{ name }}', 'Keanu Reeves'],
+		])('renders %s', async (template, expected) => {
+			expect(await renderTemplate(template, { ...variables })).toBe(expected);
+		});
+
+		test.each(['{{ cast[0]. }}', '{{ cast[0]..actor }}', '{{ cast[0].123 }}', '{{ cast[0]."actor" }}'])('rejects incomplete property access: %s', async (template) => {
+			const result = await render(template, createContext(variables));
+			expect(result.errors.some((error) => error.message === 'Expected a property name after .')).toBe(true);
+		});
+	});
+
 	describe('Text Content', () => {
 		test('renders plain text', async () => {
 			const result = await render('Hello, world!', createContext());
@@ -248,6 +274,24 @@ describe('Renderer', () => {
 	});
 
 	describe('For Loops', () => {
+		test.each(['\n', '\r\n'])('preserves blank lines between loop iterations with %j line endings', async (newline) => {
+			const ctx = createContext({ items: ['a', 'b', 'c'] });
+			const template = `{% for item in items %}${newline}{{item}}${newline}${newline}{% endfor %}`;
+			const result = await render(template, ctx);
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe(`a${newline}${newline}b${newline}${newline}c${newline}`);
+		});
+
+		test('preserves multiple intentional blank lines', async () => {
+			const result = await render('{% for item in items %}\n{{item}}\n\n\n{% endfor %}', createContext({ items: ['a', 'b'] }));
+			expect(result.output).toBe('a\n\n\nb\n\n');
+		});
+
+		test('does not add blank lines to ordinary multiline lists', async () => {
+			const result = await render('{% for item in items %}\n- {{item}}\n{% endfor %}', createContext({ items: ['a', 'b'] }));
+			expect(result.output).toBe('- a\n- b');
+		});
+
 		test('renders simple for loop', async () => {
 			const ctx = createContext({ items: ['a', 'b', 'c'] });
 			const result = await render('{% for item in items %}{{item}}{% endfor %}', ctx);
@@ -326,6 +370,32 @@ describe('Renderer', () => {
 	});
 
 	describe('Whitespace Control', () => {
+		test.each(['\n', '\r\n'])('standalone endif does not leave a trailing line with %j line endings', async (newline) => {
+			const result = await render(`{% if cast %}${newline}## Cast${newline}{% endif %}`, createContext({ cast: ['Actor'] }));
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe('## Cast');
+		});
+
+		test.each([1, 2, 3])('standalone conditional branches remove their tag lines for branch %i', async (value) => {
+			const template = 'Before\n{% if value == 1 %}\nOne\n{% elseif value == 2 %}\nTwo\n{% else %}\nThree\n{% endif %}\nAfter';
+			const result = await render(template, createContext({ value }));
+			expect(result.output).toBe(`Before\n${['One', 'Two', 'Three'][value - 1]}\nAfter`);
+		});
+
+		test.each([
+			['{% if show %}\nText\n\n{% endif %}', 'Text\n'],
+			['{% if show %}\nText\n  {% endif %}  ', 'Text  '],
+			['{% if show %}\n{% if show %}\nText\n\n{% endif %}\n{% endif %}', 'Text\n'],
+			['{% if show %}{{ value }}{% endif %}', 'Generated\n'],
+			['{% if show %}\n{{ value }}\n{% endif %}', 'Generated\n'],
+			['{% if show %}\nText\n{% endif %}After', 'Text\nAfter'],
+			['Before\n{% if missing %}\nText\n{% endif %}\nAfter', 'Before\nAfter'],
+		])('preserves content whitespace in %j', async (template, expected) => {
+			const result = await render(template, createContext({ show: true, value: 'Generated\n' }));
+			expect(result.errors).toEqual([]);
+			expect(result.output).toBe(expected);
+		});
+
 		test('renders tags with whitespace trimming', async () => {
 			const result = await render('Hello\n{% set x = 1 %}\nWorld', createContext());
 			expect(result.errors).toHaveLength(0);

@@ -5,164 +5,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Install from '../components/Install.astro';
 
-const examples = [
-  {
-    key: 'movie',
-    label: 'Movie',
-    template: `---
-{{ year | yaml_property:"year" }}
-{{ directors | wikilink | yaml_property:"director" }}
-{{ genres | yaml_property:"genre" }}
----
-
-{{ title | h1 }}
-
-{{ plot | blockquote }}
-
-{% if cast %}
-## Cast
-
-{{ cast | slice:0,4 | table_pretty }}
-{% endif %}`,
-    markdown: `---
-year: 1999
-director:
-  - "[[Lana Wachowski]]"
-  - "[[Lilly Wachowski]]"
-genre:
-  - "Action"
-  - "Sci-fi"
----
-
-# The Matrix
-
-> A hacker discovers that reality is a simulation and joins a rebellion against its machines.
-
-## Cast
-
-| Actor              | Role        |
-| ------------------ | ----------- |
-| Keanu Reeves       | Neo         |
-| Laurence Fishburne | Morpheus    |
-| Carrie-Anne Moss   | Trinity     |
-| Hugo Weaving       | Agent Smith |`,
-  },
-  {
-    key: 'recipe',
-    label: 'Recipe',
-    template: `---
-{{ author | wikilink | yaml_property:"author" }}
-{{ servings | yaml_property:"servings" }}
-{{ url | yaml_property:"source" }}
----
-
-{{ title | h1 }}
-
-{{ description | blockquote }}
-
-## Ingredients
-
-{{ ingredients | table:("Ingredient", "Quantity") }}
-
-## Instructions
-
-{{ instructions | list:numbered }}`,
-    markdown: `---
-author: "[[Eric Kim]]"
-servings: 8
-source: "https://example.com/gochujang-cookies"
----
-
-# Gochujang caramel cookies
-
-> Chewy sugar cookies with a ribbon of spicy caramel.
-
-## Ingredients
-
-| Ingredient | Quantity |
-| - | - |
-| Unsalted butter | 1/2 cup |
-| Dark brown sugar | 1/4 cup |
-| Gochujang | 1 tablespoon |
-| All-purpose flour | 1 1/2 cups |
-
-## Instructions
-
-1. Mix the caramel ingredients until smooth.
-2. Make and chill the cookie dough.
-3. Swirl in the caramel, shape, and bake.`,
-  },
-  {
-    key: 'article',
-    label: 'Article',
-    template: `---
-{{ author | wikilink | yaml_property:"author" }}
-published: {{ published | date:"YYYY-MM-DD" }}
-{{ url | yaml_property:"source" }}
-{{ tags | yaml_property:"tags" }}
----
-
-{{ (title ?? "Untitled") | h1 }}
-
-{{ description | blockquote }}
-
-{{ content }}`,
-    markdown: `---
-author: "[[Steph Ango]]"
-published: 2023-06-30
-source: "https://stephango.com/file-over-app"
-tags:
-  - "clippings"
-  - "articles"
----
-
-# File over app
-
-> If you want to create digital artifacts that last, they must be files you can control.
-
-In the fullness of time, the files you create are more important than the tools you use to create them.`,
-  },
-  {
-    key: 'research',
-    label: 'Research',
-    template: `---
-{{ metadata | yaml }}
----
-
-{{ title | h1 }}
-
-## Abstract
-
-{{ abstract }}
-
-{% if highlights %}
-## Highlights
-
-{{ highlights | list }}
-{% endif %}`,
-    markdown: `---
-authors:
-  - "[[Ashish Vaswani]]"
-  - "[[Noam Shazeer]]"
-  - "[[Niki Parmar]]"
-published: "2017-06-12"
-doi: "10.48550/arXiv.1706.03762"
-source: "https://arxiv.org/abs/1706.03762"
----
-
-# Attention Is All You Need
-
-## Abstract
-
-The Transformer is a network architecture based solely on attention mechanisms.
-
-## Highlights
-
-- Replaces recurrence with self-attention
-- Enables more parallel training
-- Improves machine translation results`,
-  },
-];
+import { homeExamples as examples } from '../lib/home-examples';
 ---
 
 <BaseLayout markdownPath="/index.md" description="Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with variables, filters, and logic.">
@@ -186,6 +29,24 @@ The Transformer is a network architecture based solely on attention mechanisms.
     </section>
 
     <Install />
+
+    <section class="guide-section" aria-labelledby="explore-title">
+      <header class="guide-heading"><h2 id="explore-title">Explore</h2></header>
+      <nav class="guide-links" aria-label="Language guides">
+        <a class="guide-link-card" data-guide="variables" href="/variables">
+          <h3>Variables</h3>
+          <p>Insert app-provided values into a template.</p>
+        </a>
+        <a class="guide-link-card" data-guide="filters" href="/filters">
+          <h3>Filters</h3>
+          <p>Transform values and format Markdown.</p>
+        </a>
+        <a class="guide-link-card" data-guide="logic" href="/logic">
+          <h3>Logic</h3>
+          <p>Include content conditionally and repeat it over arrays.</p>
+        </a>
+      </nav>
+    </section>
 
     <section class="used-by" aria-labelledby="knap-in-use">
       <header class="used-by-heading"><div><h2 id="knap-in-use">Knap in use</h2></div><p>Knap was created for <a href="https://obsidian.md" target="_blank" rel="noopener noreferrer">Obsidian</a> and is named after <a href="https://en.wikipedia.org/wiki/Knapping" target="_blank" rel="noopener noreferrer">knapping</a>, the process of shaping stones to form arrowheads, scrapers, and other tools.</p></header>

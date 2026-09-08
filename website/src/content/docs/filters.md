@@ -3,17 +3,17 @@ title: Filters
 description: Filters transform variables.
 ---
 
-## Use filters
+Apply a filter to a [variable](/variables) by placing it after a `|` pipe symbol. Filters can be chained, and run from left to right. For example:
 
-Add a filter after a pipe. Parameters follow the filter name after a colon, and chains run from left to right.
-
-```knap title="template.md"
-{{ title | trim | upper }}
-{{ published | date:"YYYY-MM-DD" }}
-{{ tags | unique | join:", " }}
+```knap title="Template"
+{{ title | h2 | upper }}
 ```
 
-Only filters registered on the engine are available. Unknown names and invalid parameters appear as structured diagnostics from `validate()` and `render()`.
+```md title="Output"
+## THE MACHINE STOPS
+```
+
+Only registered filters are available. Unknown names and invalid parameters appear as diagnostics from `validate()` and `render()`.
 
 ## Format Markdown
 

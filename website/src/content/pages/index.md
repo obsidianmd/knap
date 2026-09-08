@@ -66,6 +66,20 @@ npm install knap
 
 Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`.
 
+## Explore
+
+### [Variables](/variables)
+
+Insert app-provided values into a template.
+
+### [Filters](/filters)
+
+Transform values and format Markdown.
+
+### [Logic](/logic)
+
+Include content conditionally and repeat it over arrays.
+
 ## Knap in use
 
 Knap was created for [Obsidian](https://obsidian.md) and is named after [knapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.

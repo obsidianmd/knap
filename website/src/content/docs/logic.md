@@ -1,20 +1,24 @@
 ---
 title: Logic
-description: Include content conditionally, choose fallback values, and repeat Markdown over arrays.
+description: Include content conditionally, use fallbacks, and iterate over arrays.
 ---
 
-## Conditionals
+Logic tags are wrapped by brace percentage delimiters `{%` and `%}`. The text they surround does not produce any visible output when the template runs, so you can keep logic hidden.
 
-Use `{% if %}` to include content only when an expression is true. Add `elseif` and `else` for alternative branches.
+## Conditions
 
-```knap title="status.md"
-{% if status == "published" %}
-Published on {{ published | date:"YYYY-MM-DD" }}
-{% elseif status == "draft" %}
-Draft
+Use `{% if %}` to include content only when an expression is true. Add `elseif` and `else` for alternative branches. Here, `published` is true.
+
+```knap title="Template"
+{% if published %}
+Published
 {% else %}
-Unknown status
+Draft
 {% endif %}
+```
+
+```md title="Output"
+Published
 ```
 
 ## Comparison and logical operators
@@ -58,15 +62,22 @@ The `??` operator returns the first truthy value and has the lowest precedence, 
 
 ## Loops
 
-Use `{% for %}` to render a block once for every value in an array.
+Use `{% for %}` to render a block once for every value in an array. Here, `tags` contains `science fiction` and `novel`.
 
-```knap
+```knap title="Template"
 {% for tag in tags %}
 - #{{ tag | kebab }}
 {% endfor %}
 ```
 
+```md title="Output"
+- #science-fiction
+- #novel
+```
+
 Loops can iterate over variables supplied by the host, values created with `set`, and arrays found in nested data.
+
+Iterations are separated by a line break. Extra blank lines before `{% endfor %}` are preserved, so you can separate repeated paragraphs or tables by leaving a blank line inside the loop.
 
 ## Loop values
 

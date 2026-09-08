@@ -2,7 +2,7 @@
   min-height: 100vh;
 }
 .docs-layout {
-  width: min(88vw, var(--reading));
+  width: min(var(--page-width), var(--reading));
   margin-inline: auto;
   padding-block: 64px 72px;
 }
@@ -81,41 +81,6 @@
   margin-left: -8px;
   margin-top: 18px;
 }
-.docs-title-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  padding: 6px 8px;
-  font: inherit;
-  font-size: 0.8125rem;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--panel);
-    color: var(--paper);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  &:disabled {
-    cursor: wait;
-  }
-  &[data-copied] {
-    color: var(--body);
-
-    svg {
-      color: var(--green);
-    }
-  }
-  &[data-copy-error] {
-    color: var(--red);
-  }
-}
 .doc-section {
   scroll-margin-top: 32px;
   margin-bottom: 56px;
@@ -149,7 +114,7 @@
   grid-template-columns: 120px 1fr;
   gap: 20px;
   margin: 28px 0;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: #1a1623;
   padding: 18px 20px;
   font-size: var(--font-size-small);
@@ -260,7 +225,7 @@
     display: grid;
     gap: 6px;
     margin: 28px 0;
-    border-radius: 12px;
+    border-radius: var(--radius-panel);
     background: #1a1623;
     padding: 18px 20px;
     color: var(--body);
@@ -276,9 +241,12 @@
   > .doc-code {
     margin-block: 28px;
   }
+  > .filter-example-table {
+    margin-bottom: 28px;
+  }
 }
 .not-found {
-  width: min(88vw, var(--reading));
+  width: min(var(--page-width), var(--reading));
   margin: 12vh auto;
 
   > p {
@@ -303,7 +271,7 @@
 
 @media (max-width: 760px) {
   .docs-layout {
-    width: min(88vw, var(--reading));
+    width: min(var(--page-width), var(--reading));
     display: block;
     padding-top: 44px;
   }

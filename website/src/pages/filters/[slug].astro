@@ -1,6 +1,7 @@
 ---
 import CodeBlock from '../../components/CodeBlock.astro';
 import FilterExample from '../../components/FilterExample.astro';
+import PlaygroundLink from '../../components/PlaygroundLink.astro';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import { filterDocs, filterDocsByName } from '../../../lib/filter-docs';
 
@@ -9,6 +10,8 @@ export function getStaticPaths() {
 }
 
 const { filter } = Astro.props;
+const singleBasicExample = filter.examples.length === 1 && filter.examples[0].title === 'Basic usage';
+const runnable = filter.environment !== 'html';
 const slugifyHeading = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character] ?? character);
 const renderInlineCode = (value: string) => escapeHtml(value).replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -37,12 +40,14 @@ const headings = [
 
   {(filter.parameters?.length || filter.notes?.length) && <section id="usage" class="doc-section"><h2>Usage</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li set:html={renderInlineCode(note)} />)}</ul></section>}
 
-  <section id="examples" class="doc-section">
+  <section id="examples" class:list={['doc-section', 'filter-examples-section', singleBasicExample && runnable && 'has-playground-link']}>
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>
+    {singleBasicExample && runnable && <PlaygroundLink input={JSON.stringify(filter.examples[0].variables, null, 2)} template={filter.examples[0].template} />}
     <div class="filter-examples">
       {filter.examples.map((item) => (
-        <article class:list={['filter-example-card', filter.examples.length === 1 && item.title === 'Basic usage' && 'filter-example-card-untitled']}>
-          {!(filter.examples.length === 1 && item.title === 'Basic usage') && <header><h3 id={slugifyHeading(item.title)}>{item.title}</h3></header>}
+        <article class:list={['filter-example-card', singleBasicExample && 'filter-example-card-untitled', !singleBasicExample && runnable && 'has-playground-link']}>
+          {!singleBasicExample && <header><h3 id={slugifyHeading(item.title)}>{item.title}</h3></header>}
+          {!singleBasicExample && runnable && <PlaygroundLink input={JSON.stringify(item.variables, null, 2)} template={item.template} />}
           <FilterExample
             input={JSON.stringify(item.variables, null, 2)}
             template={item.template}

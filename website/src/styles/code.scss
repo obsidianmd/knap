@@ -1,7 +1,7 @@
 .code-window {
   min-width: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
   color: var(--paper);
 
@@ -28,16 +28,17 @@
     padding: 24px 0;
     font-family: var(--font-mono);
     font-size: var(--font-size-small);
-    line-height: 1.85;
+    line-height: var(--code-line-height);
   }
 }
 .code-line {
   display: grid;
-  min-height: 1.85em;
-  grid-template-columns: 42px 1fr;
+  min-height: calc(var(--code-line-height) * 1em);
+  grid-template-columns: var(--code-gutter-width) 1fr;
   padding-inline: 14px 24px;
 }
 .line-number {
+  -webkit-user-select: none;
   color: var(--faint);
   user-select: none;
 }
@@ -67,7 +68,7 @@
   position: relative;
   margin: 28px 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
 
   figcaption {
@@ -88,14 +89,14 @@
     color: var(--paper);
     font-family: var(--font-mono);
     font-size: var(--font-size-small);
-    line-height: 1.72;
+    line-height: var(--code-line-height);
   }
 
   &-unlabeled {
     pre {
       padding-block: 14px;
     }
-    > .doc-code-copy {
+    > .doc-code-copy, > .doc-code-actions {
       position: absolute;
       z-index: 1;
       top: 8px;
@@ -104,17 +105,20 @@
     .doc-code-line {
       padding-right: 52px;
     }
+    &:has(.doc-code-actions > a) .doc-code-line {
+      padding-right: 90px;
+    }
   }
 
   &-numbered .doc-code-line {
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: var(--code-gutter-width) minmax(0, 1fr);
     padding-left: 10px;
   }
 }
 .doc-code-actions {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 2px;
   margin-left: auto;
 }
 .doc-code-copy {
@@ -123,7 +127,7 @@
   height: 28px;
   place-items: center;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-small);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -147,7 +151,7 @@
 }
 .doc-code-line {
   display: grid;
-  min-height: 1.72em;
+  min-height: calc(var(--code-line-height) * 1em);
   grid-template-columns: minmax(0, 1fr);
   padding-inline: 20px;
 }
@@ -155,6 +159,7 @@
   min-width: 0;
 }
 .doc-line-number {
+  -webkit-user-select: none;
   color: var(--faint);
   user-select: none;
 }
@@ -188,11 +193,9 @@
 }
 .syn-md-heading {
   color: var(--paper);
-  font-weight: 700;
 }
 .syn-yaml-key {
   color: var(--syntax-blue);
-  font-weight: 650;
 }
 .syn-md-link {
   color: var(--syntax-purple);

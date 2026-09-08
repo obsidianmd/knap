@@ -25,6 +25,6 @@ const renderedCode = highlight ? highlightCode(normalizedCode, language, showLin
 <figure class:list={['doc-code', !label && 'doc-code-unlabeled', showLineNumbers && 'doc-code-numbered']} data-code-block>
   {label ? (
     <figcaption><span>{label}</span><span class="doc-code-actions"><CopyButton /></span></figcaption>
-  ) : <CopyButton />}
+  ) : <span class="doc-code-actions"><CopyButton /></span>}
   <pre><code class={`language-${language}`} data-language={language} set:html={renderedCode} /></pre>
 </figure>

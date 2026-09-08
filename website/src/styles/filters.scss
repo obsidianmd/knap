@@ -56,13 +56,14 @@
 }
 .filter-directory-group {
   margin-top: 28px;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
   padding: 18px;
 
   > header {
     display: grid;
     gap: 4px;
+    padding: 10px 12px 0;
   }
   h3 {
     margin: 0;
@@ -90,7 +91,7 @@
   gap: 20px;
   align-items: baseline;
   border-bottom: 0 !important;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   padding: 10px 12px;
   color: inherit !important;
   font-weight: 400;
@@ -127,6 +128,17 @@
   }
 }
 
+.filter-examples-section, .filter-example-card {
+  position: relative;
+  > .playground-link {
+    position: absolute;
+    top: -4px;
+    right: 0;
+  }
+  &.has-playground-link > h2, &.has-playground-link > header {
+    padding-right: 190px;
+  }
+}
 .filter-example-card {
   margin-top: 38px;
 
@@ -134,6 +146,7 @@
     margin: 0;
     color: var(--paper);
     font-size: var(--font-size-body);
+    font-weight: 600;
   }
 
   &-untitled {
@@ -146,7 +159,7 @@
 .filter-example-table {
   margin-top: 20px;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
 
   table {

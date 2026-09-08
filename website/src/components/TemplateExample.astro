@@ -1,11 +1,13 @@
 ---
 import CodeBlock from './CodeBlock.astro';
+import PlaygroundLink from './PlaygroundLink.astro';
 
 interface Example {
   key: string;
   label: string;
   template: string;
   markdown: string;
+  variables: Record<string, unknown>;
 }
 
 interface Props {
@@ -14,7 +16,8 @@ interface Props {
 }
 
 const { examples, defaultExample = examples[0]?.key } = Astro.props;
-const defaultExampleLabel = examples.find((example) => example.key === defaultExample)?.label ?? examples[0]?.label;
+const selectedExample = examples.find((example) => example.key === defaultExample) ?? examples[0];
+const playground = { input: JSON.stringify(selectedExample.variables, null, 2), template: selectedExample.template };
 const tabs = [
   { key: 'template', label: 'Template' },
   { key: 'markdown', label: 'Output' },
@@ -38,39 +41,7 @@ const tabs = [
       ))}
     </div>
 
-    <div class="example-controls">
-      <div class="example-picker" data-example-picker>
-        <button
-          class="example-picker-trigger"
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded="false"
-          aria-controls="home-example-options"
-          data-example-trigger
-        >
-          <span data-example-label>{defaultExampleLabel}</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-        </button>
-        <div class="example-picker-menu" id="home-example-options" role="listbox" aria-label="Choose an example" data-example-menu hidden>
-          {examples.map((example) => (
-            <button
-              type="button"
-              role="option"
-              aria-selected={example.key === defaultExample}
-              tabindex="-1"
-              data-example-option={example.key}
-            >
-              <span>{example.label}</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m20 6-11 11-5-5"></path>
-              </svg>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    <PlaygroundLink {...playground} />
   </div>
 
   <div class="code-tab-panels">
@@ -82,14 +53,10 @@ const tabs = [
         tabindex="0"
         hidden={index !== 0}
       >
-        {examples.map((example) => (
-          <div data-example-variant={example.key} hidden={example.key !== defaultExample}>
-            <CodeBlock
-              language={tab.key === 'markdown' ? 'md' : 'knap'}
-              code={tab.key === 'markdown' ? example.markdown : example.template}
-            />
-          </div>
-        ))}
+        <CodeBlock
+          language={tab.key === 'markdown' ? 'md' : 'knap'}
+          code={tab.key === 'markdown' ? selectedExample.markdown : selectedExample.template}
+        />
       </div>
     ))}
   </div>
@@ -99,14 +66,6 @@ const tabs = [
   document.querySelectorAll<HTMLElement>('[data-template-example]').forEach((example) => {
     const tabs = [...example.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panels = [...example.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
-    const picker = example.querySelector<HTMLElement>('[data-example-picker]');
-    const trigger = example.querySelector<HTMLButtonElement>('[data-example-trigger]');
-    const menu = example.querySelector<HTMLElement>('[data-example-menu]');
-    const label = example.querySelector<HTMLElement>('[data-example-label]');
-    const choices = [...example.querySelectorAll<HTMLButtonElement>('[data-example-option]')];
-    const variants = [...example.querySelectorAll<HTMLElement>('[data-example-variant]')];
-    let currentKey = choices.find((choice) => choice.getAttribute('aria-selected') === 'true')?.dataset.exampleOption ?? choices[0]?.dataset.exampleOption;
-
     const selectTab = (selected: HTMLButtonElement) => {
       tabs.forEach((tab) => {
         tab.setAttribute('aria-selected', String(tab === selected));
@@ -115,72 +74,6 @@ const tabs = [
       panels.forEach((panel) => { panel.hidden = panel.id !== selected.getAttribute('aria-controls'); });
     };
 
-    const selectExample = (key: string) => {
-      variants.forEach((variant) => { variant.hidden = variant.dataset.exampleVariant !== key; });
-      choices.forEach((choice) => { choice.setAttribute('aria-selected', String(choice.dataset.exampleOption === key)); });
-      currentKey = key;
-      const selectedLabel = choices.find((choice) => choice.dataset.exampleOption === key)?.textContent?.trim();
-      if (selectedLabel) {
-        if (label) label.textContent = selectedLabel;
-      }
-    };
-
-    const closePicker = () => {
-      if (menu) menu.hidden = true;
-      trigger?.setAttribute('aria-expanded', 'false');
-    };
-
-    const openPicker = (focus: 'selected' | 'first' | 'last' = 'selected') => {
-      if (!menu || !trigger) return;
-      menu.hidden = false;
-      trigger.setAttribute('aria-expanded', 'true');
-      const target = focus === 'first'
-        ? choices[0]
-        : focus === 'last'
-          ? choices.at(-1)
-          : choices.find((choice) => choice.dataset.exampleOption === currentKey) ?? choices[0];
-      target?.focus();
-    };
-
-    trigger?.addEventListener('click', () => {
-      if (menu?.hidden) openPicker();
-      else closePicker();
-    });
-    trigger?.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-        event.preventDefault();
-        openPicker(event.key === 'ArrowDown' ? 'first' : 'last');
-      }
-    });
-    choices.forEach((choice, index) => {
-      choice.addEventListener('click', () => {
-        const key = choice.dataset.exampleOption;
-        if (key) selectExample(key);
-        closePicker();
-        trigger?.focus();
-      });
-      choice.addEventListener('keydown', (event) => {
-        let nextIndex: number;
-        if (event.key === 'ArrowDown') nextIndex = (index + 1) % choices.length;
-        else if (event.key === 'ArrowUp') nextIndex = (index - 1 + choices.length) % choices.length;
-        else if (event.key === 'Home') nextIndex = 0;
-        else if (event.key === 'End') nextIndex = choices.length - 1;
-        else if (event.key === 'Escape') {
-          event.preventDefault();
-          closePicker();
-          trigger?.focus();
-          return;
-        } else if (event.key === 'Tab') {
-          closePicker();
-          return;
-        } else return;
-        event.preventDefault();
-        choices[nextIndex]?.focus();
-      });
-    });
-    document.addEventListener('click', (event) => {
-      if (event.target instanceof Node && !picker?.contains(event.target)) closePicker();
-    });
     tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => selectTab(tab));
       tab.addEventListener('keydown', (event) => {

@@ -1,3 +1,5 @@
+import { markdownPunctuationAt } from './markdown-punctuation';
+
 export type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md' | 'json';
 
 const escapeHtml = (value: string) => value
@@ -27,16 +29,39 @@ function tokenClass(token: string, language: CodeLanguage) {
 
 function highlightMarkdownInline(value: string) {
   const parts = value.split(/(\[[^\]\n]+\]\([^)\n]+\)|\[\^[^\]\n]+\])/g).filter(Boolean);
+  let offset = 0;
   return parts.map((part) => {
+    const start = offset;
+    offset += part.length;
     const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (link) return `${span('syn-punctuation', '[')}${span('syn-md-link', link[1])}${span('syn-punctuation', '](')}${span('syn-md-link', link[2])}${span('syn-punctuation', ')')}`;
     if (/^\[\^[^\]]+\]$/.test(part)) return span('syn-punctuation', part);
-    return escapeHtml(part);
+    let highlighted = '';
+    for (let index = 0; index < part.length;) {
+      const length = markdownPunctuationAt(value, start + index);
+      if (length) {
+        highlighted += span('syn-punctuation', part.slice(index, index + length));
+        index += length;
+      } else {
+        highlighted += escapeHtml(part[index++]);
+      }
+    }
+    return highlighted;
   }).join('');
 }
 
-function highlightMarkdownLine(line: string) {
+function highlightMarkdownLine(line: string, inFrontmatter = false) {
   if (/^\s*---\s*$/.test(line)) return span('syn-punctuation', line);
+
+  if (inFrontmatter) {
+    const item = line.match(/^(\s*)(-)(\s+)(?:"((?:\\.|[^"\\])*)"|'((?:''|[^'])*)')(\s*)$/);
+    if (item) {
+      const quote = item[4] !== undefined ? '"' : "'";
+      return escapeHtml(item[1]) + span('syn-punctuation', item[2]) + escapeHtml(item[3])
+        + span('syn-punctuation', quote) + span('syn-string', item[4] ?? item[5])
+        + span('syn-punctuation', quote) + escapeHtml(item[6]);
+    }
+  }
 
   const heading = line.match(/^(#{1,6})(\s+)(.*)$/);
   if (heading) return `${span('syn-punctuation', heading[1])}${escapeHtml(heading[2])}<span class="syn-md-heading">${highlightMarkdownInline(heading[3])}</span>`;
@@ -104,7 +129,10 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>,
     }
 
     const quoted = className === 'syn-string' ? token.match(/^(['"`])([\s\S]*)\1$/) : null;
-    if (quoted) return `${span('syn-punctuation', quoted[1])}${span('syn-string', quoted[2])}${span('syn-punctuation', quoted[1])}`;
+    if (quoted) {
+      const isJsonKey = language === 'json' && tokens.slice(index + 1).find((candidate) => !/^\s+$/.test(candidate)) === ':';
+      return `${span('syn-punctuation', quoted[1])}${span(isJsonKey ? 'syn-variable' : 'syn-string', quoted[2])}${span('syn-punctuation', quoted[1])}`;
+    }
     return span(className, token);
   }).join('');
 }
@@ -126,13 +154,23 @@ function highlightKnapLine(line: string) {
   ).join('');
 }
 
-export function highlightLine(line: string, language: CodeLanguage) {
-  if (language === 'md') return highlightMarkdownLine(line);
+export function highlightLine(line: string, language: CodeLanguage, inFrontmatter = false) {
+  if (language === 'md') return highlightMarkdownLine(line, inFrontmatter);
   if (language === 'knap') return highlightKnapLine(line);
   return highlightTokenLine(line, language);
 }
 
+export function highlightLines(lines: string[], language: CodeLanguage) {
+  let inFrontmatter = false;
+  return lines.map((line, index) => {
+    const highlighted = highlightLine(line, language, inFrontmatter);
+    if (index === 0 && /^---\s*$/.test(line)) inFrontmatter = true;
+    else if (inFrontmatter && /^(?:---|\.\.\.)\s*$/.test(line)) inFrontmatter = false;
+    return highlighted;
+  });
+}
+
 export function highlightCode(code: string, language: CodeLanguage, showLineNumbers = false) {
   const normalized = code.replace(/^\n|\n$/g, '');
-  return normalized.split('\n').map((line, index) => `<span class="doc-code-line"><span class="doc-line-number"${showLineNumbers ? '' : ' hidden'}>${index + 1}</span><span class="doc-code-source">${highlightLine(line, language)}</span></span>`).join('');
+  return highlightLines(normalized.split('\n'), language).map((line, index) => `<span class="doc-code-line"><span class="doc-line-number"${showLineNumbers ? '' : ' hidden'}>${index + 1}</span><span class="doc-code-source">${line}</span></span>`).join('');
 }

@@ -226,13 +226,17 @@ async function renderIf(node: IfNode, state: RenderState): Promise<string> {
 		for (const elseif of node.elseifs) {
 			const elseifValue = await evaluateExpression(elseif.condition, state);
 			if (isTruthy(elseifValue)) {
-				return renderNodes(elseif.body, state);
+				const result = await renderNodes(elseif.body, state);
+				if (node.trimRight) state.pendingTrimRight = true;
+				return result;
 			}
 		}
 
 		// Fall back to else
 		if (node.alternate) {
-			return renderNodes(node.alternate, state);
+			const result = await renderNodes(node.alternate, state);
+			if (node.trimRight) state.pendingTrimRight = true;
+			return result;
 		}
 
 		if (node.trimRight) {
@@ -316,14 +320,23 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 			};
 
 			const itemResult = await renderNodes(node.body, loopState);
-			results.push(itemResult.trim());
+			// Remove the opening tag's line break, preserving additional blank lines.
+			const result = trimLeadingWhitespace(itemResult);
+			// A false conditional can leave an iteration completely empty.
+			// It must not create a separator or become the final visible item.
+			if (result !== '') results.push(result);
 		}
 
 		if (node.trimRight) {
 			state.pendingTrimRight = true;
 		}
 
-		return results.join('\n');
+		return results.map((result, index) => {
+			// The closing tag's line break separates iterations. Only remove it
+			// after the last iteration; retain any intentionally added blank lines.
+			if (index === results.length - 1) return trimTrailingWhitespace(result);
+			return result.endsWith('\n') ? result : result + '\n';
+		}).join('');
 	} catch (error) {
 		state.errors.push(toRenderError(error, 'Error in for loop', node.line, node.column));
 		return '';
