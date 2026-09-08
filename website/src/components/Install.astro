@@ -3,11 +3,13 @@ import CodeBlock from './CodeBlock.astro';
 
 interface Props {
   headingId?: string;
+  title?: string;
+  headingLevel?: 'h2' | 'h3';
   note?: string;
   showDescription?: boolean;
 }
 
-const { headingId = 'install-title', note, showDescription = true } = Astro.props;
+const { headingId = 'install-title', title = 'Install', headingLevel: Heading = 'h2', note, showDescription = true } = Astro.props;
 
 const managers = [
   { name: 'npm', command: 'npm install knap' },
@@ -19,7 +21,7 @@ const managers = [
 
 <section class="install-section" aria-labelledby={headingId}>
   <header class="install-heading">
-    <h2 id={headingId}>Install</h2>
+    <Heading id={headingId}>{title}</Heading>
     {showDescription && <p>Add Knap to your app so users can safely generate Markdown from variables you define.</p>}
   </header>
   <div class="install-managers segmented-control" style={`--segment-count: ${managers.length}`} role="group" aria-label="Package manager">
@@ -33,6 +35,7 @@ const managers = [
     </div>
   ))}
   {note && <p class="install-note">{note}</p>}
+  <slot />
 </section>
 
 <script>

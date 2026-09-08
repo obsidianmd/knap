@@ -19,6 +19,77 @@ The Obsidian Web Clipper documentation includes examples of Knap's shared
 pnpm add knap
 ```
 
+## CLI
+
+The same package includes a Node.js CLI. Run it with `npx knap`, or install it
+globally with `npm install -g knap` to use the `knap` command. Node.js 20 or later
+is required. Library imports continue to work independently of the CLI.
+
+```sh
+# Render a template using variables from a JSON file
+npx knap render template.md --data article.json --output note.md
+
+# Supply a template and variables inline
+npx knap render -t '# {{ title }}' --data-json '{"title":"Hello"}'
+
+# Override variables with strings
+npx knap render template.md --data article.json --set title="Custom title"
+
+# Pipe JSON data or a template over stdin
+cat article.json | npx knap render template.md --data -
+cat template.md | npx knap render --data article.json
+
+# Use shell redirection instead of --output
+npx knap render template.md --data article.json > note.md
+
+# Render content and metadata extracted by Defuddle
+npx defuddle parse https://example.com/article --markdown --json \
+  | npx knap render template.md --data - --output note.md
+```
+
+In the Defuddle example, template variables such as `{{ title }}` and
+`{{ content }}` refer directly to properties of its JSON output.
+
+### CLI options
+
+```text
+knap render [template-file] [options]
+```
+
+| Option | Short | Purpose |
+| --- | --- | --- |
+| `[template-file]` | | Template file path, or `-` to read stdin. |
+| `--template <text>` | `-t` | Inline template instead of a template file. |
+| `--data <file>` | `-d` | JSON variables file, or `-` to read stdin. |
+| `--data-json <json>` | | Inline JSON variables object instead of a data file. |
+| `--set <key=value>` | | Override a top-level variable with a string; repeatable. |
+| `--output <file>` | `-o` | Write to a file; defaults to stdout. `-` explicitly selects stdout. |
+| `--help` | `-h` | Show help. |
+| `--version` | `-v` | Show the package version. |
+
+Choose one template source and one data source. When no template file or
+`--template` is supplied, `render` reads the template from piped stdin. Only
+one input can read stdin: with `--data -`, provide a template file or
+`--template` explicitly.
+
+Data must be a JSON object. Its properties become template variables, preserving
+nested objects, arrays, numbers, booleans, and null. Without data, variables
+default to `{}`. `--set` overrides are applied after the JSON data regardless of
+argument order; the last override for a key wins. Values are always strings,
+including `--set enabled=false`. Keys are literal top-level names, so use JSON
+for nested objects. Quote assignments containing spaces, such as
+`--set 'First name=Ada'`.
+
+The CLI enables the standard filters. DOM-dependent HTML filters and custom host
+integrations remain available through the library API.
+
+Rendered text is written unchanged, without an added newline. An output file is
+created or overwritten only after rendering succeeds; its parent directory must
+already exist. Argument, input, rendering, and filesystem errors exit with status
+`1`. Template errors include their code and source location on stderr, leaving
+stdout empty and existing output files untouched on rendering failure. Non-fatal
+warnings go to stderr and allow output with exit status `0`.
+
 ## Use
 
 ```ts

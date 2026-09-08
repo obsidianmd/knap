@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import api from '../content/docs/api.md?raw';
+import cli from '../content/docs/cli.md?raw';
 import filters from '../content/docs/filters.md?raw';
 import logic from '../content/docs/logic.md?raw';
 import variables from '../content/docs/variables.md?raw';
@@ -26,6 +27,7 @@ const install = [
 
 const documents = {
   api: api.replace('<!-- INSTALL -->', install),
+  cli,
   filters: filters.replace('<!-- FILTER_DIRECTORY -->', filterDirectory),
   logic,
   variables,
