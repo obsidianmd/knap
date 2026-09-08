@@ -1,6 +1,6 @@
 // Shared colors and hover fades for body and navigation links.
 :where(.lede, .used-by-heading, .markdown-doc, .doc-section, .site-header-links, .site-footer, .footer-nav) a,
-:where(.example-playground-button) {
+:where(.playground-link) {
   --link-color: var(--link-default-color, var(--paper));
   color: var(--link-color);
   transition: color 150ms ease, text-decoration-color 150ms ease;
@@ -12,7 +12,7 @@
 }
 
 :where(.site-header-links, .site-footer, .footer-nav) a:focus-visible,
-:where(.example-playground-button):focus-visible {
+:where(.playground-link):focus-visible {
   --link-color: var(--link-hover-color, #f2f0e5);
 }
 

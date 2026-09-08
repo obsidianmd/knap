@@ -42,6 +42,55 @@ genre:
 | Hugo Weaving       | Agent Smith |`,
   },
   {
+    key: 'book',
+    label: 'Book',
+    variables: {
+      title: 'The Machine Stops',
+      author: 'E. M. Forster',
+      year: 1909,
+      isbn: '9781409903291',
+      genres: ['Sci-fi'],
+      url: 'https://en.wikisource.org/wiki/The_Machine_Stops',
+      summary: 'Humanity lives underground, dependent on a vast Machine for every need. A mother and son confront the limits of a life mediated by technology.',
+      chapters: ['The Air Ship', 'The Mending Apparatus', 'The Homeless'],
+    },
+    template: `---
+{{ author | wikilink | yaml_property:"author" }}
+{{ year | yaml_property:"year" }}
+{{ isbn | yaml_property:"isbn" }}
+{{ genres | yaml_property:"genres" }}
+{{ url | yaml_property:"source" }}
+---
+
+{{ title | h1 }}
+
+{{ summary | blockquote }}
+
+{% if chapters %}
+## Contents
+
+{{ chapters | list:numbered }}
+{% endif %}`,
+    markdown: `---
+author: "[[E. M. Forster]]"
+year: 1909
+isbn: 9781409903291
+genres:
+  - "Sci-fi"
+source: "https://en.wikisource.org/wiki/The_Machine_Stops"
+---
+
+# The Machine Stops
+
+> Humanity lives underground, dependent on a vast Machine for every need. A mother and son confront the limits of a life mediated by technology.
+
+## Contents
+
+1. The Air Ship
+2. The Mending Apparatus
+3. The Homeless`,
+  },
+  {
     key: 'recipe',
     variables: { author: 'Eric Kim', servings: 8, url: 'https://example.com/gochujang-cookies', title: 'Gochujang caramel cookies', description: 'Chewy sugar cookies with a ribbon of spicy caramel.', ingredients: [['Unsalted butter', '1/2 cup'], ['Dark brown sugar', '1/4 cup'], ['Gochujang', '1 tablespoon'], ['All-purpose flour', '1 1/2 cups']], instructions: ['Mix the caramel ingredients until smooth.', 'Make and chill the cookie dough.', 'Swirl in the caramel, shape, and bake.'] },
     label: 'Recipe',

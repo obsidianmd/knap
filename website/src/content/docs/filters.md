@@ -10,7 +10,7 @@ Apply a filter to a [variable](/variables) by placing it after a `|` pipe symbol
 ```
 
 ```md title="Output"
-## THE LEFT HAND OF DARKNESS
+## THE MACHINE STOPS
 ```
 
 Only registered filters are available. Unknown names and invalid parameters appear as diagnostics from `validate()` and `render()`.

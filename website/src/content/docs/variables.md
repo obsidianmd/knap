@@ -12,7 +12,7 @@ When a template runs through Knap, [variables](/variables) are replaced with val
 ```
 
 ```md title="Output"
-The Left Hand of Darkness
+The Machine Stops
 ```
 
 Use [filters](/filters) to modify a value. Filters can be chained, and run from left to right.
@@ -22,7 +22,7 @@ Use [filters](/filters) to modify a value. Filters can be chained, and run from 
 ```
 
 ```md title="Output"
-## THE LEFT HAND OF DARKNESS
+## THE MACHINE STOPS
 ```
 
 ## Setting local variables

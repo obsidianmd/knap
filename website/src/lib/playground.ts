@@ -1,37 +1,11 @@
 import { createEngine, standardFilters, type TemplateError, type TemplateWarning } from '../../../src';
 import { parsePlaygroundInput, type PlaygroundInput } from './playground-input';
 import { recoverPlaygroundTemplate } from './playground-recovery';
+import { homeExamples } from './home-examples';
 
-export const exampleInput = JSON.stringify({
-  title: 'The Matrix',
-  year: 1999,
-  directors: ['Lana Wachowski', 'Lilly Wachowski'],
-  genres: ['Action', 'Sci-fi'],
-  plot: 'A hacker discovers that reality is a simulation and joins a rebellion against its machines.',
-  cast: [
-    { actor: 'Keanu Reeves', role: 'Neo' },
-    { actor: 'Laurence Fishburne', role: 'Morpheus' },
-    { actor: 'Carrie-Anne Moss', role: 'Trinity' },
-  ],
-}, null, 2);
-
-export const exampleTemplate = `---
-{{ year | yaml_property:"year" }}
-{{ directors | wikilink | yaml_property:"director" }}
-{{ genres | yaml_property:"genre" }}
----
-
-{{ title | h1 }}
-
-{{ plot | blockquote }}
-
-{% if cast %}
-## Cast
-
-{% for member in cast %}
-- **{{ member.actor }}** as {{ member.role }}
-{% endfor %}
-{% endif %}`;
+const movieSample = homeExamples.find((example) => example.key === 'movie')!;
+export const exampleInput = JSON.stringify(movieSample.variables, null, 2);
+export const exampleTemplate = movieSample.template;
 
 export interface PlaygroundResult {
   inputError: string | null;

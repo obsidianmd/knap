@@ -29,7 +29,7 @@
     -webkit-user-select: none;
     user-select: none;
 
-    &:hover, &:focus-visible {
+    &:hover, &:focus-visible, &[aria-expanded="true"] {
       outline: 0;
       background: var(--line-hover);
       color: var(--paper);

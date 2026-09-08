@@ -203,7 +203,7 @@
     box-shadow: 0 4px 16px #0003;
     overflow: hidden;
     font-family: var(--font-mono);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-menu);
   }
   .cm-tooltip-autocomplete { padding: 0; }
   .cm-tooltip-autocomplete > ul { padding: 4px; scroll-padding-block: 4px; }
@@ -239,7 +239,7 @@
   .playground-status-icon-loading { animation: none; }
 }
 #output-status { text-align: right; }
-#output-status[data-state=''] { color: var(--faint); }
+#output-status[data-state=''] { color: var(--muted); }
 #output-status .playground-status-message { justify-content: flex-end; }
 
 .playground-diagnostic {

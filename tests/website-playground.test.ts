@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { evaluatePlayground, exampleInput, exampleTemplate } from '../website/src/lib/playground';
 import { createPlaygroundInputValidator } from '../website/src/lib/playground-input';
+import { homeExamples } from '../website/src/lib/home-examples';
 
 describe('website playground', () => {
   test('validates JSON only when input changes, including invalid input', async () => {
@@ -39,14 +40,17 @@ describe('website playground', () => {
     expect(result.warnings).toEqual([]);
     expect(result.output).toContain('# The Matrix');
     expect(result.output).toContain('"[[Lana Wachowski]]"');
-    expect(result.output).toContain('- **Keanu Reeves** as Neo');
+    const movie = homeExamples.find((example) => example.key === 'movie')!;
+    expect(JSON.parse(exampleInput)).toEqual(movie.variables);
+    expect(exampleTemplate).toBe(movie.template);
+    expect(result.output).toBe(movie.markdown);
   });
 
   test('preserves the blank line between tables in a loop', async () => {
     const table = await evaluatePlayground(exampleInput, '{{ cast | table }}');
     const result = await evaluatePlayground(exampleInput, '{% for member in cast %}\n{{ cast | table }}\n\n{% endfor %}');
     expect(result.errors).toEqual([]);
-    expect(result.output).toBe([table.output, table.output, table.output].join('\n\n') + '\n');
+    expect(result.output).toBe([table.output, table.output, table.output, table.output].join('\n\n') + '\n');
   });
 
   test.each(['{', '', 'null', '[]', '42', '"hello"', 'true'])('rejects invalid JSON object input: %s', async (input) => {
@@ -108,9 +112,9 @@ describe('website playground', () => {
   test('renders the movie example with its incomplete endif visible', async () => {
     const result = await evaluatePlayground(exampleInput, exampleTemplate.slice(0, -1));
     expect(result.output).toContain('# The Matrix');
-    expect(result.output).toContain('- **Keanu Reeves** as Neo');
+    expect(result.output).toContain('| Keanu Reeves       | Neo         |');
     expect(result.output).toContain('{% endif %');
-    expect(result.errors.some((error) => error.line === 17)).toBe(true);
+    expect(result.errors.some((error) => error.line === 15)).toBe(true);
   });
 
   test('retains original diagnostic positions after recovering multiline syntax', async () => {

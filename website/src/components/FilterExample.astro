@@ -5,10 +5,9 @@ interface Props {
   input: string;
   template: string;
   output: string;
-  runnable?: boolean;
 }
 
-const { input, template, output, runnable = true } = Astro.props;
+const { input, template, output } = Astro.props;
 ---
 
 <div class="filter-example-table">
@@ -20,7 +19,7 @@ const { input, template, output, runnable = true } = Astro.props;
       </tr>
       <tr>
         <th scope="row">Template</th>
-        <td><CodeBlock code={template} playground={runnable ? { input, template } : undefined} /></td>
+        <td><CodeBlock code={template} /></td>
       </tr>
       <tr>
         <th scope="row">Output</th>

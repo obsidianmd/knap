@@ -128,6 +128,17 @@
   }
 }
 
+.filter-examples-section, .filter-example-card {
+  position: relative;
+  > .playground-link {
+    position: absolute;
+    top: -4px;
+    right: 0;
+  }
+  &.has-playground-link > h2, &.has-playground-link > header {
+    padding-right: 190px;
+  }
+}
 .filter-example-card {
   margin-top: 38px;
 
@@ -135,6 +146,7 @@
     margin: 0;
     color: var(--paper);
     font-size: var(--font-size-body);
+    font-weight: 600;
   }
 
   &-untitled {

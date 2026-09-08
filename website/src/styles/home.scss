@@ -75,17 +75,6 @@
   }
 }
 
-.example-playground-button {
-  --text-action-color: var(--link-color);
-  --text-action-hover-color: var(--link-color);
-  gap: 4px;
-  font-size: var(--font-size-small);
-  transition: background 150ms ease, color 150ms ease;
-  padding-inline-end: 12px;
-  svg { color: var(--muted); }
-  &:hover svg, &:focus-visible svg { color: var(--paper); }
-}
-
 .install-section .doc-code {
   margin: 0;
 }
