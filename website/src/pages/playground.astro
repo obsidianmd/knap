@@ -2,21 +2,33 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PlaygroundEditor from '../components/PlaygroundEditor.astro';
 import Search from '../components/Search.astro';
+import SiteNavigation from '../components/SiteNavigation.astro';
 import { exampleInput, exampleTemplate } from '../lib/playground';
 import { storageKey, minimumWidth } from '../scripts/playground-columns';
 import '../styles/playground.scss';
-import { filterDocs } from '../../lib/filter-docs';
-import { standardFilters } from '../../../src/filters';
-
-const filters = Object.keys(standardFilters).map((name) => {
-  const doc = filterDocs.find((filter) => filter.name === name || filter.aliases?.includes(name));
-  return { label: name, type: 'function', detail: doc?.syntax[0]?.slice(doc.name.length) || undefined, info: doc?.summary, parameterValues: doc?.parameterValues };
-});
+import { playgroundFilterSuggestions as filters } from '../../lib/filter-completions';
 ---
 
 <BaseLayout title="Playground" description="Try Knap in your browser. Edit JSON input and a template to generate Markdown with live template validation.">
-  <main class="playground">
+  <main class="playground" data-active-panel="template">
     <script is:inline define:vars={{ storageKey, minimumWidth }}>
+      // Prevent iOS from zooming into our small editors on focus. Safari still
+      // permits manual pinch zoom; keep other platforms' viewport unrestricted.
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+        || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+      if (isIOS) {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) viewport.content += ', maximum-scale=1';
+      }
+      // Keep the panel frames stable while the editable layers initialize.
+      const playground = document.currentScript.parentElement;
+      playground.dataset.initializing = '';
+      const showEditors = () => playground.removeAttribute('data-initializing');
+      const startupTimeout = setTimeout(showEditors, 8000);
+      playground.addEventListener('playground-ready', () => {
+        clearTimeout(startupTimeout);
+        showEditors();
+      }, { once: true });
       // Restore column widths before their markup can paint, without waiting for modules.
       try {
         const saved = JSON.parse(localStorage.getItem(storageKey) ?? 'null');
@@ -31,14 +43,50 @@ const filters = Object.keys(standardFilters).map((name) => {
     </script>
     <script is:inline type="application/json" id="playground-filter-completions" set:html={JSON.stringify(filters).replaceAll('<', '\\u003c')} />
     <header class="playground-header">
-      <a class="wordmark" href="/" aria-label="Knap home">Knap</a>
-      <h1>Playground</h1>
-      <nav aria-label="Playground navigation">
-        <button type="button" id="reset-example">Reset</button>
-        <a href="/variables">Docs</a>
+      <div class="playground-brand">
+        <a class="wordmark" href="/" aria-label="Knap home">Knap</a>
+        <h1>Playground</h1>
+        <div class="playground-actions">
+          <button type="button" id="playground-settings" aria-label="Playground settings" title="Settings" aria-haspopup="menu" aria-expanded="false" aria-controls="playground-settings-menu">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+          <div id="playground-settings-menu" class="menu" role="menu" aria-labelledby="playground-settings" hidden>
+            <button type="button" id="open-file" data-open-file role="menuitem" tabindex="-1">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg>
+              <span class="menu-label">Open file…</span>
+            </button>
+            <button type="button" id="reset-example" role="menuitem" tabindex="-1">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+              <span class="menu-label">Reset</span>
+            </button>
+            <button type="button" id="clear-playground" role="menuitem" tabindex="-1">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+              <span class="menu-label">Clear</span>
+            </button>
+            <button type="button" id="wrap-lines" role="menuitemcheckbox" aria-checked="false" tabindex="-1">
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16-3 3 3 3" /><path d="M3 12h14.5a1 1 0 0 1 0 7H13" /><path d="M3 19h6" /><path d="M3 5h18" /></svg>
+              <span class="menu-label">Line wrap</span>
+              <svg class="menu-check" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5" /></svg>
+            </button>
+          </div>
+          <input type="file" data-file-input accept=".json,.txt,.md" aria-label="Choose JSON input or a template file" hidden />
+        </div>
+      </div>
+      <nav class="site-header-links" aria-label="Main navigation">
+        <SiteNavigation />
       </nav>
       <Search />
     </header>
+    <div class="playground-tabs segmented-control" style="--segment-count: 3" role="tablist" aria-label="Playground editors">
+      {['input', 'template', 'output'].map((name) => (
+        <button type="button" role="tab" id={`${name}-tab`} aria-controls={`${name}-panel`} aria-selected={name === 'template'} tabindex={name === 'template' ? 0 : -1} data-playground-tab={name}>
+          {name[0].toUpperCase() + name.slice(1)}
+        </button>
+      ))}
+    </div>
     <div class="playground-columns">
       <PlaygroundEditor name="input" label="Input" language="JSON" value={exampleInput} />
       <div

@@ -1,5 +1,12 @@
 import { tokenize } from '../../../src/tokenizer';
 
+export interface FilterParameterSuggestion {
+  name: string;
+  values: string[];
+  property?: boolean;
+  repeat?: boolean;
+}
+
 export interface TemplateSuggestion {
   label: string;
   type: string;
@@ -7,6 +14,8 @@ export interface TemplateSuggestion {
   info?: string;
   boost?: number;
   parameterValues?: string[];
+  parameters?: FilterParameterSuggestion[];
+  apply?: string;
 }
 
 const logic = [
@@ -111,7 +120,7 @@ function scopeAt(source: string, variables: Record<string, unknown>) {
   return scope;
 }
 
-function filterParameterCompletions(body: string, position: number, source: string, filters: TemplateSuggestion[]) {
+function filterParameterCompletions(body: string, position: number, source: string, filters: TemplateSuggestion[], scope: Scope) {
   let pipe = -1;
   let quote = '';
   for (let index = 0; index < body.length; index++) {
@@ -123,14 +132,78 @@ function filterParameterCompletions(body: string, position: number, source: stri
     else if (char === '|' && body[index - 1] !== '|' && body[index + 1] !== '|') pipe = index;
   }
   if (pipe < 0) return null;
-  const argument = body.slice(pipe + 1).match(/^\s*(\w+)\s*:\s*(?:\(\s*)?["']?([\w-]*)$/);
-  if (!argument) return null;
-  const values = filters.find((filter) => filter.label === argument[1])?.parameterValues;
-  if (!values?.length) return null;
+  const filterMatch = body.slice(pipe + 1).match(/^\s*(\w+)\s*:\s*(?:\(\s*)?/);
+  if (!filterMatch) return null;
+  const filter = filters.find((filter) => filter.label === filterMatch[1]);
+  const slots = filter?.parameters ?? (filter?.parameterValues ? [{ name: '', values: filter.parameterValues }] : undefined);
+  if (!slots) return null;
+  const start = pipe + 1 + filterMatch[0].length;
+  let argumentStart = start;
+  let argumentIndex = 0;
+  let depth = 0;
+  quote = '';
+  // Only top-level separators advance to the next argument. Colons in
+  // replacements are separators; colons in URLs, strings, or objects are not.
+  for (let index = start; index < body.length; index++) {
+    const char = body[index];
+    if (quote) {
+      if (char === '\\') index++;
+      else if (char === quote) quote = '';
+    } else if (char === '"' || char === "'") quote = char;
+    else if ('([{'.includes(char)) depth++;
+    else if (')]}'.includes(char)) { if (--depth < 0) return null; }
+    else if (depth === 0 && filterMatch[1] !== 'nth' && (char === ',' || (char === ':' && /^(replace|replace_tags)$/.test(filterMatch[1])))) {
+      argumentStart = index + 1;
+      argumentIndex++;
+    }
+  }
+  if (depth !== 0) return null;
+  const slot = slots[filterMatch[1] === 'replace' ? argumentIndex % 2 : argumentIndex] ?? (slots.at(-1)?.repeat ? slots.at(-1) : undefined);
+  if (!slot) return { from: position, to: position, options: [] };
+  const argument = body.slice(argumentStart).match(/^\s*(["']?)([\s\S]*)$/)!;
+  const openingQuote = argument[1];
+  const prefix = argument[2];
+  if (openingQuote ? quote !== openingQuote : /[\s"'(){}]/.test(prefix)) return null;
+  const from = position - prefix.length;
+  let to = position;
+  if (openingQuote) {
+    while (to < source.length && source[to] !== openingQuote) {
+      if (source.startsWith('}}', to) || source.startsWith('%}', to)) break;
+      if (source[to] === '\\') to++;
+      to++;
+    }
+  } else {
+    to += source.slice(position).match(/^[\w.$*+\/-]*/)?.[0].length ?? 0;
+  }
+  const values = [...slot.values];
+  if (slot.property) {
+    const inputPath = body.slice(0, pipe).trim().match(/(?:^|(?:if|elseif|in|=)\s+)([\w$]+(?:\[\d+\]|\.[\w$]+)*)\s*(?:\|[\s\S]*)?$/)?.[1];
+    const paths = new Set<string>();
+    const visit = (value: unknown, prefix = '', depth = 0) => {
+      if (depth > 4 || value === null || typeof value !== 'object') return;
+      if (Array.isArray(value)) { value.forEach((item) => visit(item, prefix, depth + 1)); return; }
+      for (const [key, child] of Object.entries(value)) {
+        if (key.includes('.')) continue;
+        const path = prefix ? `${prefix}.${key}` : key;
+        paths.add(path);
+        visit(child, path, depth + 1);
+      }
+    };
+    if (inputPath) resolve(inputPath, scope).forEach((value) => visit(value));
+    values.unshift(...[...paths].map((path) => JSON.stringify(path)));
+  }
+  const options = [...new Set(values)].map((value, index): TemplateSuggestion => {
+    const quoted = value.startsWith('"');
+    const label: string = quoted ? JSON.parse(value) : value;
+    let apply = value;
+    if (openingQuote) {
+      apply = label.replaceAll('\\', '\\\\').replaceAll(openingQuote, `\\${openingQuote}`).replaceAll('\n', '\\n').replaceAll('\r', '\\r');
+      if (source[to] !== openingQuote) apply += openingQuote;
+    }
+    return { label: label.trim() ? label.replaceAll('\n', '\\n') : value, apply, detail: slot.name || undefined, type: 'enum', boost: values.length - index };
+  });
   return {
-    from: position - argument[2].length,
-    to: position + (source.slice(position).match(/^[\w-]*/)?.[0].length ?? 0),
-    options: values.map((label, index) => ({ label, type: 'enum', boost: values.length - index })),
+    from, to, options,
   };
 }
 
@@ -139,7 +212,8 @@ export function templateCompletions(source: string, position: number, variables:
   const tag = templateTags(before).at(-1);
   if (!tag || tag.closed) return null;
   const body = tag.body;
-  const parameters = filterParameterCompletions(body, position, source, filters);
+  const scope = scopeAt(source.slice(0, tag.from - 2), variables);
+  const parameters = filterParameterCompletions(body, position, source, filters, scope);
   if (parameters) return parameters;
   if (tag.quoted) return null;
   const word = body.match(/[\w$]*$/)![0];
@@ -153,7 +227,6 @@ export function templateCompletions(source: string, position: number, variables:
   const operatorResult = tag.kind === '{%' ? conditionOperatorRange(body, position, source) : undefined;
   if (operatorResult) return operatorResult;
 
-  const scope = scopeAt(source.slice(0, tag.from - 2), variables);
   const path = body.match(/([\w$]+(?:\[\d+\]|\.[\w$]+)*)\.[\w$]*$/);
   let options: TemplateSuggestion[];
   if (path) {

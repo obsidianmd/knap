@@ -6,6 +6,7 @@ interface Example {
   label: string;
   template: string;
   markdown: string;
+  variables: Record<string, unknown>;
 }
 
 interface Props {
@@ -53,7 +54,7 @@ const tabs = [
             <path d="m6 9 6 6 6-6"></path>
           </svg>
         </button>
-        <div class="example-picker-menu" id="home-example-options" role="listbox" aria-label="Choose an example" data-example-menu hidden>
+        <div class="example-picker-menu menu" id="home-example-options" role="listbox" aria-label="Choose an example" data-example-menu hidden>
           {examples.map((example) => (
             <button
               type="button"
@@ -62,8 +63,8 @@ const tabs = [
               tabindex="-1"
               data-example-option={example.key}
             >
-              <span>{example.label}</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <span class="menu-label">{example.label}</span>
+              <svg class="menu-check" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m20 6-11 11-5-5"></path>
               </svg>
             </button>
@@ -87,6 +88,7 @@ const tabs = [
             <CodeBlock
               language={tab.key === 'markdown' ? 'md' : 'knap'}
               code={tab.key === 'markdown' ? example.markdown : example.template}
+              playground={{ input: JSON.stringify(example.variables, null, 2), template: example.template }}
             />
           </div>
         ))}

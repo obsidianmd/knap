@@ -10,7 +10,7 @@
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   max-width: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   font-size: var(--font-size-small);
 
@@ -21,7 +21,7 @@
     inset-block: 0;
     left: 0;
     width: calc(100% / var(--segment-count));
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--line);
     pointer-events: none;
     transform: translateX(calc(var(--selected-index) * 100% + var(--pill-shift))) scaleX(var(--pill-scale));
@@ -47,8 +47,10 @@
 
   > button {
     min-width: 0;
+    -webkit-user-select: none;
+    user-select: none;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: transparent;
     padding: 3px 10px;
     color: var(--muted);

@@ -47,6 +47,7 @@ const headings = [
             input={JSON.stringify(item.variables, null, 2)}
             template={item.template}
             output={item.expected}
+            runnable={filter.environment !== 'html'}
           />
         </article>
       ))}

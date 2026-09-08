@@ -1,8 +1,22 @@
 import { describe, expect, test } from 'vitest';
-import { highlightLine, highlightLines } from '../website/src/lib/highlight';
+import { highlightCode, highlightLine, highlightLines } from '../website/src/lib/highlight';
 import { markdownPunctuationAt } from '../website/src/lib/markdown-punctuation';
 
 describe('website syntax highlighting', () => {
+
+	test('highlights list and hashtag punctuation in the docs loop example', () => {
+		const template = highlightCode('{% for tag in tags %}\n- #{{ tag | kebab }}\n{% endfor %}', 'knap');
+		const output = highlightCode('- #science-fiction\n- #novel', 'md');
+		for (const html of [template, output]) {
+			expect(html).toContain('<span class="syn-punctuation">-</span> <span class="syn-punctuation">#</span>');
+		}
+		expect(template).toContain('<span class="syn-variable">tag</span>');
+		expect(output).toContain('science-fiction');
+	});
+
+	test.each([['- #science-fiction', 2, 1], ['- #{{ tag }}', 2, 1], ['## Heading', 0, 2], ['C#', 1, 0], ['https://example.com/#section', 20, 0], ['\\#escaped', 1, 0]] as const)('recognizes hash punctuation in %s at %i', (line, position, length) => {
+		expect(markdownPunctuationAt(line, position)).toBe(length);
+	});
 	test('colors quoted YAML list strings without recoloring Markdown quotes outside frontmatter', () => {
 		const lines = highlightLines(['---', 'genre:', '- "Action"', "- 'Sci-fi'", '- "[[Lana Wachowski]]"', '---', '- "A quotation"'], 'md');
 		expect(lines[2]).toBe('<span class="syn-punctuation">-</span> <span class="syn-punctuation">&quot;</span><span class="syn-string">Action</span><span class="syn-punctuation">&quot;</span>');

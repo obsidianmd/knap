@@ -1,10 +1,10 @@
 .hero-grid, .markdown-native, .install-section, .guide-section, .used-by {
-  width: min(88vw, var(--reading));
+  width: min(var(--page-width), var(--reading));
   margin-inline: auto;
 }
 
 .home-page > .site-footer {
-  width: min(88vw, var(--reading));
+  width: min(var(--page-width), var(--reading));
   margin-inline: auto;
 }
 
@@ -93,7 +93,7 @@
   justify-content: space-between;
   gap: 8px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--panel);
   padding: 3px 9px 3px 10px;
   color: var(--muted);
@@ -116,53 +116,8 @@
 }
 
 .example-picker-menu {
-  position: absolute;
-  z-index: 5;
-  top: calc(100% + 6px);
   right: 0;
   width: 140px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 32%);
-
-  > button {
-    display: grid;
-    width: 100%;
-    grid-template-columns: minmax(0, 1fr) 14px;
-    align-items: center;
-    gap: 12px;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    padding: 5px 7px;
-    color: var(--muted);
-    font: inherit;
-    font-size: var(--font-size-small);
-    line-height: 1.55;
-    text-align: left;
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      outline: 0;
-      background: var(--line);
-      color: var(--paper);
-    }
-
-    svg {
-      opacity: 0;
-    }
-
-    &[aria-selected="true"] {
-      color: var(--paper);
-
-      svg {
-        opacity: 1;
-      }
-    }
-  }
 }
 
 .install-section .doc-code {
@@ -184,7 +139,7 @@
 }
 
 .guide-link-card {
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--guide-background);
   padding: 18px;
   transition: background 150ms ease;
@@ -242,7 +197,7 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
   gap: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
   padding: 18px;
   transition: background 150ms ease;
@@ -281,7 +236,7 @@
 
 @media (max-width: 760px) {
   .hero-grid, .markdown-native, .install-section, .guide-section, .used-by {
-    width: min(88vw, var(--reading));
+    width: min(var(--page-width), var(--reading));
   }
 
   .hero-grid {

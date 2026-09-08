@@ -12,7 +12,7 @@
 .command-palette {
   width: min(100%, 680px);
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--panel);
   color: var(--body);
   box-shadow: 0 20px 60px rgb(16 15 15 / 65%);
@@ -27,7 +27,6 @@
     grid-template-columns: auto 1fr auto;
     gap: 12px;
     align-items: center;
-    border-bottom: 1px solid var(--line);
     padding: 13px 14px;
 
     > span {

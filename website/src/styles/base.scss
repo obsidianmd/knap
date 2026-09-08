@@ -3,6 +3,14 @@
   --font-size-heading: 1.25rem;
   --font-size-body: clamp(1rem, 0.875rem + 0.2vw, 1.125rem);
   --font-size-small: 0.875rem;
+  --font-size-xs: 0.75rem;
+  --code-line-height: 1.72;
+  --code-gutter-width: 42px;
+  --radius-small: 6px;
+  --radius-panel: 12px;
+  --radius-pill: 999px;
+  --header-height: 64px;
+  --page-width: 88vw;
   --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "IBM Plex Mono", "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco, "Consolas", "Source Code Pro", monospace;
   --ink: #100f0f;
   --panel: #1c1b1a;
@@ -78,7 +86,7 @@ a {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--faint);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 8px 14px;
   font-size: var(--font-size-small);
   font-weight: 500;

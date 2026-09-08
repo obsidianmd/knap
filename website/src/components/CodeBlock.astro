@@ -1,5 +1,7 @@
 ---
 import CopyButton from './CopyButton.astro';
+import PlaygroundLink from './PlaygroundLink.astro';
+import type { PlaygroundExample } from '../lib/playground-link';
 import { highlightCode, type CodeLanguage } from '../lib/highlight';
 
 interface Props {
@@ -8,9 +10,10 @@ interface Props {
   label?: string;
   showLineNumbers?: boolean;
   highlight?: boolean;
+  playground?: PlaygroundExample;
 }
 
-const { code, language = 'knap', label, showLineNumbers = false, highlight = true } = Astro.props;
+const { code, language = 'knap', label, showLineNumbers = false, highlight = true, playground } = Astro.props;
 const normalizedCode = code.replace(/^\n|\n$/g, '');
 const escapeHtml = (value: string) => value
   .replaceAll('&', '&amp;')
@@ -24,7 +27,7 @@ const renderedCode = highlight ? highlightCode(normalizedCode, language, showLin
 
 <figure class:list={['doc-code', !label && 'doc-code-unlabeled', showLineNumbers && 'doc-code-numbered']} data-code-block>
   {label ? (
-    <figcaption><span>{label}</span><span class="doc-code-actions"><CopyButton /></span></figcaption>
-  ) : <CopyButton />}
+    <figcaption><span>{label}</span><span class="doc-code-actions">{playground && <PlaygroundLink {...playground} />}<CopyButton /></span></figcaption>
+  ) : <span class="doc-code-actions">{playground && <PlaygroundLink {...playground} />}<CopyButton /></span>}
   <pre><code class={`language-${language}`} data-language={language} set:html={renderedCode} /></pre>
 </figure>

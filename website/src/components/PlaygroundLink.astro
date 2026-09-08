@@ -1,0 +1,11 @@
+---
+import { playgroundHref, type PlaygroundExample } from '../lib/playground-link';
+interface Props extends PlaygroundExample {}
+const { input, template } = Astro.props;
+---
+
+<a class="doc-code-copy" href={playgroundHref({ input, template })} title="Open in Playground" aria-label="Open in Playground">
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="6 3 20 12 6 21 6 3" />
+  </svg>
+</a>

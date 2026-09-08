@@ -1,4 +1,5 @@
-import { highlightLines, type CodeLanguage } from '../lib/highlight';
+import { editorHighlighting } from '../lib/editor-highlighting';
+import { createPlaygroundEditor } from './playground-editor';
 import type { PlaygroundResult } from '../lib/playground';
 import { createPlaygroundInputValidator, type PlaygroundInput } from '../lib/playground-input';
 import { setupPlaygroundColumns } from './playground-columns';
@@ -6,40 +7,35 @@ import { setupPlaygroundFiles } from './playground-files';
 import { createTemplateEditor } from './playground-template-editor';
 import { setStatus } from './playground-status';
 import { setupPlaygroundCopy } from './playground-copy';
+import { readPlaygroundExample } from '../lib/playground-link';
+import { setupPlaygroundTabs } from './playground-tabs';
+import { setupPlaygroundSettings } from './playground-settings';
 
-function editor(name: string, language: CodeLanguage) {
-  const root = document.querySelector<HTMLElement>(`[data-editor="${name}"]`)!;
-  const textarea = root.querySelector('textarea')!;
-  const highlight = root.querySelector<HTMLElement>('.playground-highlight')!;
-  const numbers = root.querySelector<HTMLElement>('.playground-line-numbers')!;
-  const status = document.getElementById(`${name}-status`)!;
-  const syncScroll = () => {
-    highlight.scrollTop = textarea.scrollTop;
-    highlight.scrollLeft = textarea.scrollLeft;
-    numbers.scrollTop = textarea.scrollTop;
-  };
-  const paint = () => {
-    const lines = textarea.value.split('\n');
-    highlight.innerHTML = highlightLines(lines, language).join('\n') + '\n';
-    numbers.textContent = lines.map((_, index) => index + 1).join('\n') + '\n';
-    syncScroll();
-  };
-  textarea.addEventListener('input', paint);
-  textarea.addEventListener('scroll', syncScroll);
-  new ResizeObserver(syncScroll).observe(textarea);
-  paint();
-  root.classList.add('is-highlighted');
-  return { textarea, status, paint };
+const wrapStorageKey = 'knap:playground:wrap';
+let initialWrap = window.matchMedia('(max-width: 760px)').matches;
+try {
+  const savedWrap = localStorage.getItem(wrapStorageKey);
+  if (savedWrap === 'true' || savedWrap === 'false') initialWrap = savedWrap === 'true';
+} catch {
+  // Use the screen-size default when storage is unavailable.
+}
+let resolveInitialRender: () => void;
+const initialRender = new Promise<void>((resolve) => { resolveInitialRender = resolve; });
+
+const linkedExample = readPlaygroundExample(window.location.hash);
+if (linkedExample) {
+  document.querySelector<HTMLTextAreaElement>('#playground-input')!.value = linkedExample.input;
+  document.querySelector<HTMLTextAreaElement>('#playground-template')!.value = linkedExample.template;
 }
 
-const input = editor('input', 'json');
-const template = createTemplateEditor(() => validatedInput?.variables ?? {});
-const output = editor('output', 'md');
-const initialInput = input.textarea.value;
-const initialTemplate = template.value;
-const inputCopy = setupPlaygroundCopy('input', () => input.textarea.value);
+const input = createPlaygroundEditor('input', editorHighlighting('json'), initialWrap);
+const template = createTemplateEditor(() => validatedInput?.variables ?? {}, initialWrap);
+const output = createPlaygroundEditor('output', editorHighlighting('md'), initialWrap);
+let initialInput = input.value;
+let initialTemplate = template.value;
+const inputCopy = setupPlaygroundCopy('input', () => input.value);
 const templateCopy = setupPlaygroundCopy('template', () => template.value);
-const outputCopy = setupPlaygroundCopy('output', () => output.textarea.value);
+const outputCopy = setupPlaygroundCopy('output', () => output.value);
 const validateInput = createPlaygroundInputValidator();
 let validatedInput: PlaygroundInput | undefined;
 let worker: Worker | undefined;
@@ -53,12 +49,12 @@ function stopWorker() {
 
 function showFailure(message: string) {
   stopWorker();
-  output.textarea.removeAttribute('aria-busy');
-  output.textarea.value = template.value;
-  output.paint();
+  output.element.removeAttribute('aria-busy');
+  output.setValue(template.value, { reset: false, notify: false });
   outputCopy.refresh();
   setStatus(template.status, 'Validation could not finish.', 'error');
   setStatus(output.status, message, 'error');
+  resolveInitialRender();
 }
 
 function showResult(result: PlaygroundResult) {
@@ -82,24 +78,19 @@ function showResult(result: PlaygroundResult) {
     setStatus(template.status, 'Valid template', 'success');
   }
 
-  output.textarea.removeAttribute('aria-busy');
-  if (output.textarea.value !== result.output) {
-    const { scrollTop, scrollLeft } = output.textarea;
-    output.textarea.value = result.output;
-    output.textarea.scrollTop = scrollTop;
-    output.textarea.scrollLeft = scrollLeft;
-    output.paint();
-  }
+  output.element.removeAttribute('aria-busy');
+  output.setValue(result.output, { reset: false, notify: false });
   outputCopy.refresh();
   setStatus(output.status, result.output ? `${result.output.length.toLocaleString()} characters` : 'The template rendered an empty result.');
+  resolveInitialRender();
 }
 
 function render() {
   try {
-    const currentInput = validateInput(input.textarea.value);
+    const currentInput = validateInput(input.value);
     if (currentInput !== validatedInput) {
       validatedInput = currentInput;
-      input.textarea.setAttribute('aria-invalid', String(Boolean(currentInput.error)));
+      input.element.setAttribute('aria-invalid', String(Boolean(currentInput.error)));
       setStatus(input.status, currentInput.error ?? 'Valid JSON', currentInput.error ? 'error' : 'success');
     }
     const current = new Worker(new URL('../lib/playground.worker.ts', import.meta.url), { type: 'module' });
@@ -124,29 +115,70 @@ function updateOutput() {
   inputCopy.refresh();
   templateCopy.refresh();
   stopWorker();
-  output.textarea.setAttribute('aria-busy', 'true');
+  output.element.setAttribute('aria-busy', 'true');
   render();
 }
 
-input.textarea.addEventListener('input', updateOutput);
+input.onChange(updateOutput);
 template.onChange(updateOutput);
-document.getElementById('reset-example')!.addEventListener('click', () => {
-  input.textarea.value = initialInput;
-  for (const field of [input, output]) {
-    field.textarea.scrollTop = 0;
-    field.textarea.scrollLeft = 0;
-    field.paint();
+const wrapButton = document.querySelector<HTMLButtonElement>('#wrap-lines')!;
+wrapButton.setAttribute('aria-checked', String(initialWrap));
+function setWrap(enabled: boolean) {
+  wrapButton.setAttribute('aria-checked', String(enabled));
+  input.setWrap(enabled);
+  template.setWrap(enabled);
+  output.setWrap(enabled);
+}
+wrapButton.addEventListener('click', () => {
+  const enabled = wrapButton.getAttribute('aria-checked') !== 'true';
+  setWrap(enabled);
+  try {
+    localStorage.setItem(wrapStorageKey, String(enabled));
+  } catch {
+    // Wrapping still works when the preference cannot be saved.
   }
-  template.setValue(initialTemplate);
+});
+window.addEventListener('hashchange', () => {
+  const example = readPlaygroundExample(window.location.hash);
+  if (!example) return;
+  initialInput = example.input;
+  initialTemplate = example.template;
+  input.setValue(example.input, { notify: false });
+  template.setValue(example.template, { notify: false });
+  updateOutput();
+});
+document.getElementById('reset-example')!.addEventListener('click', () => {
+  input.setValue(initialInput, { notify: false });
+  template.setValue(initialTemplate, { notify: false });
+  output.setValue(output.value, { notify: false });
+  updateOutput();
 });
 setupPlaygroundColumns();
+document.getElementById('clear-playground')!.addEventListener('click', () => {
+  stopWorker();
+  validatedInput = undefined;
+  for (const editor of [input, template, output]) {
+    editor.setValue('', { notify: false });
+    editor.element.removeAttribute('aria-invalid');
+    editor.element.removeAttribute('aria-busy');
+    setStatus(editor.status, '');
+  }
+  setStatus(output.status, '0 characters');
+  inputCopy.refresh();
+  templateCopy.refresh();
+  outputCopy.refresh();
+  resolveInitialRender();
+});
+setupPlaygroundTabs();
+setupPlaygroundSettings();
 setupPlaygroundFiles({
-  input(text) {
-    input.textarea.value = text;
-    input.textarea.setSelectionRange(0, 0);
-    input.textarea.scrollTop = input.textarea.scrollLeft = 0;
-    input.textarea.dispatchEvent(new Event('input', { bubbles: true }));
-  },
+  input: (text) => input.setValue(text),
   template: (text) => template.setValue(text),
 });
 updateOutput();
+void Promise.all([initialRender, document.fonts.ready]).then(async () => {
+  await Promise.all([input.measure(), template.measure(), output.measure()]);
+  requestAnimationFrame(() => {
+    document.querySelector('.playground')!.dispatchEvent(new Event('playground-ready'));
+  });
+});

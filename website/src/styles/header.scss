@@ -1,6 +1,6 @@
 .site-header {
-  width: min(88vw, var(--reading));
-  min-height: 64px;
+  width: min(var(--page-width), var(--reading));
+  min-height: var(--header-height);
   display: flex;
   align-items: center;
   gap: 20px;
@@ -26,7 +26,7 @@
   align-items: center;
   gap: 7px;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--muted);
   padding: 6px 0;
@@ -49,17 +49,17 @@
   kbd {
     margin-left: 8px;
     border: 1px solid var(--line-hover);
-    border-radius: 6px;
+    border-radius: var(--radius-small);
     color: var(--muted);
     padding: 0 4px;
     font-family: inherit;
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
   }
 }
 
 @media (max-width: 760px) {
   .site-header {
-    width: min(88vw, var(--reading));
+    width: min(var(--page-width), var(--reading));
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;

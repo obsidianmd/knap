@@ -1,4 +1,5 @@
 .playground {
+  --playground-editor-font-size: var(--font-size-small);
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -16,34 +17,57 @@
 }
 
 .playground-header {
+  width: 100%;
+  min-height: var(--header-height);
+  margin-inline: auto;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 12px 24px;
+  gap: 20px;
+  padding: 0 24px;
 
+  .playground-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
   h1 {
     margin: 0;
     font-size: inherit;
-    font-weight: 500;
+    font-weight: 300;
+    font-size: var(--font-size-heading);
   }
-  nav {
+  .playground-actions {
+    position: relative;
+    top: 2px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    margin-left: auto;
   }
-  #reset-example {
+  #playground-settings {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
     border: 0;
+    border-radius: var(--radius-small);
     background: transparent;
-    padding: 6px 0;
     color: var(--muted);
     cursor: pointer;
-  }
-  #reset-example:hover, a:hover {
-    color: var(--paper);
+    &:hover, &[aria-expanded="true"] { color: var(--paper); background: var(--panel); }
   }
 }
+#playground-settings-menu {
+  z-index: 20;
+  left: 0;
+  min-width: 180px;
+}
+
 .playground-divider { color: var(--faint); }
+.playground-tabs { display: none; }
+.playground[data-initializing] {
+  .playground-editor, .playground-status { visibility: hidden; }
+}
 
 .playground-columns {
   display: grid;
@@ -61,7 +85,7 @@
   min-width: 0;
   min-height: 0;
   background: var(--panel);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
 }
 .playground-resizer {
   position: relative;
@@ -96,20 +120,6 @@
   .playground-panel-header { padding-inline: 12px; gap: 8px; }
   .playground-language { display: none; }
 }
-.playground .playground-open {
-  margin-left: auto;
-  flex-shrink: 0;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--line);
-  color: var(--body);
-  font-size: 12px;
-  cursor: pointer;
-
-  &:hover:enabled, &:focus-visible { background: var(--line-hover); outline: none; }
-  &:disabled { opacity: 0.45; cursor: default; }
-}
 .playground-copy { flex-shrink: 0; }
 .playground-language + .playground-copy { margin-left: auto; }
 .playground-copy:disabled { opacity: 0.45; cursor: default; }
@@ -120,7 +130,7 @@
   display: grid;
   place-items: center;
   border: 2px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   padding: 16px;
   background: var(--line);
   color: var(--paper);
@@ -132,7 +142,7 @@
   padding: 10px 20px;
   border-bottom: 1px solid var(--line);
   color: var(--paper);
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   overflow-wrap: anywhere;
 }
 .playground-editor {
@@ -142,70 +152,43 @@
   flex: 1;
   min-height: 0;
 
-  pre, textarea {
+  // Plain fallback if JavaScript is unavailable; all active editors use CodeMirror.
+  textarea {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
     margin: 0;
+    padding: 20px 16px 40px calc(var(--code-gutter-width) + 8px);
     border: 0;
     border-radius: 0;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: var(--paper);
     font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.85;
+    font-size: var(--playground-editor-font-size);
+    line-height: var(--code-line-height);
     tab-size: 2;
     white-space: pre;
   }
-  textarea, .playground-highlight {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    padding: 20px 16px 40px 8px;
-    background: transparent;
-    color: var(--paper);
-    overflow: auto;
-  }
-  textarea {
-    resize: none;
-    outline: none;
-  }
-  .playground-highlight {
-    overflow: hidden;
-    pointer-events: none;
-    // Keep highlighted text exactly aligned with the editable layer.
-    span { font-weight: inherit; }
-  }
-  &.is-highlighted textarea {
-    color: transparent;
-    caret-color: var(--paper);
-
-    &::selection { color: transparent; }
-  }
-}
-.playground-editor-content {
-  position: absolute;
-  inset: 0 0 0 42px;
-}
-.playground-line-numbers {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 42px;
-  padding: 20px 8px 40px 0;
-  overflow: hidden;
-  color: var(--faint);
-  text-align: right;
-  user-select: none;
 }
 .playground-editor .cm-editor {
   flex: 1;
   min-height: 0;
   color: var(--paper);
-  font-size: 13px;
+  font-size: var(--playground-editor-font-size);
 
   &.cm-focused { outline: none; }
-  .cm-scroller { flex: 1; min-height: 0; overflow: auto; font-family: var(--font-mono); line-height: 1.85; }
+  .cm-scroller { flex: 1; min-height: 0; overflow: auto; font-family: var(--font-mono); line-height: var(--code-line-height); }
   .cm-content { padding: 20px 0 40px; caret-color: var(--paper); }
-  .cm-line { padding: 0 16px 0 8px; }
+  .cm-content::selection, .cm-content ::selection {
+    color: currentColor;
+    background: transparent;
+  }
+  .cm-line { padding: 0 16px 0 8px; span { font-weight: inherit; } }
   .cm-gutters { border: 0; background: var(--panel); color: var(--faint); }
-  .cm-lineNumbers .cm-gutterElement { min-width: 42px; padding: 0 8px 0 0; }
+  .cm-gutters, .cm-gutters * { -webkit-user-select: none; user-select: none; }
+  .cm-lineNumbers .cm-gutterElement { min-width: var(--code-gutter-width); padding: 0 8px 0 0; }
   .cm-cursor { border-left-color: var(--paper); }
   .cm-selectionBackground,
   &.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground {
@@ -213,19 +196,19 @@
   }
   .cm-tooltip {
     border: 0;
-    border-radius: 12px;
+    border-radius: var(--radius-panel);
     padding: 4px;
     background: var(--line);
     color: var(--paper);
     box-shadow: 0 4px 16px #0003;
     overflow: hidden;
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
   .cm-tooltip-autocomplete { padding: 0; }
   .cm-tooltip-autocomplete > ul { padding: 4px; scroll-padding-block: 4px; }
   .cm-tooltip-autocomplete > ul > li { display: flex; align-items: baseline; gap: 16px; padding: 4px 8px; }
-  .cm-tooltip-autocomplete > ul > li[aria-selected] { border-radius: 6px; background: var(--line-hover); color: var(--paper); }
+  .cm-tooltip-autocomplete > ul > li[aria-selected] { border-radius: var(--radius-small); background: var(--line-hover); color: var(--paper); }
   .playground-completion-variable .cm-completionLabel { color: var(--syntax-blue); }
   .playground-completion-keyword .cm-completionLabel { color: var(--syntax-green); }
   .playground-completion-filter .cm-completionLabel { color: var(--syntax-orange); }
@@ -240,7 +223,7 @@
   min-height: 44px;
   max-height: 30%;
   overflow: auto;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   color: var(--paper);
   overflow-wrap: anywhere;
 
@@ -273,22 +256,28 @@
 }
 
 @media (max-width: 760px) {
-  .playground { height: auto; min-height: 100dvh; }
   .playground-header {
+    width: min(var(--page-width), var(--reading));
+    flex-wrap: wrap;
     gap: 10px;
-    padding-inline: 16px;
-    nav { gap: 14px; }
+    padding: 16px 0 12px;
+    .site-header-links { display: none; }
+    #playground-settings-menu { left: auto; right: 0; }
+    .filter-search-trigger { margin-left: auto; }
   }
+  .playground-tabs { display: grid; flex-shrink: 0; margin: 0 8px 8px; }
+  .playground-tabs > button { min-height: 40px; }
   .playground-columns { grid-template-columns: minmax(0, 1fr); }
   .playground-resizer { display: none; }
-  .playground-panel {
-    height: 440px;
+  .playground {
+    @each $panel in input, template, output {
+      &:not([data-active-panel="#{$panel}"]) ##{$panel}-panel { display: none; }
+    }
   }
 }
 
 @media (forced-colors: active) {
-  .playground-highlight { display: none; }
-  .playground-editor.is-highlighted textarea {
+  .playground-editor textarea {
     color: CanvasText;
     caret-color: CanvasText;
     &::selection { color: HighlightText; background: Highlight; }

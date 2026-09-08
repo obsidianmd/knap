@@ -2,6 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { templateCompletions } from '../website/src/lib/playground-completions';
 import { filterDocs } from '../website/lib/filter-docs';
 import { standardFilters } from '../src/filters';
+import { createEngine } from '../src/engine';
+import { filterParameters, playgroundFilterSuggestions } from '../website/lib/filter-completions';
 
 const input = { title: 'Example', author: { name: 'Sam', address: { city: 'Paris' } }, cast: [{ actor: 'A' }, { role: 'B' }] };
 const filters = [{ label: 'upper', type: 'function', info: 'Uppercase text' }];
@@ -102,5 +104,95 @@ describe('playground template completion', () => {
     expect(labels('{{ title | replace:"}}":author.')).toEqual(['name', 'address']);
     expect(templateCompletions('{{ ti }}', 5, input, filters)?.from).toBe(3);
     expect(templateCompletions('{{ title }}', 5, input, filters)).toMatchObject({ from: 3, to: 8 });
+  });
+});
+
+describe('filter argument completion catalog', () => {
+  const suggest = (source: string, position = source.length, variables = input) => templateCompletions(source, position, variables, playgroundFilterSuggestions)!;
+  const names = (source: string) => suggest(source)?.options.map((option) => option.label);
+  const apply = (source: string, label: string, position = source.length) => {
+    const result = suggest(source, position);
+    const option = result.options.find((option) => option.label === label)!;
+    expect(option, label).toBeDefined();
+    return source.slice(0, result.from) + (option.apply ?? option.label) + source.slice(result.to);
+  };
+
+  test('covers every documented filter with parameters, including optional ones', () => {
+    for (const doc of filterDocs.filter((doc) => doc.syntax.some((syntax) => syntax.startsWith(doc.name + ':')))) {
+      expect(filterParameters[doc.name]?.length, doc.name).toBeGreaterThan(0);
+      if (doc.environment === 'html') continue;
+      for (const name of [doc.name, ...(doc.aliases ?? [])]) {
+        expect(names(`{{ value | ${name}:`)?.length, name).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  test.each(['{{ cast | sort:', '{{ cast | sort: ', '{{ cast | sort:d', '{{ cast | sort:"d', "{{ cast | sort:'d", '{{ cast | sort:( ', '{{ cast | slice:0,4 | sort:', '{% set ordered = cast | sort:'])('suggests sort directions and input properties in %s', (source) => {
+    expect(names(source)).toEqual(expect.arrayContaining(['asc', 'desc', 'actor', 'role']));
+    expect(names(source)).not.toContain('cast');
+  });
+
+  test.each(['{{ cast | sort:("actor", ', "{{ cast | sort:('actor', '", '{{ cast | sort:"actor", d'])('suggests only directions in the second sort argument: %s', (source) => {
+    expect(names(source)).toEqual(['asc', 'desc']);
+  });
+
+  test('completes later and repeated arguments without splitting quoted punctuation', () => {
+    expect(names('{{ cast | callout:("note", "A, B: C", ')).toEqual(['true', 'false']);
+    expect(names('{{ title | number_format:(2, ".", ')).toContain(',');
+    expect(names('{{ title | replace:("a,b|c":"new", "d":')).toContain('new');
+    expect(names('{{ title | remove_attr:("class", "style", ')).toContain('href');
+    expect(names('{{ cast | table:("First", "Second", ')).toContain('Column 1');
+    expect(names('{{ cast | slice:0,')).toContain('4');
+    expect(names('{{ title | bold:')).toEqual(['*', '_']);
+    expect(names('{{ title | safe_name:')).toEqual(['windows', 'mac', 'linux']);
+    expect(names('{{ cast | object:')).toEqual(['keys', 'values', 'array']);
+  });
+
+  test('infers nested and loop-local property paths', () => {
+    const data = { ...input, cast: [{ actor: 'A', author: { name: 'Sam' } }] };
+    for (const filter of ['sort', 'map', 'sum', 'where']) {
+      const source = `{{ cast | ${filter}:"author.`;
+      expect(suggest(source, source.length, data).options.map((option) => option.label)).toContain('author.name');
+    }
+    const source = '{% for group in groups %}{{ group.cast | sort:';
+    expect(suggest(source, source.length, { ...input, groups: [data] } as typeof input).options.map((option) => option.label)).toContain('actor');
+  });
+
+  test('accepting a suggestion keeps existing quotes, following filters, and text intact', async () => {
+    const engine = createEngine({ filters: standardFilters });
+    for (const source of ['{{ cast | sort: | slice:0,4 }}', '{{ cast | sort:d | slice:0,4 }}', '{{ cast | sort:"de" | slice:0,4 }}', "{{ cast | sort:'de' | slice:0,4 }}"]) {
+      const position = source.indexOf('sort:') + 5 + (source.includes('"de"') || source.includes("'de'") ? 2 : source.includes('sort:d') ? 1 : 0);
+      const completed = apply(source, 'desc', position);
+      expect(completed).toMatch(/sort:(?:"desc"|'desc') \| slice:0,4/);
+      expect((await engine.render(completed, { variables: input })).errors).toEqual([]);
+    }
+    expect(apply('{{ cast | sort:"d', 'desc')).toBe('{{ cast | sort:"desc"');
+    expect(apply('{{ title | replace:("old":', 'new')).toBe('{{ title | replace:("old":"new"');
+  });
+
+  test('does not treat strings or nested expressions as new filter arguments', () => {
+    expect(names('{{ title | replace:"text | sort:')).toEqual(['old', '/[aeiou]/g']);
+    expect(suggest('{{ cast | map:item => ({name: ')).not.toMatchObject({ options: expect.arrayContaining([expect.objectContaining({ label: 'asc' })]) });
+  });
+
+  test('all suggested argument values form valid filter syntax in their respective slots', async () => {
+    const engine = createEngine({ filters: standardFilters });
+    for (const [name, slots] of Object.entries(filterParameters)) {
+      if (!standardFilters[name]) continue;
+      for (const [index, slot] of slots.entries()) {
+        const separator = name === 'replace' || name === 'replace_tags' ? ':' : ', ';
+        const prefix = slots.slice(0, index).map((other) => other.values[0]).join(separator);
+        const source = `{{ value | ${name}:${slots.length > 1 ? '(' : ''}${prefix}${index ? separator : ''}`;
+        expect(suggest(source).options.length, `${name}, argument ${index + 1}`).toBeGreaterThan(0);
+        for (const value of slot.values) {
+          const args = slots.map((other, otherIndex) => otherIndex === index ? value : other.values[0]);
+          const params = name === 'replace' || name === 'replace_tags' ? args.join(':') : args.length === 1 ? args[0] : `(${args.join(', ')})`;
+          const validation = standardFilters[name].metadata?.validateParams?.(params);
+          expect(validation?.valid ?? true, `${name}:${params}`).toBe(true);
+          const result = engine.validate(`{{ value | ${name}:${params} }}`);
+          expect(result, `${name}:${params}`).toEqual([]);
+        }
+      }
+    }
   });
 });

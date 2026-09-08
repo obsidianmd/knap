@@ -2,16 +2,17 @@ import { setStatus } from './playground-status';
 
 export function setupPlaygroundFiles(editors: Record<string, (text: string) => void>) {
   const hasFiles = (event: DragEvent) => event.dataTransfer?.types.includes('Files');
+  const openers: Record<string, (files: FileList, extensions?: string[]) => Promise<void>> = {};
+  const picker = document.querySelector<HTMLInputElement>('[data-file-input]')!;
+  document.querySelector<HTMLButtonElement>('[data-open-file]')!.addEventListener('click', () => picker.click());
 
   document.querySelectorAll<HTMLElement>('.playground-panel').forEach((panel) => {
-    const picker = panel.querySelector<HTMLInputElement>('[data-file-input]');
-    if (!picker) return;
-    const button = panel.querySelector<HTMLButtonElement>('[data-open-file]')!;
-    const setValue = editors[panel.id.replace('-panel', '')];
+    const name = panel.id.replace('-panel', '');
+    const setValue = editors[name];
+    if (!setValue) return;
     const status = panel.querySelector<HTMLElement>('.playground-file-status')!;
     const hint = panel.querySelector<HTMLElement>('.playground-drop-hint')!;
-    const extensions = picker.accept.split(',');
-    const fileTypes = extensions.join(' or ');
+    const extensions = name === 'input' ? ['.json'] : ['.md', '.txt'];
     let revision = 0;
     let dragDepth = 0;
 
@@ -29,16 +30,17 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
       hint.hidden = true;
     };
 
-    async function openFiles(files: FileList | null) {
+    async function openFiles(files: FileList | null, accepted = extensions) {
       if (!files?.length) return;
+      const fileTypes = accepted.join(' or ');
       clear();
       if (files.length !== 1) {
         showMessage(`Open one ${fileTypes} file at a time.`, 'error');
         return;
       }
       const file = files[0];
-      if (!extensions.some((extension) => file.name.toLowerCase().endsWith(extension))) {
-        showMessage(`Choose a ${fileTypes} file for this column.`, 'error');
+      if (!accepted.some((extension) => file.name.toLowerCase().endsWith(extension))) {
+        showMessage(`Choose a ${fileTypes} file.`, 'error');
         return;
       }
       const current = revision;
@@ -54,15 +56,11 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
       }
     }
 
-    button.addEventListener('click', () => picker.click());
-    picker.addEventListener('change', () => {
-      void openFiles(picker.files);
-      // Allow selecting the same file again after changing it on disk.
-      picker.value = '';
-    });
+    openers[name] = openFiles;
     panel.addEventListener('input', clear);
     panel.addEventListener('playground-change', clear);
     document.getElementById('reset-example')!.addEventListener('click', clear);
+    document.getElementById('clear-playground')!.addEventListener('click', clear);
 
     panel.addEventListener('dragenter', (event) => {
       if (!hasFiles(event)) return;
@@ -89,6 +87,18 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
     window.addEventListener('drop', clearDrop);
     window.addEventListener('dragend', clearDrop);
     window.addEventListener('blur', clearDrop);
+  });
+
+  picker.addEventListener('change', () => {
+    const files = picker.files;
+    if (files?.length) {
+      const name = files[0].name.toLowerCase().endsWith('.json') ? 'input' : 'template';
+      // Reveal the destination on mobile, including any file-read errors.
+      document.querySelector<HTMLButtonElement>(`[data-playground-tab="${name}"]`)!.click();
+      void openers[name](files, picker.accept.split(','));
+    }
+    // Allow selecting the same file again after changing it on disk.
+    picker.value = '';
   });
 
   // File drops outside an editor should not navigate away from the playground.

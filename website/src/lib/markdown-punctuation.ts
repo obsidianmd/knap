@@ -13,6 +13,10 @@ export function markdownPunctuationAt(line: string, position: number): number {
     if (block) return block[0].length;
   }
 
+  // Hashtag prefixes, including a tag supplied by a Knap expression.
+  // Keep hashes inside words and URL fragments as ordinary text.
+  if ((!before || /\s$/.test(before)) && /^#(?=[\p{L}\p{N}_/]|\{\{|$)/u.test(rest)) return 1;
+
   const inline = rest.match(/^(?:\*{1,3}|_{1,3}|~~|==|`+|\|)/)?.[0];
   if (!inline) return 0;
   // Underscores inside identifiers are plain text, e.g. movie_title.
