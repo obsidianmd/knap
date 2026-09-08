@@ -61,6 +61,7 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
     panel.addEventListener('playground-change', clear);
     document.getElementById('reset-example')!.addEventListener('click', clear);
     document.getElementById('clear-playground')!.addEventListener('click', clear);
+    document.querySelectorAll('[data-playground-sample]').forEach((button) => button.addEventListener('click', clear));
 
     panel.addEventListener('dragenter', (event) => {
       if (!hasFiles(event)) return;

@@ -75,49 +75,15 @@
   }
 }
 
-.example-controls {
-  display: flex;
-  align-items: center;
+.example-playground-button {
+  --text-action-color: var(--link-color);
+  --text-action-hover-color: var(--link-color);
   gap: 4px;
-}
-
-.example-picker {
-  position: relative;
-  flex: 0 0 auto;
-}
-
-.example-picker-trigger {
-  display: flex;
-  min-width: 104px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--panel);
-  padding: 3px 9px 3px 10px;
-  color: var(--muted);
-  font: inherit;
   font-size: var(--font-size-small);
-  line-height: 1.55;
-  cursor: pointer;
   transition: background 150ms ease, color 150ms ease;
-
-  &:hover,
-  &[aria-expanded="true"] {
-    background: var(--line);
-    color: var(--paper);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-.example-picker-menu {
-  right: 0;
-  width: 140px;
+  padding-inline-end: 12px;
+  svg { color: var(--muted); }
+  &:hover svg, &:focus-visible svg { color: var(--paper); }
 }
 
 .install-section .doc-code {

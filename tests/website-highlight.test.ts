@@ -24,6 +24,11 @@ describe('website syntax highlighting', () => {
 		expect(lines[4]).toContain('<span class="syn-string">[[Lana Wachowski]]</span>');
 		expect(lines[6]).not.toContain('syn-string');
 	});
+	test('preserves frontmatter context when rendering a complete docs code block', () => {
+		const html = highlightCode('---\ndirector:\n  - "[[Lana Wachowski]]"\n---\n- "A quotation"', 'md');
+		expect(html).toContain('<span class="syn-punctuation">&quot;</span><span class="syn-string">[[Lana Wachowski]]</span><span class="syn-punctuation">&quot;</span>');
+		expect(html).not.toContain('<span class="syn-string">A quotation</span>');
+	});
 	test.each(['md', 'knap'] as const)('highlights Markdown markers in %s', (language) => {
 		expect(highlightLine('---', language)).toBe('<span class="syn-punctuation">---</span>');
 		expect(highlightLine('- **Cast**', language)).toBe('<span class="syn-punctuation">-</span> <span class="syn-punctuation">**</span>Cast<span class="syn-punctuation">**</span>');

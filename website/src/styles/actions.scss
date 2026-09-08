@@ -1,0 +1,36 @@
+.text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-action-color, var(--muted));
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  svg { flex-shrink: 0; }
+
+  &:hover {
+    background: var(--panel);
+    color: var(--text-action-hover-color, var(--paper));
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: wait;
+  }
+  &[data-copied] {
+    color: var(--body);
+
+    svg {
+      color: var(--green);
+    }
+  }
+  &[data-copy-error] {
+    color: var(--red);
+  }
+}

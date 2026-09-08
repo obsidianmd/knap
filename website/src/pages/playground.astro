@@ -4,6 +4,7 @@ import PlaygroundEditor from '../components/PlaygroundEditor.astro';
 import Search from '../components/Search.astro';
 import SiteNavigation from '../components/SiteNavigation.astro';
 import { exampleInput, exampleTemplate } from '../lib/playground';
+import { homeExamples } from '../lib/home-examples';
 import { storageKey, minimumWidth } from '../scripts/playground-columns';
 import '../styles/playground.scss';
 import { playgroundFilterSuggestions as filters } from '../../lib/filter-completions';
@@ -58,6 +59,18 @@ import { playgroundFilterSuggestions as filters } from '../../lib/filter-complet
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg>
               <span class="menu-label">Open file…</span>
             </button>
+            <div class="menu-submenu">
+              <button type="button" id="open-sample" role="menuitem" tabindex="-1" aria-haspopup="menu" aria-expanded="false" aria-controls="playground-samples-menu">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2" /><path d="M8 7h8M8 11h8M8 15h4" /></svg>
+                <span class="menu-label">Open sample</span>
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+              <div id="playground-samples-menu" class="menu" role="menu" aria-labelledby="open-sample" hidden>
+                {homeExamples.map((example) => (
+                  <button type="button" role="menuitem" tabindex="-1" data-playground-sample={example.key}>{example.label}</button>
+                ))}
+              </div>
+            </div>
             <button type="button" id="share-playground" role="menuitem" tabindex="-1" data-menu-keep-open>
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
               <span class="menu-label" aria-live="polite">Copy share link</span>
@@ -70,10 +83,11 @@ import { playgroundFilterSuggestions as filters } from '../../lib/filter-complet
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
               <span class="menu-label">Clear</span>
             </button>
+            <div class="menu-separator" role="separator"></div>
             <button type="button" id="wrap-lines" role="menuitemcheckbox" aria-checked="false" tabindex="-1">
               <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16-3 3 3 3" /><path d="M3 12h14.5a1 1 0 0 1 0 7H13" /><path d="M3 19h6" /><path d="M3 5h18" /></svg>
               <span class="menu-label">Line wrap</span>
-              <svg class="menu-check" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5" /></svg>
+              <svg class="menu-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5" /></svg>
             </button>
           </div>
           <input type="file" data-file-input accept=".json,.txt,.md" aria-label="Choose JSON input or a template file" hidden />

@@ -172,5 +172,5 @@ export function highlightLines(lines: string[], language: CodeLanguage) {
 
 export function highlightCode(code: string, language: CodeLanguage, showLineNumbers = false) {
   const normalized = code.replace(/^\n|\n$/g, '');
-  return normalized.split('\n').map((line, index) => `<span class="doc-code-line"><span class="doc-line-number"${showLineNumbers ? '' : ' hidden'}>${index + 1}</span><span class="doc-code-source">${highlightLine(line, language)}</span></span>`).join('');
+  return highlightLines(normalized.split('\n'), language).map((line, index) => `<span class="doc-code-line"><span class="doc-line-number"${showLineNumbers ? '' : ' hidden'}>${index + 1}</span><span class="doc-code-source">${line}</span></span>`).join('');
 }

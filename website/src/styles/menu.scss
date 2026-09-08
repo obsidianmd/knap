@@ -11,7 +11,7 @@
   background: var(--line-background);
   box-shadow: 0 12px 32px rgb(0 0 0 / 32%);
 
-  > button {
+  > button, > .menu-submenu > button {
     display: flex;
     width: 100%;
     align-items: center;
@@ -42,11 +42,36 @@
   }
   svg { flex-shrink: 0; }
   &[role="listbox"] > button { font-size: var(--font-size-small); }
-  &[role="menu"] > button {
+  &[role="menu"] > button, &[role="menu"] > .menu-submenu > button {
     color: var(--paper);
     svg { color: var(--muted); }
     &[data-copied] svg { color: var(--syntax-green); }
   }
   .menu-label { flex: 1; min-width: 0; }
   .menu-check { margin-left: auto; opacity: 0; }
+  .menu-separator {
+    height: 1px;
+    margin: 4px 3px;
+    background: var(--line-hover);
+  }
+}
+
+.menu-submenu {
+  position: relative;
+  > .menu {
+    top: -5px;
+    left: 100%;
+    min-width: 140px;
+    &.opens-left { left: auto; right: 100%; }
+  }
+}
+
+@media (max-width: 760px) {
+  .menu-submenu > .menu {
+    position: static;
+    min-width: 0;
+    margin-left: 12px;
+    border: 0;
+    box-shadow: none;
+  }
 }

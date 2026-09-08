@@ -81,41 +81,6 @@
   margin-left: -8px;
   margin-top: 18px;
 }
-.docs-title-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
-  color: var(--muted);
-  padding: 6px 8px;
-  font: inherit;
-  font-size: 0.8125rem;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--panel);
-    color: var(--paper);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  &:disabled {
-    cursor: wait;
-  }
-  &[data-copied] {
-    color: var(--body);
-
-    svg {
-      color: var(--green);
-    }
-  }
-  &[data-copy-error] {
-    color: var(--red);
-  }
-}
 .doc-section {
   scroll-margin-top: 32px;
   margin-bottom: 56px;

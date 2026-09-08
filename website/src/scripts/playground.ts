@@ -11,6 +11,7 @@ import { readPlaygroundExample } from '../lib/playground-link';
 import { setupPlaygroundTabs } from './playground-tabs';
 import { setupPlaygroundSettings } from './playground-settings';
 import { setupPlaygroundShare } from './playground-share';
+import { homeExamples } from '../lib/home-examples';
 
 const wrapStorageKey = 'knap:playground:wrap';
 let initialWrap = window.matchMedia('(max-width: 760px)').matches;
@@ -153,6 +154,18 @@ document.getElementById('reset-example')!.addEventListener('click', () => {
   template.setValue(initialTemplate, { notify: false });
   output.setValue(output.value, { notify: false });
   updateOutput();
+});
+document.querySelectorAll<HTMLButtonElement>('[data-playground-sample]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const example = homeExamples.find((example) => example.key === button.dataset.playgroundSample)!;
+    initialInput = JSON.stringify(example.variables, null, 2);
+    initialTemplate = example.template;
+    input.setValue(initialInput, { notify: false });
+    template.setValue(initialTemplate, { notify: false });
+    output.setValue('', { notify: false });
+    document.querySelector<HTMLButtonElement>('[data-playground-tab="template"]')!.click();
+    updateOutput();
+  });
 });
 setupPlaygroundColumns();
 document.getElementById('clear-playground')!.addEventListener('click', () => {
