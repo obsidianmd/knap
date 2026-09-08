@@ -2,10 +2,22 @@
 
 All notable changes to Knap will be documented in this file.
 
-## Unreleased
+## 0.3.1
 
-- Remove the extra output line before standalone conditional closing tags, preserving intentional blank lines.
-- Preserve intentional blank lines between loop iterations, including separate Markdown tables.
+- Support dot property access after array indexing, including chained paths
+  such as `cast[0].details.name` and keys that share a keyword name.
+- Merge through `merge` using the original array value rather than its
+  serialized form, and treat a single comma-separated argument as a list.
+- Preserve regular expression escapes such as `\s` in filter arguments while
+  still decoding escaped quotes and backslashes.
+- Remove the extra output line before standalone conditional closing tags,
+  preserving intentional blank lines.
+- Preserve intentional blank lines between loop iterations, including separate
+  Markdown tables.
+- Skip loop iterations that render nothing so a false condition cannot leave a
+  blank separator or a trailing empty item.
+- Apply whitespace control from an `if` tag when an `elseif` or `else` branch
+  is taken.
 
 ## 0.3.0
 
