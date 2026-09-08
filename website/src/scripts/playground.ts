@@ -10,6 +10,7 @@ import { setupPlaygroundCopy } from './playground-copy';
 import { readPlaygroundExample } from '../lib/playground-link';
 import { setupPlaygroundTabs } from './playground-tabs';
 import { setupPlaygroundSettings } from './playground-settings';
+import { setupPlaygroundShare } from './playground-share';
 
 const wrapStorageKey = 'knap:playground:wrap';
 let initialWrap = window.matchMedia('(max-width: 760px)').matches;
@@ -171,6 +172,7 @@ document.getElementById('clear-playground')!.addEventListener('click', () => {
 });
 setupPlaygroundTabs();
 setupPlaygroundSettings();
+setupPlaygroundShare(() => ({ input: input.value, template: template.value }));
 setupPlaygroundFiles({
   input: (text) => input.setValue(text),
   template: (text) => template.setValue(text),

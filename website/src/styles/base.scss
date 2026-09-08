@@ -4,6 +4,7 @@
   --font-size-body: clamp(1rem, 0.875rem + 0.2vw, 1.125rem);
   --font-size-small: 0.875rem;
   --font-size-xs: 0.75rem;
+  --font-size-menu: 0.8125rem;
   --code-line-height: 1.72;
   --code-gutter-width: 42px;
   --radius-small: 6px;
@@ -15,6 +16,7 @@
   --ink: #100f0f;
   --panel: #1c1b1a;
   --line: #282726;
+  --line-background: var(--line);
   --line-hover: #343331;
   --line-active: #403e3c;
   --faint: #575653;

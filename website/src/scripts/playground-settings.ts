@@ -21,7 +21,8 @@ export function setupPlaygroundSettings() {
     open(event.key === 'ArrowDown' ? 0 : items.length - 1);
   });
   menu.addEventListener('click', (event) => {
-    if ((event.target as Element).closest('button')) close(true);
+    const item = (event.target as Element).closest('button');
+    if (item && !item.hasAttribute('data-menu-keep-open')) close(true);
   });
   menu.addEventListener('keydown', (event) => {
     const index = items.indexOf(document.activeElement as HTMLButtonElement);
