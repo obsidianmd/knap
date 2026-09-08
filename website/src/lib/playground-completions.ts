@@ -23,7 +23,7 @@ const logic = [
   ['set', 'Assign a variable'], ['elseif', 'Add another condition'],
   ['else', 'Use a fallback branch'], ['endif', 'Close a condition'],
   ['endfor', 'Close a loop'],
-].map(([label, detail], index) => ({ label, detail, type: 'keyword', boost: 7 - index }));
+].map(([label, detail], index): TemplateSuggestion => ({ label, detail, type: 'keyword', boost: 7 - index }));
 
 const operators = [
   ['==', 'Equal to'], ['!=', 'Not equal to'],
@@ -33,7 +33,7 @@ const operators = [
   ['and', 'Both sides are true'], ['or', 'Either side is true'],
   ['&&', 'Both sides are true'], ['||', 'Either side is true'],
   ['??', 'Fallback value'], ['|', 'Apply a filter'],
-].map(([label, detail], index) => ({ label, detail, type: /^[a-z]/.test(label) ? 'keyword' : 'operator', boost: 13 - index }));
+].map(([label, detail], index): TemplateSuggestion => ({ label, detail, type: /^[a-z]/.test(label) ? 'keyword' : 'operator', boost: 13 - index }));
 
 const conditionValues: TemplateSuggestion[] = [
   { label: 'not', type: 'keyword', detail: 'Negate an expression', boost: -2 },

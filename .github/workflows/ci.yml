@@ -21,6 +21,9 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The root tests and typecheck reach into website/src, which imports
+      # CodeMirror, so the website's dependencies must be present here too.
+      - run: pnpm --dir website install --frozen-lockfile
       - run: pnpm check
 
   website:
