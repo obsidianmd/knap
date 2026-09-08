@@ -39,6 +39,9 @@ jobs:
           node-version: 22.13.0
           cache: pnpm
           cache-dependency-path: website/pnpm-lock.yaml
+      # The website imports the engine from src, which depends on dayjs, so
+      # the root dependencies must be present alongside the website's own.
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --dir website install --frozen-lockfile
       - run: pnpm --dir website check
       - run: pnpm --dir website build
