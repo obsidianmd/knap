@@ -41,26 +41,17 @@
   }
   .playground-actions {
     position: relative;
-    top: 2px;
     display: flex;
     align-items: center;
+    margin-left: auto;
   }
   #playground-settings {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    border: 0;
-    border-radius: var(--radius-small);
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    &:hover, &[aria-expanded="true"] { color: var(--paper); background: var(--panel); }
+    &[aria-expanded="true"] { color: #f2f0e5; }
   }
 }
 #playground-settings-menu {
   z-index: 20;
-  left: 0;
+  right: 0;
   min-width: 180px;
 }
 
@@ -262,10 +253,11 @@
     flex-wrap: wrap;
     gap: 12px;
     padding: 16px 0 12px;
-    #playground-settings-menu { left: auto; right: 0; }
   }
   .playground-tabs { display: grid; flex-shrink: 0; margin: 0 8px 8px; }
   .playground-tabs > button { min-height: 40px; }
+  .playground #playground-settings:focus-visible,
+  .playground .menu button:focus-visible { outline: 0; }
   .playground-columns { grid-template-columns: minmax(0, 1fr); }
   .playground-resizer { display: none; }
   .playground {

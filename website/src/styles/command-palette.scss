@@ -1,3 +1,12 @@
+.search-open {
+  overflow: hidden;
+  background: var(--panel);
+
+  body {
+    background: var(--panel);
+  }
+}
+
 .command-backdrop {
   position: fixed;
   z-index: 100;
@@ -123,6 +132,29 @@
   padding: 30px 14px;
   color: var(--muted);
   text-align: center;
+}
+
+@media (max-width: 760px) {
+  .command-backdrop {
+    grid-template-rows: minmax(0, 1fr);
+    background: var(--panel);
+    padding-inline: 0;
+    padding-bottom: 0;
+    backdrop-filter: none;
+  }
+  .command-palette {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    box-shadow: none;
+  }
+  .command-results {
+    min-height: 0;
+    max-height: none;
+    flex: 1;
+  }
 }
 
 @media (max-width: 480px) {

@@ -100,8 +100,14 @@ function setupSearch() {
   if (!trigger || !backdrop || !input || !clearButton || !resultsElement || !data) return;
 
   const items = JSON.parse(data) as SearchItem[];
+  const mobileSearch = window.matchMedia('(max-width: 760px)');
   let results = items.filter((item) => item.kind === 'filter').slice(0, 12);
   let activeIndex = 0;
+
+  const syncClearButton = () => {
+    clearButton.hidden = !mobileSearch.matches && input.value.length === 0;
+    clearButton.setAttribute('aria-label', mobileSearch.matches ? 'Close search' : 'Clear search');
+  };
 
   const render = () => {
     if (!results.length) {
@@ -148,26 +154,40 @@ function setupSearch() {
   };
 
   const open = () => {
+    input.readOnly = false;
     input.value = '';
-    clearButton.hidden = true;
     update();
     backdrop.hidden = false;
+    syncClearButton();
+    document.documentElement.classList.add('search-open');
     input.focus({ preventScroll: true });
   };
-  const close = () => { backdrop.hidden = true; };
+  const close = () => {
+    if (backdrop.hidden) return;
+    input.readOnly = true;
+    input.blur();
+    backdrop.hidden = true;
+    syncClearButton();
+    document.documentElement.classList.remove('search-open');
+  };
 
   trigger.addEventListener('click', open);
   backdrop.addEventListener('mousedown', (event) => { if (event.target === backdrop) close(); });
   input.addEventListener('input', () => {
-    clearButton.hidden = input.value.length === 0;
+    syncClearButton();
     update();
   });
   clearButton.addEventListener('click', () => {
+    if (mobileSearch.matches) {
+      close();
+      return;
+    }
     input.value = '';
-    clearButton.hidden = true;
+    syncClearButton();
     update();
     input.focus();
   });
+  mobileSearch.addEventListener('change', syncClearButton);
   resultsElement.addEventListener('mousemove', (event) => {
     const result = (event.target as Element).closest<HTMLElement>('[data-result-index]');
     if (!result) return;
@@ -177,13 +197,18 @@ function setupSearch() {
     const result = (event.target as Element).closest<HTMLAnchorElement>('a[data-result-index]');
     if (!result) return;
     event.preventDefault();
-    window.location.assign(result.href);
     close();
+    requestAnimationFrame(() => window.location.assign(result.href));
   });
   input.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex(Math.min(activeIndex + 1, results.length - 1)); }
     if (event.key === 'ArrowUp') { event.preventDefault(); setActiveIndex(Math.max(activeIndex - 1, 0)); }
-    if (event.key === 'Enter' && results[activeIndex]) { event.preventDefault(); close(); window.location.assign(results[activeIndex].href); }
+    if (event.key === 'Enter' && results[activeIndex]) {
+      event.preventDefault();
+      const href = results[activeIndex].href;
+      close();
+      requestAnimationFrame(() => window.location.assign(href));
+    }
   });
   window.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); open(); }

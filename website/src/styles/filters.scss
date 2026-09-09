@@ -219,6 +219,14 @@
   }
 }
 @media (max-width: 760px) {
+  .filter-examples-section, .filter-example-card {
+    &.has-playground-link > h2, &.has-playground-link > header {
+      padding-right: 112px;
+    }
+  }
+  .filter-example-card h3 {
+    white-space: nowrap;
+  }
   .filter-example-table th {
     width: 76px;
     padding-inline: 12px;

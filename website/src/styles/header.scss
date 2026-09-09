@@ -6,10 +6,6 @@
   gap: 20px;
   margin-inline: auto;
   color: var(--paper);
-
-  .filter-search-trigger {
-    color: var(--muted);
-  }
 }
 .site-header-links {
   display: flex;
@@ -18,7 +14,7 @@
   margin-left: auto;
   font-weight: 400;
 }
-.filter-search-trigger {
+.header-action {
   display: inline-flex;
   width: auto;
   min-height: 34px;
@@ -27,18 +23,20 @@
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--muted);
+  color: var(--paper);
   padding: 6px 0;
   font: inherit;
   font-size: var(--font-size-body);
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease;
 
-  &:hover {
-    color: var(--paper);
+  &:hover,
+  &:focus-visible {
+    color: #f2f0e5;
   }
   svg {
     flex: 0 0 auto;
+    color: var(--muted);
   }
   span {
     overflow: hidden;
@@ -64,7 +62,7 @@
   .site-header-links {
     gap: 16px;
   }
-  .filter-search-trigger {
+  .header-action {
     min-height: 32px;
     padding: 4px;
 
