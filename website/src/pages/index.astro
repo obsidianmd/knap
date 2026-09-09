@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import TemplateExample from '../components/TemplateExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import Install from '../components/Install.astro';
+import GetStarted from '../components/GetStarted.astro';
 
 import { homeExamples as examples } from '../lib/home-examples';
 ---
@@ -28,14 +28,14 @@ import { homeExamples as examples } from '../lib/home-examples';
       <TemplateExample examples={examples} defaultExample="movie" />
     </section>
 
-    <Install />
+    <GetStarted />
 
     <section class="guide-section" aria-labelledby="explore-title">
       <header class="guide-heading"><h2 id="explore-title">Explore</h2></header>
       <nav class="guide-links" aria-label="Language guides">
         <a class="guide-link-card" data-guide="variables" href="/variables">
           <h3>Variables</h3>
-          <p>Insert app-provided values into a template.</p>
+          <p>Insert values from your data into a template.</p>
         </a>
         <a class="guide-link-card" data-guide="filters" href="/filters">
           <h3>Filters</h3>

@@ -56,7 +56,25 @@ genre:
 | Hugo Weaving       | Agent Smith |
 ```
 
-## Install
+## Get started
+
+### Use in the terminal
+
+Generate Markdown from a template and JSON data.
+
+```shell
+npx knap render template.md --data data.json --output note.md
+```
+
+Try it without creating any files:
+
+```shell
+npx knap render -t '# {{ title }}' --set title=Hello
+```
+
+Read the [CLI guide](/cli) for input options, piping, and installation.
+
+### Use in your app
 
 Add Knap to your app so users can safely generate Markdown from variables you define.
 
@@ -66,11 +84,13 @@ npm install knap
 
 Or use `pnpm add knap`, `yarn add knap`, or `bun add knap`.
 
+Read the [API reference](/api) to configure and render templates in your app.
+
 ## Explore
 
 ### [Variables](/variables)
 
-Insert app-provided values into a template.
+Insert values from your data into a template.
 
 ### [Filters](/filters)
 

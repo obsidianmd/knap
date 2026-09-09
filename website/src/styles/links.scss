@@ -1,5 +1,5 @@
 // Shared colors and hover fades for body and navigation links.
-:where(.lede, .used-by-heading, .markdown-doc, .doc-section, .site-header-links, .site-footer, .footer-nav) a,
+:where(.lede, .used-by-heading, .get-started-link, .markdown-doc, .doc-section, .site-header-links, .site-footer, .footer-nav) a,
 :where(.playground-link) {
   --link-color: var(--link-default-color, var(--paper));
   color: var(--link-color);
@@ -17,7 +17,7 @@
 }
 
 // Keep inline links distinct without making their underline compete with the text.
-:where(.lede, .used-by-heading, .markdown-doc, .doc-section) a {
+:where(.lede, .used-by-heading, .get-started-link, .markdown-doc, .doc-section) a {
   font-weight: 500;
   text-decoration-line: underline;
   text-decoration-color: var(--link-decoration-color, var(--faint));

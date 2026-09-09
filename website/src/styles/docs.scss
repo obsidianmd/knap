@@ -18,6 +18,16 @@
   user-select: none;
   -webkit-user-select: none;
 
+  .docs-toc-page, .docs-toc-children, .docs-toc-outline {
+    display: grid;
+    gap: 8px;
+  }
+
+  .docs-toc-children, .docs-toc-outline {
+    border-left: 1px solid var(--line);
+    padding-left: 12px;
+  }
+
   a {
     color: var(--muted);
     font-size: 0.8125rem;
@@ -36,6 +46,8 @@
         color: var(--muted);
       }
     }
+    &.is-current,
+    &[aria-current="page"],
     &[aria-current="location"] {
       color: var(--paper);
     }
@@ -196,6 +208,7 @@
     margin: 36px 0 12px;
     color: var(--paper);
     font-size: var(--font-size-body);
+    font-weight: 600;
   }
   > p {
     margin: 0 0 18px;
@@ -263,9 +276,16 @@
   }
 }
 
-@media (max-width: 1120px) {
+@media (min-width: 761px) {
+  .docs-page > .site-header, .docs-layout {
+    // Keep room for the sidebar while letting the right gutter shrink first.
+    width: min(var(--reading), calc(100vw - 268px));
+    margin-left: max(244px, calc((100vw - var(--reading)) / 2));
+    margin-right: 24px;
+  }
+
   .docs-toc {
-    display: none;
+    width: 180px;
   }
 }
 

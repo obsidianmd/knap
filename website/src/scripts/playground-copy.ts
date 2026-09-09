@@ -1,7 +1,7 @@
 export function setupPlaygroundCopy(name: string, getValue: () => string) {
   const button = document.querySelector<HTMLButtonElement>(`#copy-${name}`)!;
   const copyIcon = button.innerHTML;
-  const label = `Copy ${name}`;
+  const label = `Copy ${name === 'input' ? 'data' : name}`;
   let timer: number | undefined;
   let revision = 0;
   let previous: string | undefined;

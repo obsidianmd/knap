@@ -1,4 +1,4 @@
-.hero-grid, .markdown-native, .install-section, .guide-section, .used-by {
+.hero-grid, .markdown-native, .get-started, .install-section, .guide-section, .used-by {
   width: min(var(--page-width), var(--reading));
   margin-inline: auto;
 }
@@ -30,7 +30,7 @@
 }
 
 .markdown-native-heading, .used-by-heading, .install-heading, .guide-heading {
-  h2 {
+  h2, h3 {
     margin: 0;
     font-size: var(--font-size-heading);
     font-weight: 500;
@@ -79,6 +79,27 @@
   margin: 0;
 }
 .install-note {
+  margin: 18px 0 0;
+}
+
+.get-started {
+  margin-top: 56px;
+
+  .install-section {
+    width: 100%;
+    margin: 32px 0 0;
+  }
+}
+
+.get-started-terminal {
+  margin-top: 24px;
+
+  .doc-code {
+    margin-block: 16px;
+  }
+}
+
+.get-started-link {
   margin: 18px 0 0;
 }
 

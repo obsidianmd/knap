@@ -1,8 +1,77 @@
 import { describe, expect, test } from 'vitest';
-import { highlightCode, highlightLine, highlightLines } from '../website/src/lib/highlight';
+import { highlightCode, highlightInlineKnap, highlightLine, highlightLines } from '../website/src/lib/highlight';
 import { markdownPunctuationAt } from '../website/src/lib/markdown-punctuation';
 
 describe('website syntax highlighting', () => {
+
+	test.each(['npx knap render', 'npx --yes knap render'])('colors the command invoked through %s', (source) => {
+		const html = highlightLine(source, 'shell');
+		expect(html).toContain('<span class="syn-command">npx</span>');
+		expect(html).toContain('<span class="syn-command">knap</span> render');
+	});
+
+	test('colors option values equally with a space or equals sign', () => {
+		for (const separator of [' ', '=']) {
+			const html = highlightLine(`knap render --output${separator}note.md --output-dir${separator}notes`, 'shell');
+			expect(html).toContain(`--output${separator}<span class="syn-string">note.md</span>`);
+			expect(html).toContain(`--output-dir${separator}<span class="syn-string">notes</span>`);
+		}
+	});
+
+	test('preserves option and command context over continuations and resets for new commands', () => {
+		const lines = highlightLines(['knap batch template.md --output-dir \\', '  notes --data \\', '  articles', 'npx \\', '  knap render template.md', 'cat template.md |', '  knap render --data data.json'], 'shell');
+		expect(lines[1]).toContain('  <span class="syn-string">notes</span> --data');
+		expect(lines[2]).toBe('  <span class="syn-string">articles</span>');
+		expect(lines[3]).toContain('<span class="syn-command">npx</span>');
+		expect(lines[4]).toContain('  <span class="syn-command">knap</span> render');
+		expect(lines[5]).toContain('<span class="syn-command">cat</span>');
+		expect(lines[6]).toContain('  <span class="syn-command">knap</span> render');
+	});
+
+	test.each(['--set', '--set enabled=false', '--set title="if true"', '-t "{{ title }}"'])('leaves inline CLI reference %s unhighlighted', (value) => {
+		expect(highlightInlineKnap(value)).toBeUndefined();
+	});
+
+	test('still highlights actual inline Knap assignments', () => {
+		expect(highlightInlineKnap('{% set enabled = false %}')).toContain('<span class="syn-keyword">set</span>');
+	});
+
+	test('colors extensionless file and directory option values as paths', () => {
+		const html = highlightLine('knap batch template.md --data articles --output-dir notes', 'shell');
+		expect(html).toContain('--data <span class="syn-string">articles</span>');
+		expect(html).toContain('--output-dir <span class="syn-string">notes</span>');
+		expect(highlightLine('knap render -d - -o result', 'shell')).toContain('-d - -o <span class="syn-string">result</span>');
+	});
+
+	test('colors unquoted shell assignment values as strings', () => {
+		const html = highlightLine('knap render --set title=Hello --set enabled=false', 'shell');
+		expect(html).toContain('title=<span class="syn-string">Hello</span>');
+		expect(html).toContain('enabled=<span class="syn-string">false</span>');
+	});
+
+	test('distinguishes shell commands from filenames and flags in a pipeline', () => {
+		expect(highlightLine('cat template.md | knap render - --data data.json', 'shell')).toBe(
+            '<span class="syn-command">cat</span> <span class="syn-string">template.md</span> <span class="syn-punctuation">|</span> <span class="syn-command">knap</span> render - --data <span class="syn-string">data.json</span>',
+		);
+	});
+
+	test('keeps quoted templates literal and shell paths intact', () => {
+		const html = highlightLine("knap render -t '{{ title | upper }}' --output ./notes/my-note.md", 'shell');
+		expect(html).toContain('<span class="syn-string">{{ title | upper }}</span>');
+		expect(html).toContain('--output <span class="syn-string">./notes/my-note.md</span>');
+		expect(html).not.toContain('syn-variable');
+	});
+
+	test('preserves shell URLs, redirections, variables, and comments', () => {
+		const html = highlightLine('curl https://example.com/a?q=1#part > out.json && cat $FILE # inspect', 'shell');
+		expect(html).toContain('<span class="syn-string">https://example.com/a?q=1#part</span> <span class="syn-punctuation">&gt;</span> <span class="syn-string">out.json</span>');
+		expect(html).toContain('<span class="syn-command">cat</span> <span class="syn-variable">$FILE</span> <span class="syn-punctuation"># inspect</span>');
+	});
+
+	test.each(["knap -t 'unfinished", 'knap --set title="hello"', 'knap render \\', '  --filename "{{ title }}.md"'])('preserves all shell source characters in %s', (source) => {
+		const plain = highlightLine(source, 'shell').replace(/<[^>]*>/g, '').replaceAll('&quot;', '"').replaceAll('&#39;', "'");
+		expect(plain).toBe(source);
+	});
 
 	test('highlights list and hashtag punctuation in the docs loop example', () => {
 		const template = highlightCode('{% for tag in tags %}\n- #{{ tag | kebab }}\n{% endfor %}', 'knap');

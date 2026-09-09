@@ -59,24 +59,13 @@
 
 @media (max-width: 760px) {
   .site-header {
-    width: min(var(--page-width), var(--reading));
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 14px 20px;
+    gap: 12px;
     padding-block: 16px 12px;
   }
   .site-header-links {
-    grid-row: 2;
-    grid-column: 1 / -1;
-    width: 100%;
-    justify-content: flex-start;
-    margin-left: 0;
+    gap: 16px;
   }
   .filter-search-trigger {
-    grid-row: 1;
-    grid-column: 2;
-    width: auto;
     min-height: 32px;
     padding: 4px;
 

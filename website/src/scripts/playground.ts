@@ -106,7 +106,7 @@ function render() {
     current.addEventListener('error', () => {
       if (worker === current) showFailure('Unable to render. Edit the template or reset the example to try again.');
     });
-    deadline = window.setTimeout(() => showFailure('Rendering took too long. Try a smaller input or a simpler template.'), 3000);
+    deadline = window.setTimeout(() => showFailure('Rendering took too long. Try less data or a simpler template.'), 3000);
     current.postMessage({ input: currentInput, template: template.value });
   } catch {
     showFailure('Unable to start the playground. Try reloading this page.');

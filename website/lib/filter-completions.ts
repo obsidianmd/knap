@@ -14,7 +14,7 @@ const formats = text('Format', 'YYYY-MM-DD', 'MMMM D, YYYY', 'YYYY-MM-DD HH:mm',
 // Each slot describes an argument, rather than a complete parameter list.
 // Values for unrestricted strings/numbers are editable examples, not restrictions.
 export const filterParameters: Record<string, FilterParameterSuggestion[]> = {
-  date: [formats, { ...formats, name: 'Input format' }],
+  date: [formats, { ...formats, name: 'Data format' }],
   date_modify: [text('Interval', ...['year', 'month', 'week', 'day', 'hour', 'minute', 'second'].flatMap((unit) => [`+1 ${unit}`, `-1 ${unit}`]))],
   duration: [text('Format', 'HH:mm:ss', 'H:mm:ss', 'mm:ss', 'H', 'HH', 'm', 'mm', 's', 'ss')],
   replace: [text('Search', 'old', '/[aeiou]/g'), text('Replacement', 'new', '')],

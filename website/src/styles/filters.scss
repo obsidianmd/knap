@@ -67,6 +67,7 @@
   }
   h3 {
     margin: 0;
+    scroll-margin-top: 32px;
     color: var(--paper);
     font-size: var(--font-size-body);
     font-weight: 400;
@@ -82,7 +83,7 @@
     margin-top: 14px;
   }
 }
-[data-filter-view-panel] > .filter-directory-group:first-child {
+.filter-directory > .filter-directory-group:first-child {
   margin-top: 24px;
 }
 .filter-row {

@@ -29,6 +29,9 @@
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"bin": {
+		"knap": "./dist/cli.js"
+	},
 	"typesVersions": {
 		"*": {
 			"html": [

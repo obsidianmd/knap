@@ -22,7 +22,6 @@ function tokenClass(token: string, language: CodeLanguage) {
   if (/^(true|false|null|undefined)$/.test(token)) return 'syn-constant';
   if (/^(if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)$/.test(token)) return 'syn-keyword';
   if (language === 'ts' && /^(const|let|type|async|await|return|new|throw|export)$/.test(token)) return 'syn-keyword';
-  if (language === 'shell' && /^(pnpm|npm|npx|yarn|bun)$/.test(token)) return 'syn-filter';
   if (/^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*$/.test(token)) return 'syn-variable';
   return undefined;
 }
@@ -89,7 +88,62 @@ function highlightMarkdownLine(line: string, inFrontmatter = false) {
   return highlightMarkdownInline(line);
 }
 
-function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>, constrainKnapToTags = true) {
+interface ShellHighlightState {
+  expectsCommand: boolean;
+  expectsRedirect: boolean;
+  expectsPath: boolean;
+}
+
+const shellHighlightState = (): ShellHighlightState => ({ expectsCommand: true, expectsRedirect: false, expectsPath: false });
+
+function highlightShellLine(line: string, state = shellHighlightState()) {
+  // Keep shell words intact: paths, flags, and URLs are not identifiers.
+  const tokens = line.match(/\s+|#.*$|&&|\|\||[|;&<>]+|\\$|(?:\\.|"(?:\\.|[^"\\])*"|'[^']*'|[^\s|;&<>"'\\])+|./g) ?? [];
+  let { expectsCommand, expectsRedirect, expectsPath } = state;
+  let continued = false;
+
+  const highlighted = tokens.map((token) => {
+    if (/^\s+$/.test(token)) return escapeHtml(token);
+    if (token.startsWith('#')) return span('syn-punctuation', token);
+    continued = false;
+    if (/^[|;&]+$/.test(token)) {
+      expectsCommand = true;
+      expectsPath = false;
+      expectsRedirect = false;
+      continued = /^(?:\||\|\||&&)$/.test(token);
+      return span('syn-punctuation', token);
+    }
+    if (/^[<>]+$/.test(token)) {
+      expectsRedirect = true;
+      return span('syn-punctuation', token);
+    }
+    if (token === '\\') {
+      continued = true;
+      return span('syn-punctuation', token);
+    }
+
+    const assignment = token.match(/^(?:[A-Za-z_][\w]*|--[\w-]+)=/)?.[0];
+    const command = expectsCommand && !expectsRedirect && !expectsPath && !assignment && !token.startsWith('-');
+    const path = !command && !assignment && !token.startsWith('-')
+      && (expectsPath || expectsRedirect || token.includes('/') || /^\.?[\w-]+(?:\.[\w-]+)+$/.test(token));
+    expectsPath = /^(?:--data|--output|--output-dir|-d|-o)$/.test(token);
+    if (!assignment && !expectsRedirect && !token.startsWith('-')) expectsCommand = command && token === 'npx';
+    expectsRedirect = false;
+
+    const value = assignment ? token.slice(assignment.length) : token;
+    return escapeHtml(assignment ?? '') + value.split(/("(?:\\.|[^"\\])*"|'[^']*'|\$\{[^}]+\}|\$[A-Za-z_][\w]*)/g).filter(Boolean).map((part) => {
+      if (/^(['"])[\s\S]*\1$/.test(part)) {
+        return span('syn-punctuation', part[0]) + span('syn-string', part.slice(1, -1)) + span('syn-punctuation', part.at(-1)!);
+      }
+      if (part.startsWith('$')) return span('syn-variable', part);
+      return span(command ? 'syn-command' : path || assignment ? 'syn-string' : undefined, part);
+    }).join('');
+  }).join('');
+  Object.assign(state, continued ? { expectsCommand, expectsRedirect, expectsPath } : shellHighlightState());
+  return highlighted;
+}
+
+function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md' | 'shell'>, constrainKnapToTags = true) {
   const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
   const tokens = line.split(pattern).filter(Boolean);
   let expectsFilter = false;
@@ -138,6 +192,8 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md'>,
 }
 
 export function highlightInlineKnap(value: string) {
+  // Inline CLI options are prose references, not Knap expressions.
+  if (/^\s*--?[A-Za-z]/.test(value)) return undefined;
   const isKnapSyntax = /(\{\{|\}\}|\{%|%\}|\?\?|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)\b)/.test(value)
     || /(?:==|!=|>=|<=|&&|\|\|)/.test(value)
     || /(?:^|\s)[<>!](?:\s|$)/.test(value)
@@ -155,12 +211,17 @@ function highlightKnapLine(line: string) {
 }
 
 export function highlightLine(line: string, language: CodeLanguage, inFrontmatter = false) {
+  if (language === 'shell') return highlightShellLine(line);
   if (language === 'md') return highlightMarkdownLine(line, inFrontmatter);
   if (language === 'knap') return highlightKnapLine(line);
   return highlightTokenLine(line, language);
 }
 
 export function highlightLines(lines: string[], language: CodeLanguage) {
+  if (language === 'shell') {
+    const state = shellHighlightState();
+    return lines.map((line) => highlightShellLine(line, state));
+  }
   let inFrontmatter = false;
   return lines.map((line, index) => {
     const highlighted = highlightLine(line, language, inFrontmatter);

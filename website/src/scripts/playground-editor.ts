@@ -23,7 +23,7 @@ export function createPlaygroundEditor(name: 'input' | 'template' | 'output', ex
         EditorState.readOnly.of(readonly), EditorView.editable.of(!readonly),
         readonly ? keymap.of(defaultKeymap) : [history(), keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab])],
         EditorView.contentAttributes.of({
-          id: `playground-${name}`, 'aria-label': name[0].toUpperCase() + name.slice(1),
+          id: `playground-${name}`, 'aria-label': name === 'input' ? 'Data' : name[0].toUpperCase() + name.slice(1),
           'aria-describedby': `${name}-status${readonly ? '' : ` ${name}-file-status`}`,
           role: 'textbox', 'aria-readonly': String(readonly), tabindex: '0', spellcheck: 'false', autocapitalize: 'off',
         }),

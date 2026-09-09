@@ -41,7 +41,7 @@
   --syntax-magenta: #e47da8;
   --syntax-muted: #9f9d96;
   --accent: var(--purple);
-  --selection-background: rgb(218 112 44 / 24%);
+  --selection-background: rgb(255 252 240 / 15%);
   --content: 960px;
   --reading: calc(var(--font-size-body) * 42);
 }
@@ -51,7 +51,6 @@
 }
 ::selection {
   background: var(--selection-background);
-  color: var(--syntax-orange);
 }
 [hidden] {
   display: none !important;

@@ -10,6 +10,7 @@
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
+    "test:dev": "ASTRO_TELEMETRY_DISABLED=1 node --test tests/dev-css.integration.mjs",
     "deploy": "pnpm build && wrangler deploy",
     "lint": "ASTRO_TELEMETRY_DISABLED=1 astro check"
   },

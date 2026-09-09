@@ -14,7 +14,13 @@
 .footer-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 20px;
+}
+
+@media (max-width: 760px) {
+  .footer-nav {
+    gap: 16px;
+  }
 }
 
 @media (max-width: 480px) {

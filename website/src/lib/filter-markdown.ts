@@ -19,7 +19,7 @@ export function filterMarkdown(filter: FilterDoc) {
     '',
   ];
 
-  if (filter.environment === 'html') lines.push('> **HTML preset**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
+  if (filter.environment === 'html') lines.push('> **HTML parsing**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
 
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
@@ -28,7 +28,7 @@ export function filterMarkdown(filter: FilterDoc) {
   lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
   filter.examples.forEach((item) => {
     if (!(filter.examples.length === 1 && item.title === 'Basic usage')) lines.push(`### ${item.title}`, '');
-    lines.push(fence('json', JSON.stringify(item.variables, null, 2), 'Input'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
+    lines.push(fence('json', JSON.stringify(item.variables, null, 2), 'Data'), '', fence('knap', item.template, 'Template'), '', fence('md', item.expected, 'Output'), '');
   });
 
   for (const table of filter.referenceTables ?? []) {
