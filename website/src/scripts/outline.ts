@@ -1,6 +1,6 @@
 // Match Reader mode: brighten the current section and fade those above it.
 export function setupOutline() {
-  const links = document.querySelectorAll<HTMLAnchorElement>('.docs-toc a[href^="#"]');
+  const links = document.querySelectorAll<HTMLAnchorElement>('.docs-toc-outline a[href^="#"]');
   const sections = [...links].flatMap((link) => {
     const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
     return heading ? [{ link, heading }] : [];

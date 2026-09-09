@@ -13,18 +13,38 @@ interface Props {
   fitTitle?: boolean;
 }
 
-const { title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
+const { current, title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const pages = [
+  { id: 'variables', title: 'Variables' },
+  { id: 'filters', title: 'Filters' },
+  { id: 'logic', title: 'Logic' },
+  { id: 'cli', title: 'CLI' },
+  { id: 'api', title: 'API' },
+];
+const isNestedPage = markdownPath !== `/${current}.md`;
 ---
 
 <BaseLayout title={title} description={description} markdownPath={markdownPath}>
   <main id="top" class="docs-page">
     <SiteHeader />
     <div class="docs-layout">
-      <aside class="docs-toc" aria-label="Page outline">
-        <a class="docs-toc-title" href="#top">{title}</a>
-        {toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}
-      </aside>
+      <nav class="docs-toc" aria-label="Documentation">
+        <a class="docs-toc-title" href="/">Introduction</a>
+        {pages.map((page) => (
+          <div class="docs-toc-page">
+            <a class:list={['docs-toc-title', { 'is-current': page.id === current }]} href={page.id === current && !isNestedPage ? '#top' : `/${page.id}`} aria-current={page.id === current && !isNestedPage ? 'page' : undefined}>{page.title}</a>
+            {page.id === current && (
+              <div class:list={{ 'docs-toc-children': isNestedPage }}>
+                {isNestedPage && <a class="docs-toc-title" href="#top" aria-current="page">{title}</a>}
+                <div class="docs-toc-outline">
+                  {toc.map((item) => <a href={`#${item.slug}`} data-depth={item.depth}>{item.text}</a>)}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </nav>
 
       <article class="docs-content">
         <header class="docs-title">

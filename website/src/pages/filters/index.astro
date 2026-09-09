@@ -8,24 +8,13 @@ const byName = new Map(filterDocs.map((filter) => [filter.name, filter]));
 const renderFilterRow = (filter: (typeof filterDocs)[number]) => `<a class="filter-row" href="/filters/${filter.slug}"><div><code>${escape(filter.name)}</code></div><p>${escape(filter.summary)}</p><span aria-hidden="true">→</span></a>`;
 const groupedDirectory = filterGroups.map((group) => {
   const filters = group.filters.map((name) => byName.get(name)).filter(Boolean);
-  return `<section class="filter-directory-group"><header><h3>${escape(group.label)}</h3><p>${escape(group.intro)}</p></header><div class="filter-list">${filters.map((filter) => filter ? renderFilterRow(filter) : '').join('')}</div></section>`;
+  return `<section class="filter-directory-group"><header><h3 id="filter-group-${group.id}">${escape(group.label)}</h3><p>${escape(group.intro)}</p></header><div class="filter-list">${filters.map((filter) => filter ? renderFilterRow(filter) : '').join('')}</div></section>`;
 }).join('');
-const alphabeticalDirectory = [...filterDocs]
-  .sort((a, b) => a.name.localeCompare(b.name))
-  .map(renderFilterRow)
-  .join('');
-const directory = `<div class="filter-directory">
-  <div class="filter-view-switch segmented-control" role="group" aria-label="Filter list view">
-    <button type="button" data-filter-view-control="grouped" aria-pressed="true">Grouped</button>
-    <button type="button" data-filter-view-control="alphabetical" aria-pressed="false">A–Z</button>
-  </div>
-  <div data-filter-view-panel="grouped">${groupedDirectory}</div>
-  <div data-filter-view-panel="alphabetical" hidden>
-    <section class="filter-directory-group filter-directory-alphabetical"><header><h3>All filters</h3></header><div class="filter-list">${alphabeticalDirectory}</div></section>
-  </div>
-</div>`;
+const directory = `<div class="filter-directory">${groupedDirectory}</div>`;
 const content = (await compiledContent()).replace('<!-- FILTER_DIRECTORY -->', directory);
-const headings = getHeadings();
+const headings = getHeadings().flatMap((heading) => heading.slug === 'built-in-filters'
+  ? [heading, ...filterGroups.map((group) => ({ depth: 3, slug: `filter-group-${group.id}`, text: group.label }))]
+  : [heading]);
 ---
 
 <DocsLayout current="filters" title={frontmatter.title} description={frontmatter.description} headings={headings} markdownPath="/filters.md">

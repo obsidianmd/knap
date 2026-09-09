@@ -176,32 +176,7 @@ function setupSearch() {
   });
 }
 
-function setupFilterDirectoryView() {
-  const controls = [...document.querySelectorAll<HTMLButtonElement>('[data-filter-view-control]')];
-  const panels = [...document.querySelectorAll<HTMLElement>('[data-filter-view-panel]')];
-  if (!controls.length || !panels.length) return;
-
-  type FilterView = 'grouped' | 'alphabetical';
-  const viewFromUrl = (): FilterView => new URLSearchParams(window.location.search).get('view') === 'alphabetical' ? 'alphabetical' : 'grouped';
-  const show = (view: FilterView, updateUrl = false) => {
-    controls.forEach((control) => control.setAttribute('aria-pressed', String(control.dataset.filterViewControl === view)));
-    panels.forEach((panel) => { panel.hidden = panel.dataset.filterViewPanel !== view; });
-
-    if (updateUrl) {
-      const url = new URL(window.location.href);
-      if (view === 'alphabetical') url.searchParams.set('view', 'alphabetical');
-      else url.searchParams.delete('view');
-      window.history.pushState({}, '', url);
-    }
-  };
-
-  controls.forEach((control) => control.addEventListener('click', () => show(control.dataset.filterViewControl as FilterView, true)));
-  window.addEventListener('popstate', () => show(viewFromUrl()));
-  show(viewFromUrl());
-}
-
 import { setupOutline } from './outline';
 
 setupOutline();
 setupSearch();
-setupFilterDirectoryView();

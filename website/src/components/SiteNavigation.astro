@@ -1,6 +1,10 @@
-<a href="/variables">Variables</a>
-<a href="/filters">Filters</a>
-<a href="/logic">Logic</a>
-<a href="/api">API</a>
-<a href="/cli">CLI</a>
-<a href="/playground">Playground</a>
+---
+interface Props {
+  hidePlayground?: boolean;
+}
+
+const { hidePlayground = false } = Astro.props;
+---
+
+<a href="/variables">Docs</a>
+{!hidePlayground && <a href="/playground">Playground</a>}

@@ -3,23 +3,16 @@ import CodeBlock from './CodeBlock.astro';
 import Install from './Install.astro';
 ---
 
-<section class="get-started" aria-labelledby="get-started-title">
-  <header class="install-heading">
-    <h2 id="get-started-title">Get started</h2>
-  </header>
-
+<div class="get-started">
   <section class="get-started-terminal" aria-labelledby="terminal-title">
     <header class="install-heading">
-      <h3 id="terminal-title">Use in the terminal</h3>
-      <p>Generate Markdown from a template and JSON data.</p>
+      <h2 id="terminal-title">Use in the terminal</h2>
     </header>
-    <CodeBlock language="shell" code="npx knap render template.md --data data.json --output note.md" highlight={false} />
-    <p>Try it without creating any files:</p>
-    <CodeBlock language="shell" code={'npx knap render -t \'# {{ title }}\' --set title=Hello'} highlight={false} />
-    <p class="get-started-link">Read the <a href="/cli">CLI guide</a> for input options, piping, and installation.</p>
+    <CodeBlock language="shell" code="npx knap render template.md --data data.json --output note.md" />
+    <p class="get-started-link">Generate Markdown from a Knap template. Read the <a href="/cli">CLI guide</a> for options.</p>
   </section>
 
-  <Install title="Use in your app" headingLevel="h3">
-    <p class="get-started-link">Read the <a href="/api">API reference</a> to configure and render templates in your app.</p>
+  <Install title="Use in your app" showDescription={false}>
+    <p class="get-started-link">Add Knap to your app to render templates with your own data using the <a href="/api">API</a>.</p>
   </Install>
-</section>
+</div>

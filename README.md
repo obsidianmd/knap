@@ -84,11 +84,85 @@ The CLI enables the standard filters. DOM-dependent HTML filters and custom host
 integrations remain available through the library API.
 
 Rendered text is written unchanged, without an added newline. An output file is
-created or overwritten only after rendering succeeds; its parent directory must
-already exist. Argument, input, rendering, and filesystem errors exit with status
+created or overwritten only after rendering succeeds; missing parent directories
+are created automatically. Argument, input, rendering, and filesystem errors exit with status
 `1`. Template errors include their code and source location on stderr, leaving
 stdout empty and existing output files untouched on rendering failure. Non-fatal
 warnings go to stderr and allow output with exit status `0`.
+
+### Batch rendering
+
+Use `batch` to create one file per CSV row, JSON array object, or JSON file in
+a folder:
+
+```sh
+# One file per CSV row, named using its title
+npx knap batch template.md --data articles.csv --output-dir notes \
+  --filename '{{ title | safe_name }}.md'
+
+# One file per JSON object in an array
+npx knap batch template.md --data articles.json --output-dir notes \
+  --filename '{{ title | safe_name }}.md'
+
+# One file per JSON file, preserving the source basename
+npx knap batch template.md --data ./articles --output-dir notes
+
+# Pipe a JSON array
+cat articles.json | npx knap batch template.md --data - --output-dir notes
+
+# Pipe CSV
+cat articles.csv | npx knap batch template.md --data - --format csv --output-dir notes
+
+# Preview output paths without writing files
+npx knap batch template.md --data articles.csv --output-dir notes --dry-run
+```
+
+CSV files use the first nonempty row as column headers. Values remain strings,
+including numbers and booleans. Quoted commas, escaped quotes, embedded newlines,
+and UTF-8 BOMs are supported. Blank lines are skipped; duplicate or empty column
+headers and inconsistent row lengths are errors.
+
+File input defaults to CSV for `.csv` and JSON otherwise; stdin defaults to JSON.
+Use `--format csv` or `--format json` to override detection. Folder input and
+`--data-json` require JSON. CSV uses commas; TSV is not supported.
+
+JSON array elements and individual JSON files must be objects. Folder input reads
+regular `.json` files in filename order, ignoring subfolders, symlinks, and other
+file types. File extensions are case-insensitive. Empty batches are errors.
+
+| Option | Short | Purpose |
+| --- | --- | --- |
+| `--data <source>` | `-d` | CSV file, JSON array file, folder of JSON objects, or `-` for stdin (JSON by default). |
+| `--data-json <json>` |  | Inline JSON array instead of `--data`. |
+| `--format <csv\|json>` |  | Override file format detection or select the stdin format. |
+| `--output-dir <dir>` |  | Required destination directory; created if needed. |
+| `--filename <template>` |  | Filename template evaluated against each record. |
+| `--overwrite` |  | Allow replacing existing regular files. |
+| `--dry-run` |  | Validate and list output paths without creating directories or writing files. |
+
+Batch supports the same template sources and `--set` overrides as `render`.
+Overrides apply to every record, including filename templates. Without
+`--filename`, outputs use the source JSON basename with `.md`, or `1.md`, `2.md`,
+and so on for CSV rows and JSON array items. Custom filename templates must
+include the desired extension and produce a single filename without directories;
+use `safe_name` when including data values.
+Rendered basenames must contain more than whitespace, dots, hyphens, or
+underscores; `.md` and `-.md` are rejected. Leading whitespace is also rejected.
+Optional values may be empty if the remaining name is valid. For intentional
+dotfiles, start the template with a literal dot, such as `.env` or `.{{ name }}`.
+
+Knap validates input, filenames, and rendered content before writing files.
+Duplicate filenames within a batch are errors even with `--overwrite`, including
+names that differ only by case or Unicode normalization. Existing files require
+`--overwrite`; directories and symlinks cannot be overwritten. Warnings and a
+completion summary go to stderr; stdout stays empty except for `--dry-run` paths.
+Dry runs perform the same validation and existing-file checks, print one output
+path per line only after validation succeeds, and write nothing. Use
+`--overwrite --dry-run` to preview replacements. A preview cannot guarantee that
+a later write will succeed.
+A filesystem failure during
+writing can leave some files written, and the error reports how many completed.
+Batch data and prepared outputs are held in memory.
 
 ## Use
 
@@ -282,7 +356,7 @@ When a filter cannot use runtime input but preserves that input for
 compatibility, `engine.render()` reports a non-fatal structured warning. This
 includes values such as an unparseable date or an invalid regular expression.
 
-### HTML preset
+### HTML parsing
 
 Import `htmlFilters` from `knap/html` to enable:
 

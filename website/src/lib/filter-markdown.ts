@@ -19,7 +19,7 @@ export function filterMarkdown(filter: FilterDoc) {
     '',
   ];
 
-  if (filter.environment === 'html') lines.push('> **HTML preset**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
+  if (filter.environment === 'html') lines.push('> **HTML parsing**  ', '> This filter needs browser-compatible DOM globals and the `knap/html` preset.', '');
 
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];

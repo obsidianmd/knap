@@ -44,6 +44,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --dir website install --frozen-lockfile
       - run: pnpm --dir website check
+      - run: pnpm --dir website test:dev
       - run: pnpm --dir website build
       - name: Deploy website
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

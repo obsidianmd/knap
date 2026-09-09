@@ -4,9 +4,14 @@ All notable changes to Knap will be documented in this file.
 
 ## Unreleased
 
+- Add `knap batch` to render CSV rows, JSON arrays, or folders of JSON objects
+  into individual files, with filename templates, explicit input formats,
+  CSV piping, dry-run previews, and explicit overwrite support. Reject filename
+  templates that produce empty or separator-only basenames, or leading whitespace.
 - Add a `knap render` CLI with file, inline, and stdin template inputs; JSON
   variables from files, inline data, or stdin; repeatable string overrides; and
-  file or stdout output. The existing library entry points remain available.
+  file or stdout output with automatic parent-directory creation. The existing
+  library entry points remain available.
 
 ## 0.3.1
 

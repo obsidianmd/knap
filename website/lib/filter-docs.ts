@@ -48,7 +48,7 @@ const inlineWhitespace = 'Leading and trailing whitespace stays outside inline m
 
 const docs: FilterDoc[] = [
   {
-    slug: 'date', name: 'date', searchTerms: ['date format', 'format date'], category: 'Dates and time', summary: 'Format a date.', syntax: ['date', 'date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'],
+    slug: 'date', name: 'date', searchTerms: ['date format', 'format date'], category: 'Dates', summary: 'Format a date.', syntax: ['date', 'date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'],
     parameters: ['The first parameter is the output format. It defaults to `YYYY-MM-DD`.', 'An optional second parameter describes the input format for strict parsing. The input must match it exactly, including separators and zero padding.'],
     notes: ['Format strings use Day.js tokens. Invalid dates are returned unchanged.'],
     related: ['date_modify', 'duration'],
@@ -114,7 +114,7 @@ const docs: FilterDoc[] = [
     ],
   },
   {
-    slug: 'date-modify', name: 'date_modify', category: 'Dates and time', summary: 'Add or subtract a date interval.', syntax: ['date_modify:"+1 day"'],
+    slug: 'date-modify', name: 'date_modify', category: 'Dates', summary: 'Add or subtract a date interval.', syntax: ['date_modify:"+1 day"'],
     parameters: ['Use a signed whole-number amount followed by `year`, `month`, `week`, `day`, `hour`, `minute`, or `second`. Singular and plural units are accepted.'],
     notes: ['The result uses `YYYY-MM-DD`. Hours, minutes, and seconds can change the date when they cross midnight, but the time is omitted.', 'Chain the `date` filter after `date_modify` to choose another output format.'],
     related: ['date'],
@@ -140,7 +140,7 @@ const docs: FilterDoc[] = [
     ],
   },
   {
-    slug: 'duration', name: 'duration', category: 'Dates and time', summary: 'Format seconds or an ISO 8601 duration.', syntax: ['duration', 'duration:"H:mm:ss"'],
+    slug: 'duration', name: 'duration', category: 'Dates', summary: 'Format seconds or an ISO 8601 duration.', syntax: ['duration', 'duration:"H:mm:ss"'],
     parameters: ['The optional format supports `H` and `HH` for hours, `m` and `mm` for minutes, and `s` and `ss` for seconds.'],
     notes: ['Without a format, durations of at least one hour use `HH:mm:ss`; shorter durations use `mm:ss`.', 'Input may be an ISO 8601 duration or a number of seconds.'], related: ['date'],
     referenceTables: [{
@@ -381,8 +381,8 @@ const docs: FilterDoc[] = [
   { slug: 'strip-md', name: 'strip_md', aliases: ['stripmd'], category: 'HTML cleanup', summary: 'Remove Markdown formatting while keeping readable text.', syntax: ['strip_md'], notes: ['Removes formatting including emphasis, highlights, headings, code, blockquotes, lists, and wikilinks.', 'Images, tables, footnote references, fenced code blocks, URLs, and HTML tags are removed rather than converted to visible text.'], related: ['strip_tags'], examples: [example({ text: '**Bold** and [linked](https://example.com)' }, '{{ text | strip_md }}', 'Bold and linked', 'Inline formatting'), example({ text: '# Heading\n\n> Quoted text' }, '{{ text | strip_md }}', 'Heading\n\nQuoted text', 'Block formatting')] },
   { slug: 'strip-tags', name: 'strip_tags', category: 'HTML cleanup', summary: 'Remove all HTML tags except an optional allowlist.', syntax: ['strip_tags', 'strip_tags:"b"'], notes: ['Text inside removed tags is preserved. Common HTML entities are decoded.'], related: ['remove_tags', 'strip_md'], examples: [example({ html: '<p>Hello <b>world</b>!</p>' }, '{{ html | strip_tags }}', 'Hello world!', 'Remove every tag'), example({ html: '<p>Hello <b>world</b>!</p>' }, '{{ html | strip_tags:"b" }}', 'Hello <b>world</b>!', 'Keep selected tags')] },
 
-  { slug: 'html-to-json', name: 'html_to_json', category: 'HTML preset', summary: 'Convert an HTML fragment into a structured JSON tree.', syntax: ['html_to_json'], environment: 'html', notes: ['Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['remove_html'], examples: [{ ...example({ html: '<p>Hello</p>' }, '{{ html | html_to_json }}', '{"type":"element","tag":"p","children":[{"type":"text","content":"Hello"}]}'), testable: false }] },
-  { slug: 'remove-html', name: 'remove_html', category: 'HTML preset', summary: 'Remove selected HTML elements and their contents.', syntax: ['remove_html:"script"', 'remove_html:("script", ".ad", "#promo")'], environment: 'html', parameters: ['Selectors may be tag names, classes, IDs, or other CSS selectors.'], notes: ['Unlike `remove_tags`, this removes the matched element and everything inside it.', 'Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['html_to_json', 'remove_tags'], examples: [{ ...example({ html: '<p>Keep</p><script>remove()</script>' }, '{{ html | remove_html:"script" }}', '<p>Keep</p>', 'Tag selector'), testable: false }, { ...example({ html: '<main><p>Keep</p><aside class="ad">Remove</aside></main>' }, '{{ html | remove_html:".ad" }}', '<main xmlns="http://www.w3.org/1999/xhtml"><p>Keep</p></main>', 'Class selector'), testable: false }] },
+  { slug: 'html-to-json', name: 'html_to_json', category: 'HTML parsing', summary: 'Convert an HTML fragment into a structured JSON tree.', syntax: ['html_to_json'], environment: 'html', notes: ['Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['remove_html'], examples: [{ ...example({ html: '<p>Hello</p>' }, '{{ html | html_to_json }}', '{"type":"element","tag":"p","children":[{"type":"text","content":"Hello"}]}'), testable: false }] },
+  { slug: 'remove-html', name: 'remove_html', category: 'HTML parsing', summary: 'Remove selected HTML elements and their contents.', syntax: ['remove_html:"script"', 'remove_html:("script", ".ad", "#promo")'], environment: 'html', parameters: ['Selectors may be tag names, classes, IDs, or other CSS selectors.'], notes: ['Unlike `remove_tags`, this removes the matched element and everything inside it.', 'Requires browser-compatible DOM globals and the `knap/html` preset.'], related: ['html_to_json', 'remove_tags'], examples: [{ ...example({ html: '<p>Keep</p><script>remove()</script>' }, '{{ html | remove_html:"script" }}', '<p>Keep</p>', 'Tag selector'), testable: false }, { ...example({ html: '<main><p>Keep</p><aside class="ad">Remove</aside></main>' }, '{{ html | remove_html:".ad" }}', '<main xmlns="http://www.w3.org/1999/xhtml"><p>Keep</p></main>', 'Class selector'), testable: false }] },
 ];
 
 export const filterDocs = docs.map((filter) => ({
@@ -391,13 +391,13 @@ export const filterDocs = docs.map((filter) => ({
 }));
 
 export const filterGroups: FilterGroup[] = [
-  { id: 'dates', label: 'Dates and time', intro: 'Parse, adjust, and format dates or durations.', filters: ['date', 'date_modify', 'duration'] },
-  { id: 'text', label: 'Text', intro: 'Normalize case, spacing, file names, and encoded text.', filters: ['camel', 'capitalize', 'decode_uri', 'encode_uri', 'indent', 'kebab', 'lower', 'pascal', 'replace', 'safe_name', 'snake', 'title', 'trim', 'truncate', 'truncatewords', 'uncamel', 'unescape', 'upper'] },
   { id: 'formatting', label: 'Formatting', intro: 'Create links, callouts, lists, tables, and other Markdown structures.', filters: ['blockquote', 'bold', 'callout', 'code', 'code_block', 'comment', 'embed', 'escape_md', 'footnote', 'fragment_link', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hard_break', 'highlight', 'hr', 'image', 'italic', 'link', 'list', 'math', 'math_block', 'strike', 'table', 'table_pretty', 'wikilink', 'yaml', 'yaml_property'] },
+  { id: 'text', label: 'Text', intro: 'Normalize case, spacing, file names, and encoded text.', filters: ['camel', 'capitalize', 'decode_uri', 'encode_uri', 'indent', 'kebab', 'lower', 'pascal', 'replace', 'safe_name', 'snake', 'title', 'trim', 'truncate', 'truncatewords', 'uncamel', 'unescape', 'upper'] },
+  { id: 'dates', label: 'Dates', intro: 'Parse, adjust, and format dates or durations.', filters: ['date', 'date_modify', 'duration'] },
   { id: 'numbers', label: 'Numbers', intro: 'Calculate, round, and format numeric values.', filters: ['calc', 'number_format', 'round'] },
   { id: 'collections', label: 'Collections', intro: 'Select, reshape, combine, and render arrays and objects.', filters: ['compact', 'first', 'join', 'last', 'length', 'map', 'merge', 'nth', 'object', 'parse_json', 'reverse', 'slice', 'sort', 'split', 'sum', 'template', 'unique', 'where'] },
   { id: 'html-cleanup', label: 'HTML cleanup', intro: 'Clean markup while preserving the pieces a Markdown workflow needs.', filters: ['remove_attr', 'remove_tags', 'replace_tags', 'strip_attr', 'strip_md', 'strip_tags'] },
-  { id: 'html-preset', label: 'HTML preset', intro: 'DOM-dependent filters exported separately from knap/html.', filters: ['html_to_json', 'remove_html'] },
+  { id: 'html-preset', label: 'HTML parsing', intro: 'DOM-dependent filters exported separately from knap/html.', filters: ['html_to_json', 'remove_html'] },
 ];
 
 export const filterDocsByName = new Map(
