@@ -12,31 +12,33 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
         with:
           version: 10.20.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The root tests and typecheck reach into website/src, which imports
       # CodeMirror, so the website's dependencies must be present here too.
       - run: pnpm --dir website install --frozen-lockfile
+      - run: pnpm audit
+      - run: pnpm --dir website audit
       - run: pnpm check
 
   website:
     needs: check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
         with:
           version: 10.20.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22.13.0
+          node-version: 24
           cache: pnpm
           cache-dependency-path: website/pnpm-lock.yaml
       # The website imports the engine from src, which depends on dayjs, so
