@@ -44,3 +44,7 @@
   svg { color: var(--muted); }
   &:hover svg, &:focus-visible svg { color: var(--paper); }
 }
+
+@media (max-width: 760px) {
+  .playground-link-prefix { display: none; }
+}
