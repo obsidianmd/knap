@@ -1,13 +1,11 @@
 # Changelog
 
-All notable changes to Knap will be documented in this file.
-
 ## Unreleased
 
 - Add `knap batch` to render CSV rows, JSON arrays, or folders of JSON objects into individual files, with filename templates, explicit input formats, CSV piping, dry-run previews, and explicit overwrite support. Reject filename templates that produce empty or separator-only basenames, or leading whitespace.
 - Add a `knap render` CLI with file, inline, and stdin template inputs; JSON variables from files, inline data, or stdin; repeatable string overrides; and file or stdout output with automatic parent-directory creation. The existing library entry points remain available.
 
-## 0.3.1
+## 0.3.2
 
 - Support dot property access after array indexing, including chained paths such as `cast[0].details.name` and keys that share a keyword name.
 - Merge through `merge` using the original array value rather than its serialized form, and treat a single comma-separated argument as a list.

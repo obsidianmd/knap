@@ -25,6 +25,9 @@ jobs:
           package-manager-cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # The root tests and typecheck import website code that needs CodeMirror.
+      - name: Install website dependencies
+        run: pnpm --dir website install --frozen-lockfile
       - name: Verify tag matches package version
         run: |
           package_version="$(node -p "require('./package.json').version")"
