@@ -1,3 +1,6 @@
+import { RenderBudget } from './limits';
+import type { RenderOptions } from './types';
+export type { RenderOptions } from './types';
 import { ownProperty } from './filters/property_utils';
 // Template renderer for Knap
 // Evaluates an AST and produces string output
@@ -63,10 +66,7 @@ export interface RenderContext {
 /**
  * Options for the render function
  */
-export interface RenderOptions {
-	/** Whether to trim whitespace from output */
-	trimOutput?: boolean;
-}
+
 
 /**
  * Result of rendering
@@ -95,7 +95,7 @@ export async function render(
 	context: RenderContext,
 	options: RenderOptions = {}
 ): Promise<RenderResult> {
-	const parseResult = parse(template);
+	const parseResult = parse(template, options.limits);
 
 	if (parseResult.errors.length > 0) {
 		return {
@@ -118,21 +118,29 @@ export async function render(
 export async function renderAST(
 	ast: ASTNode[],
 	context: RenderContext,
-	options: RenderOptions = {}
+	options: RenderOptions = {},
+	budget = new RenderBudget(options.limits),
 ): Promise<RenderResult> {
 	const errors: RenderError[] = [];
 	const state: RenderState = {
 		context,
 		errors,
 		pendingTrimRight: false,
+		budget,
 	};
 
 	let output = '';
 
-	for (let i = 0; i < ast.length; i++) {
-		const node = ast[i];
-		const nodeOutput = await renderNode(node, state);
-		output = appendNodeOutput(output, nodeOutput, node, state);
+	try {
+		budget.value(context.variables);
+		for (let i = 0; i < ast.length; i++) {
+			const node = ast[i];
+			const nodeOutput = await renderNode(node, state);
+			output = appendNodeOutput(output, nodeOutput, node, state);
+		}
+	} catch (error) {
+		if (!(error instanceof TemplateRuntimeError) || error.code !== 'LIMIT_EXCEEDED') throw error;
+		return { output: '', errors: [...errors, { message: error.message, code: error.code, line: error.line ?? 1, column: error.column ?? 1 }] };
 	}
 
 	if (options.trimOutput) {
@@ -147,6 +155,7 @@ export async function renderAST(
 // ============================================================================
 
 interface RenderState {
+	budget: RenderBudget;
 	context: RenderContext;
 	errors: RenderError[];
 	pendingTrimRight: boolean;
@@ -157,6 +166,7 @@ interface RenderState {
 // ============================================================================
 
 async function renderNode(node: ASTNode, state: RenderState): Promise<string> {
+	state.budget.step();
 	switch (node.type) {
 		case 'text':
 			return renderText(node, state);
@@ -197,7 +207,7 @@ async function renderVariable(node: VariableNode, state: RenderState): Promise<s
 
 	try {
 		const value = await evaluateExpression(node.expression, state);
-		const result = valueToString(value);
+		const result = valueToString(value, state);
 
 		if (node.trimRight) {
 			state.pendingTrimRight = true;
@@ -291,8 +301,10 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 
 		const results: string[] = [];
 		const length = iterableArray.length;
+		let outputLength = 0;
 
 		for (let i = 0; i < length; i++) {
+			state.budget.step();
 			const item = iterableArray[i];
 
 			// Create loop object with Twig-compatible properties
@@ -325,7 +337,11 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 			const result = trimLeadingWhitespace(itemResult);
 			// A false conditional can leave an iteration completely empty.
 			// It must not create a separator or become the final visible item.
-			if (result !== '') results.push(result);
+			if (result !== '') {
+				outputLength += result.length + (results.length && !results.at(-1)!.endsWith('\n') ? 1 : 0);
+				state.budget.output(outputLength);
+				results.push(result);
+			}
 		}
 
 		if (node.trimRight) {
@@ -347,6 +363,7 @@ async function renderFor(node: ForNode, state: RenderState): Promise<string> {
 async function renderSet(node: SetNode, state: RenderState): Promise<string> {
 	try {
 		const value = await evaluateExpression(node.value, state);
+		state.budget.value(value);
 
 		// Set the variable in the context (mutates the context)
 		Object.defineProperty(state.context.variables, node.variable, {
@@ -379,6 +396,7 @@ async function renderNodes(nodes: ASTNode[], state: RenderState): Promise<string
  * Handles both trimLeft (trim trailing from previous) and trimRight (trim leading from current).
  */
 function appendNodeOutput(output: string, nodeOutput: string, node: ASTNode, state: RenderState): string {
+	state.budget.output(output.length + nodeOutput.length);
 	// Handle trimLeft - trim trailing whitespace from previous output
 	if ('trimLeft' in node && (node as any).trimLeft && output.length > 0) {
 		output = trimTrailingWhitespace(output);
@@ -400,6 +418,7 @@ function appendNodeOutput(output: string, nodeOutput: string, node: ASTNode, sta
 // ============================================================================
 
 async function evaluateExpression(expr: Expression, state: RenderState): Promise<any> {
+	state.budget.step();
 	switch (expr.type) {
 		case 'literal':
 			return evaluateLiteral(expr);
@@ -521,6 +540,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		if (argValue === undefined && arg.type === 'identifier') {
 			argValue = arg.name;
 		}
+		state.budget.value(argValue);
 		args.push(argValue);
 	}
 	const rawArguments = args.map((argument, index) => {
@@ -529,7 +549,7 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		return expression.type === 'literal' ? expression.unquotedValue ?? argument : argument;
 	});
 
-	const stringValue = valueToString(value);
+	const stringValue = valueToString(value, state);
 
 	// Build parameter string from args (already parsed by AST)
 	// This avoids the round-trip of building "filterName:args" then re-parsing it
@@ -557,7 +577,8 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		paramString = formattedArgs.join(',');
 	}
 
-	return await state.context.applyFilter(
+	state.budget.value(paramString);
+	const result = await state.context.applyFilter(
 		stringValue,
 		expr.name,
 		paramString,
@@ -567,6 +588,8 @@ async function evaluateFilter(expr: FilterExpression, state: RenderState): Promi
 		rawArguments,
 		expr.args.some(argument => !isLiteralFilterArgument(argument)),
 	);
+	state.budget.value(result);
+	return result;
 }
 
 function evaluateContains(left: any, right: any): boolean {
@@ -698,7 +721,8 @@ function isTruthy(value: any): boolean {
 /**
  * Convert any value to a string for output
  */
-function valueToString(value: any): string {
+function valueToString(value: any, state: RenderState): string {
+	state.budget.value(value);
 	if (value === undefined || value === null) {
 		return '';
 	}
@@ -706,13 +730,16 @@ function valueToString(value: any): string {
 		return String(value[0]);
 	}
 	if (typeof value === 'object') {
-		return JSON.stringify(value);
+		const result = JSON.stringify(value);
+		state.budget.value(result);
+		return result;
 	}
 	return String(value);
 }
 
 function toRenderError(error: unknown, prefix: string, line: number, column: number): RenderError {
 	if (error instanceof TemplateRuntimeError) {
+		if (error.code === 'LIMIT_EXCEEDED') throw error;
 		return {
 			message: error.message,
 			line: error.line ?? line,

@@ -1,3 +1,4 @@
+import { TemplateRuntimeError } from '../errors';
 import { parseRegexPattern, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import type { ParamValidationResult } from '../filters';
 import type { FilterContext } from '../types';
@@ -79,12 +80,16 @@ export const replace = (str: string, param?: string, context?: FilterContext): s
 		// Check if this is a regex pattern
 		const regexInfo = parseRegexPattern(search);
 		if (regexInfo) {
+			if (context?.allowRegex === false) {
+				throw new TemplateRuntimeError('Regex replacements are disabled', 'INVALID_FILTER_ARGUMENTS');
+			}
 			try {
 				// Process escaped sequences in replacement string
 				replace = processEscapedCharacters(replace);
 				const regex = new RegExp(regexInfo.pattern, regexInfo.flags);
-				return acc.replace(regex, replace);
+				return boundedReplace(acc, regex, replace, context);
 			} catch (error) {
+				if (error instanceof TemplateRuntimeError) throw error;
 				reportFilterWarning(
 					context,
 					`Invalid regular expression: ${errorMessage(error)}`,
@@ -100,17 +105,21 @@ export const replace = (str: string, param?: string, context?: FilterContext): s
 
 		// For | and : characters, use string.split and join
 		if (search === '|' || search === ':') {
-			return acc.split(search).join(replace);
+			const parts = acc.split(search);
+			context?.checkLength?.(acc.length + (parts.length - 1) * (replace.length - search.length));
+			return parts.join(replace);
 		}
 
 		// For literal newlines and other special regex characters, use split and join
 		if (search.includes('\n') || search.includes('\r') || search.includes('\t')) {
-			return acc.split(search).join(replace);
+			const parts = acc.split(search);
+			context?.checkLength?.(acc.length + (parts.length - 1) * (replace.length - search.length));
+			return parts.join(replace);
 		}
 
 		// Escape special regex characters for literal string replacement
 		const searchRegex = new RegExp(search.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g');
-		return acc.replace(searchRegex, replace);
+		return boundedReplace(acc, searchRegex, replace, context);
 	}, str);
 };
 
@@ -122,5 +131,39 @@ function processEscapedCharacters(str: string): string {
 			case 't': return '\t';
 			default: return char;
 		}
+	});
+}
+
+/** Preserve native replacement syntax while checking each expansion before joining. */
+function boundedReplace(input: string, regex: RegExp, replacement: string, context?: FilterContext): string {
+	if (!context?.checkLength) return input.replace(regex, replacement);
+	let length = input.length;
+	return input.replace(regex, (match, ...args: any[]) => {
+		const named = typeof args.at(-1) === 'object' ? args.pop() : undefined;
+		args.pop(); // Original input.
+		const offset = args.pop() as number;
+		const captures = args as (string | undefined)[];
+		let expandedLength = replacement.length;
+		const expanded = replacement.replace(/\$(\$|&|`|'|\d{1,2}|<[^>]*>)/g, (token, key: string) => {
+			const substitute = () => {
+				if (key === '$') return '$';
+				if (key === '&') return match;
+				if (key === '`') return input.slice(0, offset);
+				if (key === "'") return input.slice(offset + match.length);
+				if (key.startsWith('<')) return named ? named[key.slice(1, -1)] ?? '' : token;
+				const index = Number(key);
+				if (index > 0 && index <= captures.length) return captures[index - 1] ?? '';
+				const first = Number(key[0]);
+				if (key.length === 2 && first > 0 && first <= captures.length) return (captures[first - 1] ?? '') + key[1];
+				return token;
+			};
+			const value = substitute();
+			expandedLength += value.length - token.length;
+			context.checkLength!(length - match.length + expandedLength);
+			return value;
+		});
+		length += expanded.length - match.length;
+		context.checkLength!(length);
+		return expanded;
 	});
 }

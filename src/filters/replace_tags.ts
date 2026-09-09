@@ -1,3 +1,4 @@
+import { TemplateRuntimeError } from '../errors';
 import { splitParamList, splitParamPair, unquoteParamToken } from '../parser-utils';
 
 const cleanTag = (value: string): string => unquoteParamToken(value).replace(/\\(.)/g, '$1');
@@ -12,6 +13,10 @@ export const replace_tags = (html: string, params: string = ''): string => {
 			cleanTag(rawSource),
 			rawTarget === undefined ? '' : cleanTag(rawTarget),
 		]);
+	}
+
+	if (transformations.some(([source, target]) => !/^[a-z][\w:-]*$/i.test(source) || (target !== '' && !/^[a-z][\w:-]*$/i.test(target)))) {
+		throw new TemplateRuntimeError('replace_tags requires tag names', 'INVALID_FILTER_ARGUMENTS');
 	}
 
 	// If no transformations specified, return the original HTML

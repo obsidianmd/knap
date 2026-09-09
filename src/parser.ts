@@ -8,7 +8,9 @@
 // - Expressions with operators and literals
 
 import { Token, TokenType, tokenize, TokenizerResult } from './tokenizer';
-import type { FilterMetadata } from './types';
+import type { FilterMetadata, ParseOptions } from './types';
+import { resolveLimits, limitError } from './limits';
+import { TemplateRuntimeError } from './errors';
 import type { TemplateErrorCode } from './errors';
 
 // ============================================================================
@@ -145,6 +147,8 @@ export interface ParserResult {
 // ============================================================================
 
 interface ParserState {
+	depth: number;
+	maxDepth: number;
 	tokens: Token[];
 	pos: number;
 	errors: ParserError[];
@@ -160,40 +164,53 @@ interface ParserState {
  * @param input The template string to parse
  * @returns ParserResult containing the AST and any errors
  */
-export function parse(input: string): ParserResult {
-	const tokenizerResult = tokenize(input);
-
-	// Convert tokenizer errors to parser errors
-	const errors: ParserError[] = tokenizerResult.errors.map(e => ({
-		message: e.message,
-		line: e.line,
-		column: e.column,
-	}));
-
-	const state: ParserState = {
-		tokens: tokenizerResult.tokens,
-		pos: 0,
-		errors,
-	};
-
-	const ast = parseTemplate(state);
-
-	return { ast, errors: state.errors };
+export function parse(input: string, options: ParseOptions = {}): ParserResult {
+	try {
+		const limits = resolveLimits(options);
+		if (input.length > limits.maxTemplateLength) limitError('maxTemplateLength');
+		const result = tokenize(input);
+		return parseTokens(result.tokens, options, result.errors);
+	} catch (error) {
+		return parseFailure(error);
+	}
 }
 
-/**
- * Parse tokens directly (for when you already have tokens).
- */
-export function parseTokens(tokens: Token[]): ParserResult {
-	const state: ParserState = {
-		tokens,
-		pos: 0,
-		errors: [],
-	};
+function parseFailure(error: unknown): ParserResult {
+	if (error instanceof TemplateRuntimeError || error instanceof RangeError) {
+		return { ast: [], errors: [{
+			message: error instanceof TemplateRuntimeError ? error.message : 'Template exceeded maxDepth',
+			code: 'LIMIT_EXCEEDED', line: 1, column: 1,
+		}] };
+	}
+	throw error;
+}
 
-	const ast = parseTemplate(state);
+/** Parse tokens directly, with the same depth checks as string input. */
+export function parseTokens(tokens: Token[], options: ParseOptions = {}, errors: ParserError[] = []): ParserResult {
+	try {
+		const limits = resolveLimits(options);
+		const state: ParserState = { tokens, pos: 0, errors, depth: 0, maxDepth: limits.maxDepth };
+		const ast = parseTemplate(state);
+		// Iteratively check left-associated expressions before recursive visitors run.
+		const pending: { value: any; depth: number }[] = ast.map(value => ({ value, depth: 0 }));
+		while (pending.length) {
+			const { value, depth } = pending.pop()!;
+			if (depth > limits.maxDepth) limitError('maxDepth');
+			if (value && typeof value === 'object') {
+				for (const child of Object.values(value)) {
+					if (child && typeof child === 'object') pending.push({ value: child, depth: depth + (Array.isArray(child) ? 0 : 1) });
+				}
+			}
+		}
+		return { ast, errors: state.errors };
+	} catch (error) {
+		return parseFailure(error);
+	}
+}
 
-	return { ast, errors: state.errors };
+function withDepth<T>(state: ParserState, parse: () => T): T {
+	if (++state.depth > state.maxDepth) limitError('maxDepth');
+	try { return parse(); } finally { state.depth--; }
 }
 
 // ============================================================================
@@ -604,6 +621,10 @@ function parseSetStatement(state: ParserState, startToken: Token, trimLeft: bool
 // ============================================================================
 
 function parseBody(state: ParserState, stopKeywords: TokenType[], trimClosingLine = false): ASTNode[] {
+	return withDepth(state, () => parseBodyInner(state, stopKeywords, trimClosingLine));
+}
+
+function parseBodyInner(state: ParserState, stopKeywords: TokenType[], trimClosingLine = false): ASTNode[] {
 	const nodes: ASTNode[] = [];
 
 	while (!isAtEnd(state)) {
@@ -1009,6 +1030,10 @@ function parseFilterExpression(state: ParserState): Expression | null {
 
 // Or: left or right, left || right
 function parseOrExpression(state: ParserState): Expression | null {
+	return withDepth(state, () => parseOrExpressionInner(state));
+}
+
+function parseOrExpressionInner(state: ParserState): Expression | null {
 	let left = parseAndExpression(state);
 	if (!left) return null;
 
@@ -1067,6 +1092,10 @@ function parseAndExpression(state: ParserState): Expression | null {
 
 // Not: not expr, !expr
 function parseNotExpression(state: ParserState): Expression | null {
+	return withDepth(state, () => parseNotExpressionInner(state));
+}
+
+function parseNotExpressionInner(state: ParserState): Expression | null {
 	if (check(state, 'op_not')) {
 		const opToken = advance(state);
 		const argument = parseNotExpression(state);

@@ -4,6 +4,7 @@ export type TemplateErrorCode =
 	| 'INVALID_FILTER_ARGUMENTS'
 	| 'RESOLVE_ERROR'
 	| 'FILTER_ERROR'
+	| 'LIMIT_EXCEEDED'
 	| 'RENDER_ERROR';
 
 export type TemplateWarningCode =

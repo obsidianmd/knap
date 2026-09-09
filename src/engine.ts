@@ -1,3 +1,4 @@
+import { RenderBudget } from './limits';
 import { TemplateRenderError, TemplateRuntimeError, type TemplateError } from './errors';
 import { parse, validateFilters, type ASTNode, type ParserError } from './parser';
 import { renderAST } from './renderer';
@@ -30,17 +31,23 @@ export function createEngine<TContext = unknown>(
 ): TemplateEngine<TContext> {
 	const filters = Object.freeze({ ...(options.filters ?? {}) });
 	const filterMetadata = metadataForRegistry(filters);
+	const parseTemplate = (template: string) => parse(template, options.limits);
 
 	function validate(templateOrAst: string | ASTNode[]): TemplateError[] {
 		let ast: ASTNode[];
 		const errors: TemplateError[] = [];
 
 		if (typeof templateOrAst === 'string') {
-			const parsed = parse(templateOrAst);
+			const parsed = parseTemplate(templateOrAst);
 			ast = parsed.ast;
 			errors.push(...parsed.errors.map(normalizeParserError));
 		} else {
 			ast = templateOrAst;
+			try { new RenderBudget(options.limits).value(ast); }
+			catch (error) {
+				if (!(error instanceof TemplateRuntimeError)) throw error;
+				return [{ message: error.message, code: error.code, line: 1, column: 1 }];
+			}
 		}
 
 		if (errors.length === 0) {
@@ -55,10 +62,12 @@ export function createEngine<TContext = unknown>(
 		input: RenderInput<TContext>,
 		renderOptions: RenderOptions = {},
 	): Promise<TemplateResult> {
-		const parsed = parse(template);
+		const limits = { ...options.limits, ...renderOptions.limits };
+		const parsed = parse(template, limits);
 		const errors = parsed.errors.map(normalizeParserError);
 		if (errors.length > 0) return { output: '', errors, warnings: [] };
 
+		const budget = new RenderBudget(limits);
 		const validationErrors = validateFilters(parsed.ast, filterMetadata).map(normalizeParserError);
 		const warnings: TemplateResult['warnings'] = [];
 		const warningKeys = new Set<string>();
@@ -97,7 +106,10 @@ export function createEngine<TContext = unknown>(
 							);
 						}
 					}
-					return await filter(value, param, {
+					const result = await filter(value, param, {
+						allowRegex: options.allowRegex ?? true,
+						checkValue: value => budget.value(value),
+						checkLength: length => budget.length(length),
 						...resolverContext,
 						rawValue,
 						rawArguments,
@@ -122,6 +134,8 @@ export function createEngine<TContext = unknown>(
 							}
 						},
 					});
+					budget.value(result);
+					return result;
 				} catch (error) {
 					if (error instanceof TemplateRuntimeError) {
 						throw new TemplateRuntimeError(
@@ -139,7 +153,7 @@ export function createEngine<TContext = unknown>(
 					);
 				}
 			},
-		}, renderOptions);
+		}, { ...renderOptions, limits }, budget);
 
 		return {
 			output: rendered.output,
@@ -150,7 +164,7 @@ export function createEngine<TContext = unknown>(
 
 	return {
 		filters,
-		parse,
+		parse: parseTemplate,
 		validate,
 		render,
 		async renderOrThrow(template, input, renderOptions) {

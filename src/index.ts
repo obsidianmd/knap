@@ -1,3 +1,4 @@
+export { defaultRenderLimits } from './limits';
 export { createEngine } from './engine';
 export {
 	applyFiltersWithRegistry,
@@ -45,6 +46,8 @@ export type {
 	ParamValidator,
 	RenderInput,
 	RenderOptions,
+	RenderLimits,
+	ParseOptions,
 	TemplateEngine,
 	TemplateFilter,
 	TemplateResult,

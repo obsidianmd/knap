@@ -89,6 +89,31 @@ Set `{ trimOutput: false }` in render options to preserve surrounding template w
 
 Knap parses templates into an AST and interprets them without using `eval` or executing arbitrary JavaScript. Applications control the variables, asynchronous resolvers, and custom filters available to each engine.
 
+
+## Rendering limits
+
+Engines apply finite limits by default. Configure them at construction, or pass a `limits` object in render options to override them for one render:
+
+```ts
+const engine = createEngine({
+  filters: standardFilters,
+  allowRegex: false,
+  limits: {
+    maxTemplateLength: 100_000,
+    maxOutputLength: 100_000,
+    maxValueLength: 1_000_000,
+    maxOperations: 50_000,
+    maxDepth: 50,
+  },
+});
+```
+
+`allowRegex: false` makes `split` treat its separator literally and rejects regex searches in `replace`. Literal replacements remain available. Regex matching stays enabled by default for compatibility. When accepting untrusted templates or regex input, run rendering in a terminable worker or process with a wall-clock deadline; a same-thread Promise timeout cannot interrupt native regex matching. Custom filters and resolvers are trusted host code and also require isolation if they can block or allocate unbounded data. Limits are not a JavaScript sandbox.
+
+The exported `defaultRenderLimits` are 1,000,000 template characters, 5,000,000 output characters, 5,000,000 characters per value, 100,000 work operations, and a nesting budget of 100. Work includes expression evaluation, iterations, and value traversal. Lengths use JavaScript string units; collection value checks include keys and structural overhead. Limits must be positive safe integers; `maxDepth` cannot exceed 256. Exceeding a limit returns `LIMIT_EXCEEDED` with empty output. `renderOrThrow` throws `TemplateRenderError` as usual. `parse` and `validate` also report nesting and template-size limits.
+
+Pass plain data rather than objects with accessors or custom serialization. Property lookup reads own data properties; inherited values and getters are not resolved. The HTML filters manipulate markup but do not sanitize it.
+
 ## Editor tooling
 
 The lower-level exports let editors tokenize once, inspect an AST, and validate variables or filters independently.

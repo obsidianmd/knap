@@ -29,6 +29,11 @@ export interface FilterContext<TContext = unknown> {
 	/** Evaluated filter arguments before Knap serializes them into the parameter string. */
 	rawArguments?: TemplateValue[];
 	reportWarning?: (warning: FilterWarning) => void;
+	/** False makes split literal and disables regex replacements. */
+	allowRegex?: boolean;
+	/** Host budget checks, also used between built-in filter operations. */
+	checkValue?: (value: unknown) => void;
+	checkLength?: (length: number) => void;
 }
 
 export interface TemplateFilter<TContext = unknown> {
@@ -50,6 +55,22 @@ export type VariableResolver<TContext = unknown> = (
 
 export interface EngineOptions<TContext = unknown> {
 	filters?: FilterRegistry<TContext>;
+	limits?: RenderLimits;
+	/** Native regexes require worker/process isolation for untrusted input. Defaults to true. */
+	allowRegex?: boolean;
+}
+
+export interface RenderLimits {
+	maxTemplateLength?: number;
+	maxOutputLength?: number;
+	maxValueLength?: number;
+	maxOperations?: number;
+	maxDepth?: number;
+}
+
+export interface ParseOptions {
+	maxTemplateLength?: number;
+	maxDepth?: number;
 }
 
 export interface RenderInput<TContext = unknown> {
@@ -60,6 +81,7 @@ export interface RenderInput<TContext = unknown> {
 
 export interface RenderOptions {
 	trimOutput?: boolean;
+	limits?: RenderLimits;
 }
 
 export interface TemplateResult {
