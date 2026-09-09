@@ -11,12 +11,13 @@ interface Props {
 
 const {
   title,
-  description = 'Knap is a safe, flexible templating language for turning structured data into Markdown.',
+  description = 'Knap is a simple template language that turns data into Markdown using logic, variables, and filters.',
   markdownPath,
 } = Astro.props;
-const pageTitle = title ? `${title} · Knap` : 'Knap · The template language for Markdown';
+const pageTitle = title ? `${title} · Knap` : 'Knap · Turn data into Markdown';
 const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
 const canonical = new URL(canonicalPath, Astro.site);
+const socialImage = new URL('/social.png', Astro.site);
 ---
 
 <!doctype html>
@@ -32,6 +33,14 @@ const canonical = new URL(canonicalPath, Astro.site);
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
     <title>{pageTitle}</title>
     <style is:inline>
       a { color: inherit; text-decoration: none; }
