@@ -11,21 +11,12 @@
 .hero-grid {
   display: grid;
   gap: 32px;
-  padding-block: 64px 48px;
+  padding-block: 48px 48px;
 
-}
-
-.hero-copy h1 {
-  max-width: 620px;
-  margin: 0;
-  font-size: var(--font-size-title);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
 }
 
 .lede {
-  margin: 20px 0 0;
+  margin: 32px 0 0;
   font-size: inherit;
 }
 

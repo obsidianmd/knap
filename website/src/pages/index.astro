@@ -4,6 +4,7 @@ import TemplateExample from '../components/TemplateExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import GetStarted from '../components/GetStarted.astro';
+import CairnHeadline from '../components/CairnHeadline.astro';
 
 import { homeExamples as examples } from '../lib/home-examples';
 ---
@@ -14,7 +15,7 @@ import { homeExamples as examples } from '../lib/home-examples';
       <SiteHeader />
       <div class="hero-grid">
         <div class="hero-copy">
-          <h1>The template language for Markdown.</h1>
+          <CairnHeadline />
           <p class="lede">Knap is a simple language that lets you generate Markdown content from structured data. It converts data by following a template that you define with <a href="/variables">variables</a>, <a href="/filters">filters</a>, and <a href="/logic">logic</a>.</p>
         </div>
 

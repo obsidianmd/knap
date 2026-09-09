@@ -1,0 +1,291 @@
+<cairn-headline>
+  <h1>
+    <span class="stone stone-for"><span class="stone-motion">for</span><span class="word-space">{' '}</span></span>
+    <span class="stone stone-data"><span class="stone-motion">data</span><span class="word-space">{' '}</span></span>
+    <span class="stone stone-shaped"><span class="stone-motion">shaped</span><span class="word-space">{' '}</span></span>
+    <span class="stone stone-into"><span class="stone-motion">into</span><span class="word-space">{' '}</span></span>
+    <span class="stone stone-md"><span class="stone-motion">.md</span></span>
+  </h1>
+</cairn-headline>
+
+<style>
+  cairn-headline {
+    display: block;
+    width: fit-content;
+    margin-inline: auto;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  cairn-headline.is-grabbing {
+    cursor: grabbing;
+  }
+
+  h1 {
+    position: relative;
+    width: 4.875em;
+    height: 4.9em;
+    margin: 0;
+    font-size: clamp(2rem, 18vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .stone {
+    position: absolute;
+    display: block;
+    white-space: nowrap;
+    transform-origin: 50% 90%;
+    transform: translateX(-50%) translateY(var(--lift, 0em)) rotate(var(--tilt));
+  }
+
+  .stone-motion {
+    display: block;
+    transform-origin: var(--contact-point, 50% 90%);
+    transform: rotate(var(--wobble, 0deg));
+  }
+
+  .word-space {
+    position: absolute;
+    white-space: pre;
+  }
+
+  .stone-for {
+    top: 0.15em;
+    left: 57%;
+    --tilt: -87deg;
+    --contact-point: 10% 58%;
+    color: var(--green);
+  }
+
+  .stone-data {
+    top: 1.48em;
+    left: 52%;
+    --tilt: -4deg;
+    color: var(--blue);
+  }
+
+  .stone-shaped {
+    top: 2.22em;
+    left: 45%;
+    --tilt: 4deg;
+    color: var(--orange);
+  }
+
+  .stone-into {
+    top: 3.07em;
+    left: 53%;
+    --tilt: -8deg;
+    color: var(--muted);
+  }
+
+  .stone-md {
+    top: 3.85em;
+    left: 45%;
+    --tilt: 0deg;
+    color: #e6e4d9;
+  }
+
+  @media (any-pointer: coarse) {
+    .stone {
+      touch-action: pinch-zoom;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stone {
+      transform: translateX(-50%) rotate(var(--tilt));
+    }
+
+    .stone-motion {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const MAX_ROCK = 4;
+  const MAX_LIFT = 0.32;
+  const GRAVITY = 0.025;
+  const LIFT_SMOOTHING = 0.5;
+  const clamp = (value: number, limit: number) => Math.max(-limit, Math.min(limit, value));
+  const spring = () => ({ position: 0, velocity: 0 });
+
+  function stepSpring(state: ReturnType<typeof spring>, target: number, step: number, stiffness = 0.08, damping = 0.72) {
+    state.velocity = (state.velocity + (target - state.position) * stiffness * step) * Math.pow(damping, step);
+    state.position += state.velocity * step;
+    if (Math.abs(state.position - target) > 0.0001 || Math.abs(state.velocity) > 0.0001) return true;
+    state.position = target;
+    state.velocity = 0;
+    return false;
+  }
+
+  function drop(state: ReturnType<typeof spring>, step: number) {
+    state.velocity = Math.max(0, state.velocity) + GRAVITY * step;
+    state.position = Math.min(0, state.position + state.velocity * step);
+    if (state.position < 0) return true;
+    state.velocity = 0;
+    return false;
+  }
+
+  class CairnHeadline extends HTMLElement {
+    connectedCallback() {
+      const events = new AbortController();
+      const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const words = [...this.querySelectorAll<HTMLElement>('.stone')];
+      const stones = words.filter((word) => !word.classList.contains('stone-md')).map((element) => ({
+        element,
+        rock: spring(),
+        lift: spring(),
+        stiffness: 0.075 + Math.random() * 0.01,
+      }));
+      let frame = 0;
+      let previousTime = 0;
+      let pointer: { x: number; y: number; word: number } | undefined;
+      let held: { pointerId: number; word: number; startY: number; lift: number; liftSpeed: number; drag: number } | undefined;
+
+      const render = (time: number) => {
+        if (motion.matches) { reset(); return; }
+        const step = previousTime ? Math.min((time - previousTime) / (1000 / 60), 2) : 1;
+        previousTime = time;
+        let moving = false;
+        if (held) {
+          held.lift = Math.min(MAX_LIFT, held.lift + held.liftSpeed * step);
+          moving = held.lift < MAX_LIFT;
+        }
+        // A word follows its support, carrying a small rock upward with a delay.
+        for (let index = stones.length - 1; index >= 0; index--) {
+          const stone = stones[index];
+          const support = stones[index + 1]?.rock.position ?? 0;
+          moving = stepSpring(stone.rock, support * 0.95, step, stone.stiffness) || moving;
+          if (Math.abs(stone.rock.position) > MAX_ROCK) {
+            stone.rock.position = clamp(stone.rock.position, MAX_ROCK);
+            stone.rock.velocity = 0;
+          }
+          const liftTarget = held && index <= held.word ? -Math.max(0, Math.min(MAX_LIFT, held.lift + held.drag)) : null;
+          const landingSpeed = liftTarget === null && stone.lift.position < 0
+            ? Math.max(0, stone.lift.velocity) + GRAVITY * step : 0;
+          if (liftTarget === null) {
+            moving = drop(stone.lift, step) || moving;
+          } else {
+            // Follow the hand closely, without the rocking spring's lag or inertia.
+            stone.lift.position += (liftTarget - stone.lift.position) * (1 - Math.pow(LIFT_SMOOTHING, step));
+            stone.lift.velocity = 0;
+            if (Math.abs(liftTarget - stone.lift.position) > 0.0001) moving = true;
+            else stone.lift.position = liftTarget;
+          }
+          if (landingSpeed && stone.lift.position === 0) {
+            // A small rock on contact, without bouncing upward.
+            stone.rock.velocity = clamp(stone.rock.velocity + Math.min(0.16, landingSpeed), 0.8);
+            moving = true;
+          }
+          stone.element.style.setProperty('--wobble', `${stone.rock.position}deg`);
+          stone.element.style.setProperty('--lift', `${stone.lift.position}em`);
+        }
+        frame = moving ? requestAnimationFrame(render) : 0;
+      };
+
+      const wake = () => {
+        if (frame || motion.matches) return;
+        previousTime = 0;
+        frame = requestAnimationFrame(render);
+      };
+
+      const nudgeWord = (word: number, force: number) => {
+        // The fixed .md base can nudge the word resting on it.
+        const stone = stones[Math.min(word, stones.length - 1)];
+        if (!stone) return;
+        stone.rock.velocity = clamp(stone.rock.velocity + force * (word === stones.length ? 0.3 : 1), 0.8);
+        wake();
+      };
+
+      const release = () => {
+        if (!held) return;
+        held = undefined;
+        this.classList.remove('is-grabbing');
+        wake();
+      };
+
+      const nudge = (event: PointerEvent) => {
+        if (motion.matches || !event.isPrimary) return;
+        const pressed = event.type === 'pointerdown';
+        if (pressed && event.button !== 0) return;
+        // Keep the held word even as it moves away from the pointer.
+        let word = held?.pointerId === event.pointerId ? held.word : -1;
+        if (word < 0) {
+          const target = event.pointerType === 'touch' ? document.elementFromPoint(event.clientX, event.clientY) : event.target;
+          word = words.findIndex((element) => target instanceof Node && element.contains(target));
+        }
+        if (word < 0) {
+          pointer = undefined;
+          return;
+        }
+        const dx = pointer ? event.clientX - pointer.x : 0;
+        const dy = pointer ? event.clientY - pointer.y : 0;
+        const entered = pointer?.word !== word;
+        pointer = { x: event.clientX, y: event.clientY, word };
+        const width = Math.max(this.getBoundingClientRect().width, 1);
+        if (pressed) {
+          const touch = event.pointerType === 'touch';
+          held = {
+            pointerId: event.pointerId, word, startY: event.clientY,
+            lift: touch ? 0.1 : 0.08, liftSpeed: touch ? 0.014 : 0.01, drag: 0,
+          };
+          this.classList.add('is-grabbing');
+          nudgeWord(word, touch ? 0.45 : 0.35);
+          return;
+        }
+        if (held) {
+          held.drag = (held.startY - event.clientY) / width * 4.875;
+          wake();
+        }
+        const travel = Math.abs(dx) >= Math.abs(dy) ? dx : dy * 0.7;
+        const force = entered && event.pointerType !== 'touch'
+          ? (Math.sign(travel) || 1) * 0.12
+          : clamp(travel / width * 8, 0.45);
+        if (force) nudgeWord(word, force);
+      };
+
+      const cancelContact = () => { release(); pointer = undefined; };
+      const reset = () => {
+        cancelAnimationFrame(frame);
+        frame = 0;
+        pointer = held = undefined;
+        this.classList.remove('is-grabbing');
+        for (const stone of stones) {
+          stone.rock.position = stone.rock.velocity = stone.lift.position = stone.lift.velocity = 0;
+          stone.element.style.removeProperty('--wobble');
+          stone.element.style.removeProperty('--lift');
+        }
+      };
+
+      this.addEventListener('pointermove', nudge, { signal: events.signal });
+      this.addEventListener('pointerdown', nudge, { signal: events.signal });
+      this.addEventListener('pointerleave', cancelContact, { signal: events.signal });
+      document.addEventListener('pointerup', (event) => {
+        if (event.pointerId === held?.pointerId && event.button === 0) release();
+      }, { signal: events.signal });
+      document.addEventListener('pointercancel', (event) => {
+        if (event.pointerId === held?.pointerId) cancelContact();
+      }, { signal: events.signal });
+      window.addEventListener('blur', cancelContact, { signal: events.signal });
+      motion.addEventListener('change', reset, { signal: events.signal });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) reset();
+      }, { signal: events.signal });
+      this.cleanup = () => { events.abort(); reset(); };
+    }
+
+    private cleanup?: () => void;
+
+    disconnectedCallback() {
+      this.cleanup?.();
+    }
+  }
+
+  if (!customElements.get('cairn-headline')) {
+    customElements.define('cairn-headline', CairnHeadline);
+  }
+</script>
