@@ -111,7 +111,7 @@ describe('website playground', () => {
   test('renders the movie example with its incomplete endif visible', async () => {
     const result = await evaluatePlayground(exampleInput, exampleTemplate.slice(0, -1));
     expect(result.output).toContain('# The Matrix');
-    expect(result.output).toContain('| Keanu Reeves       | Neo         |');
+    expect(result.output).toContain('| Keanu Reeves | Neo |');
     expect(result.output).toContain('{% endif %');
     expect(result.errors.some((error) => error.line === 9)).toBe(true);
   });

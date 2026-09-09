@@ -10,7 +10,7 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
 {% if cast %}
 ## Cast
 
-{{ cast | sort:"Actor" | table_pretty }}
+{{ cast | sort:"Actor" | table }}
 {% endif %}`,
     markdown: `# The Matrix
 
@@ -18,12 +18,12 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
 
 ## Cast
 
-| Actor              | Role        |
-| ------------------ | ----------- |
-| Carrie-Anne Moss   | Trinity     |
-| Hugo Weaving       | Agent Smith |
-| Keanu Reeves       | Neo         |
-| Laurence Fishburne | Morpheus    |`,
+| Actor | Role |
+| - | - |
+| Carrie-Anne Moss | Trinity |
+| Hugo Weaving | Agent Smith |
+| Keanu Reeves | Neo |
+| Laurence Fishburne | Morpheus |`,
   },
   {
     key: 'book',

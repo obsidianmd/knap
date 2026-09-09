@@ -1,11 +1,11 @@
 ---
 title: Knap
-description: Knap is a simple language that turns data into Markdown using templates with variables, filters, and logic.
+description: Knap is a simple template language that turns data into Markdown using logic, variables, and filters.
 ---
 
 # for data shaped into .md
 
-Knap is a simple language that turns data into Markdown using templates with [variables](/variables), [filters](/filters), and [logic](/logic).
+Knap is a simple template language that turns data into Markdown using [logic](/logic), [variables](/variables), and [filters](/filters).
 
 ## Example
 
@@ -19,7 +19,7 @@ Knap is a simple language that turns data into Markdown using templates with [va
 {% if cast %}
 ## Cast
 
-{{ cast | sort:"Actor" | table_pretty }}
+{{ cast | sort:"Actor" | table }}
 {% endif %}
 ```
 
@@ -32,12 +32,12 @@ Knap is a simple language that turns data into Markdown using templates with [va
 
 ## Cast
 
-| Actor              | Role        |
-| ------------------ | ----------- |
-| Carrie-Anne Moss   | Trinity     |
-| Hugo Weaving       | Agent Smith |
-| Keanu Reeves       | Neo         |
-| Laurence Fishburne | Morpheus    |
+| Actor | Role |
+| - | - |
+| Carrie-Anne Moss | Trinity |
+| Hugo Weaving | Agent Smith |
+| Keanu Reeves | Neo |
+| Laurence Fishburne | Morpheus |
 ```
 
 ## Knap in your terminal
