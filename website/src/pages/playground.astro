@@ -10,7 +10,7 @@ import '../styles/playground.scss';
 import { playgroundFilterSuggestions as filters } from '../../lib/filter-completions';
 ---
 
-<BaseLayout title="Playground" description="Try Knap in your browser. Edit JSON input and a template to generate Markdown with live template validation.">
+<BaseLayout title="Playground" description="Try Knap in your browser. Edit JSON data and a template to generate Markdown with live template validation.">
   <main class="playground" data-active-panel="template">
     <script is:inline define:vars={{ storageKey, minimumWidth }}>
       // Prevent iOS from zooming into our small editors on focus. Safari still
@@ -90,7 +90,7 @@ import { playgroundFilterSuggestions as filters } from '../../lib/filter-complet
               <svg class="menu-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5" /></svg>
             </button>
           </div>
-          <input type="file" data-file-input accept=".json,.txt,.md" aria-label="Choose JSON input or a template file" hidden />
+          <input type="file" data-file-input accept=".json,.txt,.md" aria-label="Choose JSON data or a template file" hidden />
         </div>
       </div>
       <nav class="site-header-links" aria-label="Main navigation">
@@ -101,17 +101,17 @@ import { playgroundFilterSuggestions as filters } from '../../lib/filter-complet
     <div class="playground-tabs segmented-control" style="--segment-count: 3" role="tablist" aria-label="Playground editors">
       {['input', 'template', 'output'].map((name) => (
         <button type="button" role="tab" id={`${name}-tab`} aria-controls={`${name}-panel`} aria-selected={name === 'template'} tabindex={name === 'template' ? 0 : -1} data-playground-tab={name}>
-          {name[0].toUpperCase() + name.slice(1)}
+          {name === 'input' ? 'Data' : name[0].toUpperCase() + name.slice(1)}
         </button>
       ))}
     </div>
     <div class="playground-columns">
-      <PlaygroundEditor name="input" label="Input" language="JSON" value={exampleInput} />
+      <PlaygroundEditor name="input" label="Data" language="JSON" value={exampleInput} />
       <div
         class="playground-resizer"
         role="separator"
         tabindex="0"
-        aria-label="Resize input and template columns"
+        aria-label="Resize data and template columns"
         aria-orientation="vertical"
         aria-controls="input-panel template-panel"
         aria-valuenow="50"

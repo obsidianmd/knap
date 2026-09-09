@@ -49,7 +49,7 @@ const inlineWhitespace = 'Leading and trailing whitespace stays outside inline m
 const docs: FilterDoc[] = [
   {
     slug: 'date', name: 'date', searchTerms: ['date format', 'format date'], category: 'Dates', summary: 'Format a date.', syntax: ['date', 'date:"YYYY-MM-DD"', 'date:("YYYY-MM-DD", "MM/DD/YYYY")'],
-    parameters: ['The first parameter is the output format. It defaults to `YYYY-MM-DD`.', 'An optional second parameter describes the input format for strict parsing. The input must match it exactly, including separators and zero padding.'],
+    parameters: ['The first parameter is the output format. It defaults to `YYYY-MM-DD`.', 'An optional second parameter describes the data format for strict parsing. The data must match it exactly, including separators and zero padding.'],
     notes: ['Format strings use Day.js tokens. Invalid dates are returned unchanged.'],
     related: ['date_modify', 'duration'],
     referenceTables: [
@@ -109,7 +109,7 @@ const docs: FilterDoc[] = [
     ],
     examples: [
       example({ published: '2024-12-01' }, '{{ published | date:"MMMM D, YYYY" }}', 'December 1, 2024', 'Format a date'),
-      example({ published: '12/01/2024' }, '{{ published | date:("YYYY-MM-DD", "MM/DD/YYYY") }}', '2024-12-01', 'Specify the input format'),
+      example({ published: '12/01/2024' }, '{{ published | date:("YYYY-MM-DD", "MM/DD/YYYY") }}', '2024-12-01', 'Specify the data format'),
       example({ published: '2024-12-01' }, '{{ published | date:"[Week] WW, GGGG" }}', 'Week 48, 2024', 'ISO week and literal text'),
     ],
   },
@@ -142,7 +142,7 @@ const docs: FilterDoc[] = [
   {
     slug: 'duration', name: 'duration', category: 'Dates', summary: 'Format seconds or an ISO 8601 duration.', syntax: ['duration', 'duration:"H:mm:ss"'],
     parameters: ['The optional format supports `H` and `HH` for hours, `m` and `mm` for minutes, and `s` and `ss` for seconds.'],
-    notes: ['Without a format, durations of at least one hour use `HH:mm:ss`; shorter durations use `mm:ss`.', 'Input may be an ISO 8601 duration or a number of seconds.'], related: ['date'],
+    notes: ['Without a format, durations of at least one hour use `HH:mm:ss`; shorter durations use `mm:ss`.', 'Data may be an ISO 8601 duration or a number of seconds.'], related: ['date'],
     referenceTables: [{
       title: 'Duration formats',
       description: 'Knap supports the six tokens below. Hours represent the total duration and can exceed 23; minutes and seconds are the remaining components. Other Day.js duration tokens and square-bracket escaping are not supported.',
@@ -205,16 +205,16 @@ const docs: FilterDoc[] = [
   {
     slug: 'code', name: 'code', category: 'Markdown', summary: 'Format inline code or a fenced code block.', syntax: ['code', 'code:"typescript"'],
     parameters: ['An optional language creates a fenced code block and adds the language after the opening fence.'],
-    searchTerms: ['backticks', 'code fence', 'syntax highlighting'], notes: ['Multiline input automatically becomes a fenced block. Backtick delimiters grow when needed to contain backticks safely.', recursiveMarkdownValues], related: ['code_block'],
+    searchTerms: ['backticks', 'code fence', 'syntax highlighting'], notes: ['Multiline data automatically becomes a fenced block. Backtick delimiters grow when needed to contain backticks safely.', recursiveMarkdownValues], related: ['code_block'],
     examples: [example({ source: 'const answer = 42' }, '{{ source | code }}', '`const answer = 42`', 'Inline'), example({ source: 'const answer = 42' }, '{{ source | code:"typescript" }}', '```typescript\nconst answer = 42\n```', 'Language block')],
   },
   {
     slug: 'code-block', name: 'code_block', category: 'Markdown', summary: 'Create a fenced code block.', syntax: ['code_block', 'code_block:"typescript"'],
-    searchTerms: ['fenced code', 'code fence', 'syntax highlighting'], parameters: ['Use this filter to explicitly create a code block. The `code` filter defaults to inline code using backticks, and automatically creates a fenced code block for multiline inputs or when a language is specified.', 'The optional language is added after the opening fence.'], notes: [recursiveMarkdownValues], related: ['code'],
+    searchTerms: ['fenced code', 'code fence', 'syntax highlighting'], parameters: ['Use this filter to explicitly create a code block. The `code` filter defaults to inline code using backticks, and automatically creates a fenced code block for multiline values or when a language is specified.', 'The optional language is added after the opening fence.'], notes: [recursiveMarkdownValues], related: ['code'],
     examples: [example({ source: 'const answer = 42' }, '{{ source | code_block:"typescript" }}', '```typescript\nconst answer = 42\n```')],
   },
   { slug: 'comment', name: 'comment', searchTerms: ['hidden text', 'percent'], category: 'Markdown', summary: 'Wrap text in comment markers.', syntax: ['comment'], notes: ['Multiline comments put the opening and closing `%%` markers on separate lines.', inlineWhitespace, recursiveMarkdownValues], examples: [example({ note: 'Hidden note' }, '{{ note | comment }}', '%%Hidden note%%')] },
-  { slug: 'embed', name: 'embed', searchTerms: ['transclusion', 'attachment', 'wiki embed'], category: 'Markdown', summary: 'Create an embedded wiki reference.', syntax: ['embed', 'embed:"Preview"'], parameters: ['The optional parameter sets an alias for string and array inputs.'], notes: ['For object inputs, keys are targets and values are aliases.'], related: ['image', 'wikilink'], examples: [example({ target: 'diagram.png' }, '{{ target | embed }}', '![[diagram.png]]', 'File'), example({ target: 'Project Atlas' }, '{{ target | embed:"Preview" }}', '![[Project Atlas|Preview]]', 'Alias'), example({ targets: ['one.md', 'two.md'] }, '{{ targets | embed }}', '["![[one.md]]","![[two.md]]"]', 'Array input')] },
+  { slug: 'embed', name: 'embed', searchTerms: ['transclusion', 'attachment', 'wiki embed'], category: 'Markdown', summary: 'Create an embedded wiki reference.', syntax: ['embed', 'embed:"Preview"'], parameters: ['The optional parameter sets an alias for string and array values.'], notes: ['For object values, keys are targets and values are aliases.'], related: ['image', 'wikilink'], examples: [example({ target: 'diagram.png' }, '{{ target | embed }}', '![[diagram.png]]', 'File'), example({ target: 'Project Atlas' }, '{{ target | embed:"Preview" }}', '![[Project Atlas|Preview]]', 'Alias'), example({ targets: ['one.md', 'two.md'] }, '{{ targets | embed }}', '["![[one.md]]","![[two.md]]"]', 'Array data')] },
   { slug: 'escape-md', name: 'escape_md', searchTerms: ['literal markdown', 'backslash', 'special characters'], category: 'Markdown', summary: 'Escape Markdown punctuation so text renders literally.', syntax: ['escape_md'], notes: ['Every ASCII punctuation character supported by Markdown backslash escapes is prefixed with a backslash.', 'Existing backslashes are escaped so they remain visible.', recursiveMarkdownValues], related: ['code', 'strip_md'], examples: [example({ text: '# Draft *title*' }, '{{ text | escape_md }}', '\\# Draft \\*title\\*')] },
   {
     slug: 'footnote', name: 'footnote', category: 'Markdown', summary: 'Convert an array or object to Markdown footnote definitions.', syntax: ['footnote'],
@@ -232,12 +232,12 @@ const docs: FilterDoc[] = [
       example({ highlights: ['Selected text', 'Another passage'] }, '{{ highlights | fragment_link:"Source:https://example.com" }}', '["Selected text [Source](https://example.com#:~:text=Selected%20text)","Another passage [Source](https://example.com#:~:text=Another%20passage)"]', 'Custom link text'),
     ],
   },
-  { slug: 'h1', name: 'h1', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-one heading.', syntax: ['h1'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h2', 'h3', 'h4', 'h5', 'h6'], examples: [example({ title: 'Introduction' }, '{{ title | h1 }}', '# Introduction')] },
-  { slug: 'h2', name: 'h2', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-two heading.', syntax: ['h2'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h1', 'h3'], examples: [example({ title: 'Introduction' }, '{{ title | h2 }}', '## Introduction')] },
-  { slug: 'h3', name: 'h3', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-three heading.', syntax: ['h3'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h2', 'h4'], examples: [example({ title: 'Introduction' }, '{{ title | h3 }}', '### Introduction')] },
-  { slug: 'h4', name: 'h4', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-four heading.', syntax: ['h4'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h3', 'h5'], examples: [example({ title: 'Introduction' }, '{{ title | h4 }}', '#### Introduction')] },
-  { slug: 'h5', name: 'h5', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-five heading.', syntax: ['h5'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h4', 'h6'], examples: [example({ title: 'Introduction' }, '{{ title | h5 }}', '##### Introduction')] },
-  { slug: 'h6', name: 'h6', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-six heading.', syntax: ['h6'], notes: ['Each nonempty input line becomes a heading.', recursiveMarkdownValues], related: ['h5'], examples: [example({ title: 'Introduction' }, '{{ title | h6 }}', '###### Introduction')] },
+  { slug: 'h1', name: 'h1', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-one heading.', syntax: ['h1'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h2', 'h3', 'h4', 'h5', 'h6'], examples: [example({ title: 'Introduction' }, '{{ title | h1 }}', '# Introduction')] },
+  { slug: 'h2', name: 'h2', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-two heading.', syntax: ['h2'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h1', 'h3'], examples: [example({ title: 'Introduction' }, '{{ title | h2 }}', '## Introduction')] },
+  { slug: 'h3', name: 'h3', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-three heading.', syntax: ['h3'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h2', 'h4'], examples: [example({ title: 'Introduction' }, '{{ title | h3 }}', '### Introduction')] },
+  { slug: 'h4', name: 'h4', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-four heading.', syntax: ['h4'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h3', 'h5'], examples: [example({ title: 'Introduction' }, '{{ title | h4 }}', '#### Introduction')] },
+  { slug: 'h5', name: 'h5', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-five heading.', syntax: ['h5'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h4', 'h6'], examples: [example({ title: 'Introduction' }, '{{ title | h5 }}', '##### Introduction')] },
+  { slug: 'h6', name: 'h6', searchTerms: ['heading', 'title'], category: 'Markdown', summary: 'Create a level-six heading.', syntax: ['h6'], notes: ['Each nonempty data line becomes a heading.', recursiveMarkdownValues], related: ['h5'], examples: [example({ title: 'Introduction' }, '{{ title | h6 }}', '###### Introduction')] },
   { slug: 'hard-break', name: 'hard_break', searchTerms: ['line break', 'newline'], category: 'Markdown', summary: 'Turn single newlines into Markdown hard line breaks.', syntax: ['hard_break'], notes: ['Two trailing spaces are added before single newlines. Blank lines between paragraphs are preserved.', recursiveMarkdownValues], examples: [example({ text: 'First line\nSecond line\n\nNew paragraph' }, '{{ text | hard_break }}', 'First line  \nSecond line\n\nNew paragraph')] },
   {
     slug: 'highlight', name: 'highlight', searchTerms: ['mark', 'color'], category: 'Markdown', summary: 'Wrap text in highlight markers.', syntax: ['highlight', 'highlight:blue'],
@@ -254,23 +254,23 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'image', name: 'image', category: 'Markdown', summary: 'Create Markdown image syntax from a URL, array, or object.', syntax: ['image', 'image:"Alt text"'],
-    parameters: ['The optional parameter is alt text for string and array inputs.'],
-    notes: ['For object inputs, keys are image URLs and values are alt text.'], related: ['link'],
+    parameters: ['The optional parameter is alt text for string and array values.'],
+    notes: ['For object values, keys are image URLs and values are alt text.'], related: ['link'],
     examples: [
-      example({ url: 'cover.jpg' }, '{{ url | image:"Cover art" }}', '![Cover art](cover.jpg)', 'String input'),
-      example({ images: ['cover.jpg', 'diagram.png'] }, '{{ images | image:"Illustration" }}', '["![Illustration](cover.jpg)","![Illustration](diagram.png)"]', 'Array input'),
-      example({ images: { 'cover.jpg': 'Cover art', 'diagram.png': 'Architecture diagram' } }, '{{ images | image }}', '["![Cover art](cover.jpg)","![Architecture diagram](diagram.png)"]', 'Object input'),
+      example({ url: 'cover.jpg' }, '{{ url | image:"Cover art" }}', '![Cover art](cover.jpg)', 'String data'),
+      example({ images: ['cover.jpg', 'diagram.png'] }, '{{ images | image:"Illustration" }}', '["![Illustration](cover.jpg)","![Illustration](diagram.png)"]', 'Array data'),
+      example({ images: { 'cover.jpg': 'Cover art', 'diagram.png': 'Architecture diagram' } }, '{{ images | image }}', '["![Cover art](cover.jpg)","![Architecture diagram](diagram.png)"]', 'Object data'),
     ],
   },
   { slug: 'italic', name: 'italic', searchTerms: ['emphasis', 'underscore'], category: 'Markdown', summary: 'Wrap text in Markdown italic markers.', syntax: ['italic', 'italic:_'], parameters: ['The default marker is `*`. Pass `_` to use the alternate underscore syntax.'], notes: [inlineWhitespace, recursiveMarkdownValues], related: ['bold', 'strike'], examples: [example({ text: 'Emphasized' }, '{{ text | italic }}', '*Emphasized*', 'Asterisk'), example({ text: 'Emphasized' }, '{{ text | italic:_ }}', '_Emphasized_', 'Underscore')] },
   {
     slug: 'link', name: 'link', category: 'Markdown', summary: 'Create Markdown links from a URL, array, or object.', syntax: ['link', 'link:"Link text"'],
-    parameters: ['The optional parameter is link text for string and array inputs.'],
-    notes: ['For object inputs, keys are URLs and values are link text.'], related: ['fragment_link', 'image', 'wikilink'],
+    parameters: ['The optional parameter is link text for string and array values.'],
+    notes: ['For object values, keys are URLs and values are link text.'], related: ['fragment_link', 'image', 'wikilink'],
     examples: [
-      example({ url: 'https://example.com' }, '{{ url | link:"Example" }}', '[Example](https://example.com)', 'String input'),
-      example({ urls: ['https://one.example', 'https://two.example'] }, '{{ urls | link:"Source" }}', '[Source](https://one.example)\n[Source](https://two.example)', 'Array input'),
-      example({ links: { 'https://one.example': 'One', 'https://two.example': 'Two' } }, '{{ links | link }}', '[One](https://one.example)\n[Two](https://two.example)', 'Object input'),
+      example({ url: 'https://example.com' }, '{{ url | link:"Example" }}', '[Example](https://example.com)', 'String data'),
+      example({ urls: ['https://one.example', 'https://two.example'] }, '{{ urls | link:"Source" }}', '[Source](https://one.example)\n[Source](https://two.example)', 'Array data'),
+      example({ links: { 'https://one.example': 'One', 'https://two.example': 'Two' } }, '{{ links | link }}', '[One](https://one.example)\n[Two](https://two.example)', 'Object data'),
     ],
   },
   {
@@ -284,8 +284,8 @@ const docs: FilterDoc[] = [
       example({ items: ['Write draft', 'Review edits'] }, '{{ items | list:numbered-task }}', '1. [ ] Write draft\n2. [ ] Review edits', 'Numbered task list'),
     ],
   },
-  { slug: 'math', name: 'math', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Format inline math or a math block.', syntax: ['math'], notes: ['Multiline input automatically becomes a block delimited by `$$`.', inlineWhitespace, recursiveMarkdownValues], related: ['math_block'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math }}', '$x^2 + y^2$')] },
-  { slug: 'math-block', name: 'math_block', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Create a block math expression.', syntax: ['math_block'], notes: ['Use this filter to explicitly create a math block. The `math` filter defaults to inline math using a single `$`, and automatically uses `$$` block fences for multiline inputs.', recursiveMarkdownValues], related: ['math'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math_block }}', '$$\nx^2 + y^2\n$$')] },
+  { slug: 'math', name: 'math', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Format inline math or a math block.', syntax: ['math'], notes: ['Multiline data automatically becomes a block delimited by `$$`.', inlineWhitespace, recursiveMarkdownValues], related: ['math_block'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math }}', '$x^2 + y^2$')] },
+  { slug: 'math-block', name: 'math_block', searchTerms: ['latex', 'equation', 'formula'], category: 'Markdown', summary: 'Create a block math expression.', syntax: ['math_block'], notes: ['Use this filter to explicitly create a math block. The `math` filter defaults to inline math using a single `$`, and automatically uses `$$` block fences for multiline values.', recursiveMarkdownValues], related: ['math'], examples: [example({ expression: 'x^2 + y^2' }, '{{ expression | math_block }}', '$$\nx^2 + y^2\n$$')] },
   { slug: 'strike', name: 'strike', searchTerms: ['strikethrough', 'deleted'], category: 'Markdown', summary: 'Wrap text in Markdown strikethrough markers.', syntax: ['strike'], notes: [inlineWhitespace, recursiveMarkdownValues], related: ['bold', 'italic', 'highlight'], examples: [example({ text: 'Removed' }, '{{ text | strike }}', '~~Removed~~')] },
   {
     slug: 'table', name: 'table', category: 'Markdown', summary: 'Convert arrays or objects to a compact Markdown table.', syntax: ['table', 'table:("Column 1", "Column 2")'],
@@ -301,7 +301,7 @@ const docs: FilterDoc[] = [
   {
     slug: 'table-pretty', name: 'table_pretty', category: 'Markdown', summary: 'Convert arrays or objects to a padded Markdown table.', syntax: ['table_pretty', 'table_pretty:("Column 1", "Column 2")'],
     parameters: ['Optional parameters set column headers.'],
-    notes: ['Columns are padded to equal widths and the separator row expands to match.', 'Input shapes and custom headers behave the same as `table`.'], related: ['table'],
+    notes: ['Columns are padded to equal widths and the separator row expands to match.', 'Data shapes and custom headers behave the same as `table`.'], related: ['table'],
     examples: [
       example({ people: [{ name: 'Ada', role: 'Engineer' }, { name: 'Lin', role: 'Designer' }] }, '{{ people | table_pretty }}', '| name | role     |\n| ---- | -------- |\n| Ada  | Engineer |\n| Lin  | Designer |', 'Object array'),
       example({ values: ['Ada', 'Writer', 'Lin', 'Editor'] }, '{{ values | table_pretty:("Name", "Role") }}', '| Name | Role   |\n| ---- | ------ |\n| Ada  | Writer |\n| Lin  | Editor |', 'Custom columns'),
@@ -309,12 +309,12 @@ const docs: FilterDoc[] = [
   },
   {
     slug: 'wikilink', name: 'wikilink', category: 'Markdown', summary: 'Create wikilinks from strings, arrays, or objects.', syntax: ['wikilink', 'wikilink:"Alias"'],
-    parameters: ['The optional parameter sets an alias for string and array inputs.'],
-    notes: ['Output uses Obsidian-compatible `[[target|alias]]` syntax. Wikilinks are also commonly called internal links.', 'For object inputs, keys are note names and values are aliases.'], related: ['link'],
+    parameters: ['The optional parameter sets an alias for string and array values.'],
+    notes: ['Output uses Obsidian-compatible `[[target|alias]]` syntax. Wikilinks are also commonly called internal links.', 'For object values, keys are note names and values are aliases.'], related: ['link'],
     examples: [
       example({ page: 'Project Atlas' }, '{{ page | wikilink:"Atlas" }}', '[[Project Atlas|Atlas]]', 'String with alias'),
-      example({ pages: ['Project Atlas', 'Daily Notes'] }, '{{ pages | wikilink }}', '["[[Project Atlas]]","[[Daily Notes]]"]', 'Array input'),
-      example({ pages: { 'Project Atlas': 'Atlas', 'Daily Notes': 'Journal' } }, '{{ pages | wikilink }}', '["[[Project Atlas|Atlas]]","[[Daily Notes|Journal]]"]', 'Object input'),
+      example({ pages: ['Project Atlas', 'Daily Notes'] }, '{{ pages | wikilink }}', '["[[Project Atlas]]","[[Daily Notes]]"]', 'Array data'),
+      example({ pages: { 'Project Atlas': 'Atlas', 'Daily Notes': 'Journal' } }, '{{ pages | wikilink }}', '["[[Project Atlas|Atlas]]","[[Daily Notes|Journal]]"]', 'Object data'),
     ],
   },
   {
@@ -342,7 +342,7 @@ const docs: FilterDoc[] = [
     ],
   },
 
-  { slug: 'calc', name: 'calc', category: 'Numbers', summary: 'Apply a simple arithmetic operation to a number.', syntax: ['calc:"+10"', 'calc:"*2"', 'calc:"**3"'], parameters: ['Supported operators are `+`, `-`, `*`, `/`, `**`, and `^`.'], notes: ['Non-numeric input is returned unchanged.'], related: ['round', 'number_format'], examples: [example({ count: 5 }, '{{ count | calc:"+10" }}', '15', 'Addition'), example({ count: 2 }, '{{ count | calc:"**3" }}', '8', 'Exponentiation')] },
+  { slug: 'calc', name: 'calc', category: 'Numbers', summary: 'Apply a simple arithmetic operation to a number.', syntax: ['calc:"+10"', 'calc:"*2"', 'calc:"**3"'], parameters: ['Supported operators are `+`, `-`, `*`, `/`, `**`, and `^`.'], notes: ['Non-numeric data is returned unchanged.'], related: ['round', 'number_format'], examples: [example({ count: 5 }, '{{ count | calc:"+10" }}', '15', 'Addition'), example({ count: 2 }, '{{ count | calc:"**3" }}', '8', 'Exponentiation')] },
   {
     slug: 'number-format', name: 'number_format', category: 'Numbers', summary: 'Add thousands separators and optional decimal places.', syntax: ['number_format', 'number_format:2', 'number_format:(2, ",", ".")'],
     parameters: ['Parameters set decimal places, the decimal separator, and the thousands separator, in that order.'],
@@ -350,7 +350,7 @@ const docs: FilterDoc[] = [
     examples: [
       example({ amount: 1234567.89 }, '{{ amount | number_format:2 }}', '1,234,567.89', 'Decimal places'),
       example({ amount: 1234.567 }, '{{ amount | number_format:(2, ",", ".") }}', '1.234,57', 'Custom separators'),
-      example({ amounts: [1200, 3500.5] }, '{{ amounts | number_format:2 }}', '["1,200.00","3,500.50"]', 'Array input'),
+      example({ amounts: [1200, 3500.5] }, '{{ amounts | number_format:2 }}', '["1,200.00","3,500.50"]', 'Array data'),
     ],
   },
   { slug: 'round', name: 'round', category: 'Numbers', summary: 'Round a number to an optional number of decimal places.', syntax: ['round', 'round:2'], parameters: ['The optional non-negative parameter sets decimal places.'], related: ['calc', 'number_format'], examples: [example({ value: 3.14159 }, '{{ value | round:2 }}', '3.14')] },
