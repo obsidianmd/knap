@@ -24,6 +24,7 @@ const managers = [
     <Heading id={headingId}>{title}</Heading>
     {showDescription && <p>Add Knap to your app so users can safely generate Markdown from variables you define.</p>}
   </header>
+  <slot name="description" />
   <div class="install-managers segmented-control" style={`--segment-count: ${managers.length}`} role="group" aria-label="Package manager">
     {managers.map(({ name }, index) => (
       <button type="button" data-install-manager={name} aria-pressed={index === 0} aria-controls={`install-${name}`}>{name}</button>

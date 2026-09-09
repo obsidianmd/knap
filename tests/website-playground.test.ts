@@ -38,8 +38,7 @@ describe('website playground', () => {
     expect(result.inputError).toBeNull();
     expect(result.errors).toEqual([]);
     expect(result.warnings).toEqual([]);
-    expect(result.output).toContain('# The Matrix');
-    expect(result.output).toContain('"[[Lana Wachowski]]"');
+    expect(result.output).toMatch(/^# The Matrix/);
     const movie = homeExamples.find((example) => example.key === 'movie')!;
     expect(JSON.parse(exampleInput)).toEqual(movie.variables);
     expect(exampleTemplate).toBe(movie.template);
@@ -114,7 +113,7 @@ describe('website playground', () => {
     expect(result.output).toContain('# The Matrix');
     expect(result.output).toContain('| Keanu Reeves       | Neo         |');
     expect(result.output).toContain('{% endif %');
-    expect(result.errors.some((error) => error.line === 15)).toBe(true);
+    expect(result.errors.some((error) => error.line === 9)).toBe(true);
   });
 
   test('retains original diagnostic positions after recovering multiline syntax', async () => {

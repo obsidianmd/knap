@@ -127,6 +127,15 @@ function setupSearch() {
     }).join('');
   };
 
+  const setActiveIndex = (index: number) => {
+    activeIndex = index;
+    resultsElement.querySelectorAll<HTMLElement>('[data-result-index]').forEach((result) => {
+      const active = Number(result.dataset.resultIndex) === activeIndex;
+      result.classList.toggle('is-active', active);
+      result.setAttribute('aria-selected', String(active));
+    });
+  };
+
   const update = () => {
     const query = input.value.trim().toLowerCase();
     results = items
@@ -162,13 +171,19 @@ function setupSearch() {
   resultsElement.addEventListener('mousemove', (event) => {
     const result = (event.target as Element).closest<HTMLElement>('[data-result-index]');
     if (!result) return;
-    activeIndex = Number(result.dataset.resultIndex);
-    render();
+    setActiveIndex(Number(result.dataset.resultIndex));
+  });
+  resultsElement.addEventListener('click', (event) => {
+    const result = (event.target as Element).closest<HTMLAnchorElement>('a[data-result-index]');
+    if (!result) return;
+    event.preventDefault();
+    window.location.assign(result.href);
+    close();
   });
   input.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowDown') { event.preventDefault(); activeIndex = Math.min(activeIndex + 1, results.length - 1); render(); }
-    if (event.key === 'ArrowUp') { event.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); render(); }
-    if (event.key === 'Enter' && results[activeIndex]) { event.preventDefault(); window.location.assign(results[activeIndex].href); }
+    if (event.key === 'ArrowDown') { event.preventDefault(); setActiveIndex(Math.min(activeIndex + 1, results.length - 1)); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); setActiveIndex(Math.max(activeIndex - 1, 0)); }
+    if (event.key === 'Enter' && results[activeIndex]) { event.preventDefault(); close(); window.location.assign(results[activeIndex].href); }
   });
   window.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); open(); }

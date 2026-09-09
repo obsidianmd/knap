@@ -3,32 +3,16 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
     key: 'movie',
     variables: { title: 'The Matrix', year: 1999, directors: ['Lana Wachowski', 'Lilly Wachowski'], genres: ['Action', 'Sci-fi'], plot: 'A hacker discovers that reality is a simulation and joins a rebellion against its machines.', cast: [{ Actor: 'Keanu Reeves', Role: 'Neo' }, { Actor: 'Laurence Fishburne', Role: 'Morpheus' }, { Actor: 'Carrie-Anne Moss', Role: 'Trinity' }, { Actor: 'Hugo Weaving', Role: 'Agent Smith' }] },
     label: 'Movie',
-    template: `---
-{{ year | yaml_property:"year" }}
-{{ directors | wikilink | yaml_property:"director" }}
-{{ genres | yaml_property:"genre" }}
----
-
-{{ title | h1 }}
+    template: `{{ title | h1 }}
 
 {{ plot | blockquote }}
 
 {% if cast %}
 ## Cast
 
-{{ cast | slice:0,4 | table_pretty }}
+{{ cast | sort:"Actor" | table_pretty }}
 {% endif %}`,
-    markdown: `---
-year: 1999
-director:
-  - "[[Lana Wachowski]]"
-  - "[[Lilly Wachowski]]"
-genre:
-  - "Action"
-  - "Sci-fi"
----
-
-# The Matrix
+    markdown: `# The Matrix
 
 > A hacker discovers that reality is a simulation and joins a rebellion against its machines.
 
@@ -36,10 +20,10 @@ genre:
 
 | Actor              | Role        |
 | ------------------ | ----------- |
-| Keanu Reeves       | Neo         |
-| Laurence Fishburne | Morpheus    |
 | Carrie-Anne Moss   | Trinity     |
-| Hugo Weaving       | Agent Smith |`,
+| Hugo Weaving       | Agent Smith |
+| Keanu Reeves       | Neo         |
+| Laurence Fishburne | Morpheus    |`,
   },
   {
     key: 'book',
