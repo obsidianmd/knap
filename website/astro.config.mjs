@@ -70,6 +70,27 @@ function staticCodeBlocks() {
   };
 }
 
+function scrollableTables() {
+  return (tree) => {
+    const visit = (node) => {
+      if (!Array.isArray(node?.children)) return;
+      node.children = node.children.map((child) => {
+        if (child?.type === 'element' && child.tagName === 'table') {
+          return {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: ['table-wrap'] },
+            children: [child],
+          };
+        }
+        visit(child);
+        return child;
+      });
+    };
+    visit(tree);
+  };
+}
+
 export default defineConfig({
   site: 'https://knap.md',
   output: 'static',
@@ -78,6 +99,9 @@ export default defineConfig({
   vite: { plugins: [refreshDevCss()] },
   markdown: {
     syntaxHighlight: false,
-    processor: unified({ remarkPlugins: [remarkGfm, staticCodeBlocks] }),
+    processor: unified({
+      remarkPlugins: [remarkGfm, staticCodeBlocks],
+      rehypePlugins: [scrollableTables],
+    }),
   },
 });

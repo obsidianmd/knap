@@ -23,7 +23,7 @@ const canonical = new URL(canonicalPath, Astro.site);
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -33,6 +33,10 @@ const canonical = new URL(canonicalPath, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <title>{pageTitle}</title>
+    <style is:inline>
+      a { color: inherit; text-decoration: none; }
+      button.header-action { appearance: none; border: 1px solid transparent; outline: 0; background: transparent; color: inherit; font: inherit; }
+    </style>
   </head>
   <body><slot /></body>
 </html>

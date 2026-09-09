@@ -32,6 +32,7 @@
 
   &:hover,
   &:focus-visible {
+    outline: 0;
     color: #f2f0e5;
   }
   svg {
@@ -56,8 +57,25 @@
 
 @media (max-width: 760px) {
   .site-header {
+    width: 100%;
     gap: 12px;
-    padding-block: 16px 12px;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 6vw 12px;
+    transition: opacity 240ms ease;
+  }
+
+  [data-scroll-header].is-header-floating {
+    position: fixed;
+    z-index: 90;
+    top: 0;
+    right: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+  }
+  [data-scroll-header].is-header-floating.is-header-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
   .site-header-links {
     gap: 16px;

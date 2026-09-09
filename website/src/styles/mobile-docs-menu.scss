@@ -1,0 +1,79 @@
+.mobile-docs-trigger,
+.mobile-docs-backdrop {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobile-docs-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    width: 32px;
+    justify-content: center;
+  }
+
+  .mobile-docs-backdrop {
+    position: fixed;
+    z-index: 110;
+    inset: 0;
+    display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--ink);
+  }
+
+  .mobile-docs-panel {
+    min-height: 100%;
+    background: var(--ink);
+    color: var(--body);
+  }
+
+  .mobile-docs-header,
+  .mobile-docs-content {
+    width: min(var(--page-width), var(--reading));
+    margin-inline: auto;
+  }
+
+  .mobile-docs-header {
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 16px 12px;
+    color: var(--paper);
+  }
+
+  .mobile-docs-close {
+    width: 32px;
+    justify-content: center;
+  }
+
+  .mobile-docs-content {
+    padding-block: 32px calc(48px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-docs-navigation {
+    gap: 10px;
+
+    .docs-toc-page,
+    .docs-toc-children,
+    .docs-toc-outline {
+      gap: 10px;
+    }
+
+    a {
+      display: block;
+      padding-block: 5px;
+      font-size: var(--font-size-body);
+
+      &.docs-toc-title {
+        font-size: var(--font-size-body);
+      }
+    }
+  }
+
+  html.docs-menu-open,
+  html.docs-menu-open body {
+    overflow: hidden;
+    background: var(--ink);
+  }
+}

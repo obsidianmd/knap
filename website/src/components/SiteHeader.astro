@@ -1,12 +1,31 @@
 ---
 import Search from './Search.astro';
 import SiteNavigation from './SiteNavigation.astro';
+import MobileDocsMenu from './MobileDocsMenu.astro';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  current?: 'variables' | 'logic' | 'filters' | 'api' | 'cli';
+  title?: string;
+  headings?: Heading[];
+  markdownPath?: string;
+}
+
+const { current, title, headings = [], markdownPath } = Astro.props;
 ---
 
-<nav class="site-header" aria-label="Main navigation">
-  <a class="wordmark" href="/" aria-label="Knap home">Knap</a>
-  <div class="site-header-links">
-    <SiteNavigation />
-  </div>
-  <Search />
-</nav>
+<div class="site-header-slot" data-scroll-header-slot>
+  <nav class="site-header" aria-label="Main navigation" data-scroll-header>
+    <a class="wordmark" href="/" aria-label="Knap home">Knap</a>
+    <div class="site-header-links">
+      <SiteNavigation />
+    </div>
+    <Search />
+    <MobileDocsMenu current={current} title={title} headings={headings} markdownPath={markdownPath} />
+  </nav>
+</div>

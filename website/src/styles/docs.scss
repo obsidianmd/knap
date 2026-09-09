@@ -6,13 +6,7 @@
   margin-inline: auto;
   padding-block: 64px 72px;
 }
-.docs-toc {
-  position: fixed;
-  top: 128px;
-  left: 24px;
-  width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
-  max-height: calc(100dvh - 148px);
-  overflow-y: auto;
+.docs-navigation {
   display: grid;
   gap: 8px;
   user-select: none;
@@ -58,6 +52,15 @@
       padding-left: 12px;
     }
   }
+}
+
+.docs-toc {
+  position: fixed;
+  top: 128px;
+  left: 24px;
+  width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
+  max-height: calc(100dvh - 148px);
+  overflow-y: auto;
 }
 
 .docs-title {
@@ -260,11 +263,14 @@
 }
 
 @media (min-width: 761px) {
-  .docs-page > .site-header, .docs-layout {
+  .docs-page > .site-header-slot, .docs-layout {
     // Keep room for the sidebar while letting the right gutter shrink first.
     width: min(var(--reading), calc(100vw - 268px));
     margin-left: max(244px, calc((100vw - var(--reading)) / 2));
     margin-right: 24px;
+  }
+  .docs-page > .site-header-slot > .site-header {
+    width: 100%;
   }
 
   .docs-toc {

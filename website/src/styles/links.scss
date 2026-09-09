@@ -14,6 +14,7 @@
 :where(.site-header-links, .site-footer, .footer-nav) a:focus-visible,
 :where(.playground-link):focus-visible {
   --link-color: var(--link-hover-color, #f2f0e5);
+  outline: 0;
 }
 
 // Keep inline links distinct without making their underline compete with the text.

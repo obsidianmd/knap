@@ -1,9 +1,15 @@
 // Match Reader mode: brighten the current section and fade those above it.
 export function setupOutline() {
   const links = document.querySelectorAll<HTMLAnchorElement>('.docs-toc-outline a[href^="#"]');
-  const sections = [...links].flatMap((link) => {
-    const heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-    return heading ? [{ link, heading }] : [];
+  const linksByHash = new Map<string, HTMLAnchorElement[]>();
+  links.forEach((link) => {
+    const matchingLinks = linksByHash.get(link.hash) ?? [];
+    matchingLinks.push(link);
+    linksByHash.set(link.hash, matchingLinks);
+  });
+  const sections = [...linksByHash].flatMap(([hash, matchingLinks]) => {
+    const heading = document.getElementById(decodeURIComponent(hash.slice(1)));
+    return heading ? [{ links: matchingLinks, heading }] : [];
   });
   if (!sections.length) return;
 
@@ -25,10 +31,12 @@ export function setupOutline() {
     }
     if (nextIndex === activeIndex) return;
     activeIndex = nextIndex;
-    sections.forEach(({ link }, index) => {
-      link.classList.toggle('is-read', index < activeIndex);
-      if (index === activeIndex) link.setAttribute('aria-current', 'location');
-      else link.removeAttribute('aria-current');
+    sections.forEach(({ links: matchingLinks }, index) => {
+      matchingLinks.forEach((link) => {
+        link.classList.toggle('is-read', index < activeIndex);
+        if (index === activeIndex) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
     });
   };
 
