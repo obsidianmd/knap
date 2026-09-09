@@ -143,6 +143,8 @@
       }));
       let frame = 0;
       let previousTime = 0;
+      let introPending = true;
+      let introAnimations: Animation[] = [];
       let pointer: { x: number; y: number; word: number } | undefined;
       let held: { pointerId: number; word: number; startY: number; lift: number; liftSpeed: number; drag: number } | undefined;
 
@@ -178,7 +180,8 @@
           }
           if (landingSpeed && stone.lift.position === 0) {
             // A small rock on contact, without bouncing upward.
-            stone.rock.velocity = clamp(stone.rock.velocity + Math.min(0.16, landingSpeed), 0.8);
+            const settling = Math.min(0.16, landingSpeed);
+            stone.rock.velocity = clamp(stone.rock.velocity + settling, 0.8);
             moving = true;
           }
           stone.element.style.setProperty('--wobble', `${stone.rock.position}deg`);
@@ -222,6 +225,7 @@
           pointer = undefined;
           return;
         }
+        if (introPending || introAnimations.length) reset();
         const dx = pointer ? event.clientX - pointer.x : 0;
         const dy = pointer ? event.clientY - pointer.y : 0;
         const entered = pointer?.word !== word;
@@ -252,6 +256,9 @@
       const reset = () => {
         cancelAnimationFrame(frame);
         frame = 0;
+        introPending = false;
+        introAnimations.forEach((animation) => animation.cancel());
+        introAnimations = [];
         pointer = held = undefined;
         this.classList.remove('is-grabbing');
         for (const stone of stones) {
@@ -276,6 +283,33 @@
         if (document.hidden) reset();
       }, { signal: events.signal });
       this.cleanup = () => { events.abort(); reset(); };
+
+      // Let the browser animate transforms without per-frame JavaScript during page startup.
+      // Keep the static headline visible while its font loads, and allow interaction to skip the intro.
+      if (motion.matches || document.hidden) introPending = false;
+      else void document.fonts.ready.then(() => {
+        if (!introPending || motion.matches || document.hidden || events.signal.aborted) return;
+        introPending = false;
+        stones.forEach((stone, index) => {
+          const height = 0.4 + (stones.length - 1 - index) * 0.2;
+          const duration = 250 * Math.sqrt(height);
+          const tilt = getComputedStyle(stone.element).getPropertyValue('--tilt');
+          const rocking = stone.element.querySelector<HTMLElement>('.stone-motion')!;
+          introAnimations.push(
+            stone.element.animate([
+              { transform: `translateX(-50%) translateY(${-height}em) rotate(${tilt})` },
+              { transform: `translateX(-50%) translateY(0em) rotate(${tilt})` },
+            ], { duration, easing: 'cubic-bezier(0.333, 0, 0.667, 0.333)' }),
+            rocking.animate([0, 0.9, -0.4, 0.15, 0].map((angle) => ({
+              transform: `rotate(${angle}deg)`, easing: 'ease-in-out',
+            })), { delay: duration, duration: 500 }),
+          );
+        });
+        const animations = introAnimations;
+        void Promise.all(animations.map((animation) => animation.finished)).then(() => {
+          if (introAnimations === animations) introAnimations = [];
+        }, () => {}); // Cancellation hands control back to the pointer or reduced-motion setting.
+      });
     }
 
     private cleanup?: () => void;
