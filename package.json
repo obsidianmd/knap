@@ -63,13 +63,18 @@
 		"node": ">=20"
 	},
 	"packageManager": "pnpm@10.20.0",
+	"pnpm": {
+		"overrides": {
+			"tsup>esbuild": "^0.28.1"
+		}
+	},
 	"dependencies": {
-		"dayjs": "^1.11.13"
+		"dayjs": "^1.11.23"
 	},
 	"devDependencies": {
-		"@types/node": "^20.19.27",
-		"tsup": "^8.5.0",
+		"@types/node": "^20.19.43",
+		"tsup": "^8.5.1",
 		"typescript": "^5.9.3",
-		"vitest": "^4.0.18"
+		"vitest": "^4.1.11"
 	}
 }
