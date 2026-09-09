@@ -83,7 +83,7 @@ export function createEngine<TContext = unknown>(
 				}
 				: undefined,
 			applyFilter: async (value, filterName, param, line, column, rawValue, rawArguments, validateResolvedParams) => {
-				const filter = filters[filterName];
+				const filter = Object.prototype.hasOwnProperty.call(filters, filterName) ? filters[filterName] : undefined;
 				if (!filter) {
 					return value;
 				}

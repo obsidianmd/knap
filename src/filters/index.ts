@@ -374,7 +374,7 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 
 	for (const filterExpression of splitFilterString(filterString)) {
 		const [name, ...params] = parseFilterString(filterExpression);
-		const filter = registry[name];
+		const filter = Object.prototype.hasOwnProperty.call(registry, name) ? registry[name] : undefined;
 
 		if (!filter) continue;
 

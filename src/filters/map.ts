@@ -1,6 +1,6 @@
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
 import { splitParamPair, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
-import { ownPropertyAtPath } from './property_utils';
+import { ownProperty, ownPropertyAtPath } from './property_utils';
 import { collectionInputValue } from './value_utils';
 
 export const validateMapParams = (param: string | undefined): ParamValidationResult => {
@@ -48,7 +48,7 @@ function mapWithArrow(str: string, param: string): string {
 				(expr.startsWith('"') && expr.endsWith('"')) ||
 				(expr.startsWith("'") && expr.endsWith("'"))) {
 				// Use a simple object to store the mapped properties
-				const mappedItem: { [key: string]: any } = {};
+				const mappedItem: { [key: string]: any } = Object.create(null);
 
 				// Parse the expression to extract property assignments or string literal
 				if (expr.startsWith('{')) {
@@ -118,10 +118,7 @@ function evaluateExpression(expression: string, item: any, argName: string): any
 }
 
 function getNestedProperty(obj: any, path: string): any {
-	return path.split(/[\.\[\]]/).filter(Boolean).reduce((current, key) => {
-		if (current && Array.isArray(current) && /^\d+$/.test(key)) {
-			return current[parseInt(key, 10)];
-		}
-		return current && current[key] !== undefined ? current[key] : undefined;
+	return path.split(/[.\[\]]/).filter(Boolean).reduce((current, key) => {
+		return ownProperty(current, key).value;
 	}, obj);
 }

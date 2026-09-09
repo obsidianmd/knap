@@ -1,3 +1,4 @@
+import { ownPropertyAtPath } from './property_utils';
 import type { ParamValidationResult } from '../filters';
 import { unquoteScalarParam } from '../parser-utils';
 
@@ -63,7 +64,7 @@ function replaceTemplateVariables(obj: any, template: string): string {
 }
 
 function parseObjectString(str: string): any {
-	const obj: any = {};
+	const obj: any = Object.create(null);
 	const regex = /(\w+):\s*("(?:\\.|[^"\\])*"|[^,}]+)/g;
 	let match;
 
@@ -80,7 +81,5 @@ function parseObjectString(str: string): any {
 }
 
 function getNestedProperty(obj: any, path: string): any {
-	return path.split('.').reduce((current, key) => {
-		return current && typeof current === 'object' ? current[key] : undefined;
-	}, obj);
+	return ownPropertyAtPath(obj, path).value;
 }

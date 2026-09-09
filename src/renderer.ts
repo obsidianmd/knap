@@ -1,3 +1,4 @@
+import { ownProperty } from './filters/property_utils';
 // Template renderer for Knap
 // Evaluates an AST and produces string output
 //
@@ -348,7 +349,9 @@ async function renderSet(node: SetNode, state: RenderState): Promise<string> {
 		const value = await evaluateExpression(node.value, state);
 
 		// Set the variable in the context (mutates the context)
-		state.context.variables[node.variable] = value;
+		Object.defineProperty(state.context.variables, node.variable, {
+			value, writable: true, enumerable: true, configurable: true,
+		});
 
 		if (node.trimRight) {
 			state.pendingTrimRight = true;
@@ -454,22 +457,7 @@ async function evaluateMember(expr: MemberExpression, state: RenderState): Promi
 		return undefined;
 	}
 
-	// Array access with numeric index
-	if (Array.isArray(object) && typeof property === 'number') {
-		return object[property];
-	}
-
-	// Array access with string that's a number
-	if (Array.isArray(object) && typeof property === 'string' && /^\d+$/.test(property)) {
-		return object[parseInt(property, 10)];
-	}
-
-	// Object property access
-	if (typeof object === 'object' && property !== undefined) {
-		return object[property];
-	}
-
-	return undefined;
+	return ownProperty(object, property).value;
 }
 
 async function evaluateBinary(expr: BinaryExpression, state: RenderState): Promise<any> {
@@ -612,14 +600,14 @@ function resolveVariable(name: string, variables: Record<string, any>, path?: re
 	const trimmed = name.trim();
 
 	// Try with {{ }} wrapper first (how variables are stored)
-	const wrappedValue = variables[`{{${trimmed}}}`];
+	const wrappedValue = ownProperty(variables, `{{${trimmed}}}`).value;
 	if (wrappedValue !== undefined) {
 		return wrappedValue;
 	}
 
 	// Try plain key (for locally set variables)
-	if (variables[trimmed] !== undefined) {
-		return variables[trimmed];
+	if (ownProperty(variables, trimmed).value !== undefined) {
+		return ownProperty(variables, trimmed).value;
 	}
 
 	// Handle nested property access: author.name
@@ -642,12 +630,12 @@ function getNestedValue(obj: any, keys: readonly string[]): any {
 			const match = key.match(/^([^\[]*)\[([^\]]+)\]/);
 			if (match) {
 				const [, arrayKey, indexStr] = match;
-				const baseValue = arrayKey ? value[arrayKey] : value;
+				const baseValue = arrayKey ? ownProperty(value, arrayKey).value : value;
 				if (Array.isArray(baseValue)) {
 					const index = parseInt(indexStr, 10);
-					value = baseValue[index];
+					value = ownProperty(baseValue, index).value;
 				} else if (baseValue && typeof baseValue === 'object') {
-					value = baseValue[indexStr.replace(/^["']|["']$/g, '')];
+					value = ownProperty(baseValue, indexStr.replace(/^["']|["']$/g, '')).value;
 				} else {
 					return undefined;
 				}
@@ -656,10 +644,10 @@ function getNestedValue(obj: any, keys: readonly string[]): any {
 		}
 
 		// Try wrapped key first
-		if (value[`{{${key}}}`] !== undefined) {
-			value = value[`{{${key}}}`];
+		if (ownProperty(value, `{{${key}}}`).value !== undefined) {
+			value = ownProperty(value, `{{${key}}}`).value;
 		} else {
-			value = value[key];
+			value = ownProperty(value, key).value;
 		}
 	}
 

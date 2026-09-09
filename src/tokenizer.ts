@@ -766,7 +766,7 @@ function tokenizeIdentifier(state: TokenizerState): void {
 
 	// Check if it's a keyword
 	const lowerValue = value.toLowerCase();
-	const keywordType = KEYWORDS[lowerValue];
+	const keywordType = Object.prototype.hasOwnProperty.call(KEYWORDS, lowerValue) ? KEYWORDS[lowerValue] : undefined;
 
 	if (keywordType) {
 		state.tokens.push({
