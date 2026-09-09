@@ -74,7 +74,11 @@
   padding: 4px;
   cursor: pointer;
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      color: var(--muted);
+    }
+  }
   &:focus-visible {
     color: var(--muted);
   }

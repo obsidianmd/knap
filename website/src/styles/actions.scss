@@ -12,9 +12,11 @@
   cursor: pointer;
   svg { flex-shrink: 0; }
 
-  &:hover {
-    background: var(--panel);
-    color: var(--text-action-hover-color, var(--paper));
+  @media (hover: hover) {
+    &:hover {
+      background: var(--panel);
+      color: var(--text-action-hover-color, var(--paper));
+    }
   }
   &:focus-visible {
     outline: 2px solid var(--accent);
@@ -42,7 +44,10 @@
   transition: background 150ms ease, color 150ms ease;
   padding-inline-end: 12px;
   svg { color: var(--muted); }
-  &:hover svg, &:focus-visible svg { color: var(--paper); }
+  @media (hover: hover) {
+    &:hover svg { color: var(--paper); }
+  }
+  &:focus-visible svg { color: var(--paper); }
 }
 
 @media (max-width: 760px) {

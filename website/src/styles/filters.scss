@@ -99,8 +99,10 @@
   text-decoration: none;
   transition: background 150ms ease;
 
-  &:hover {
-    background: var(--line);
+  @media (hover: hover) {
+    &:hover {
+      background: var(--line);
+    }
   }
   > div {
     display: grid;
@@ -213,8 +215,10 @@
   .filter-row {
     padding-block: 7px;
 
-    &:hover {
-      background: var(--panel);
+    @media (hover: hover) {
+      &:hover {
+        background: var(--panel);
+      }
     }
   }
 }

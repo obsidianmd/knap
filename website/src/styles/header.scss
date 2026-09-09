@@ -30,7 +30,12 @@
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease;
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      outline: 0;
+      color: #f2f0e5;
+    }
+  }
   &:focus-visible {
     outline: 0;
     color: #f2f0e5;

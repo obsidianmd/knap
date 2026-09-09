@@ -5,9 +5,11 @@
   color: var(--link-color);
   transition: color 150ms ease, text-decoration-color 150ms ease;
 
-  &:hover {
-    --link-color: var(--link-hover-color, #f2f0e5);
-    text-decoration-color: currentColor;
+  @media (hover: hover) {
+    &:hover {
+      --link-color: var(--link-hover-color, #f2f0e5);
+      text-decoration-color: currentColor;
+    }
   }
 }
 

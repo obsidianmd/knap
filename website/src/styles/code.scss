@@ -132,9 +132,11 @@
   color: var(--muted);
   cursor: pointer;
 
-  &:hover {
-    background: var(--line);
-    color: var(--paper);
+  @media (hover: hover) {
+    &:hover {
+      background: var(--line);
+      color: var(--paper);
+    }
   }
   &:focus-visible {
     outline: 2px solid var(--accent);

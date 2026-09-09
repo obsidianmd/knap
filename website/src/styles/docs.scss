@@ -36,8 +36,10 @@
     &.is-read {
       color: var(--faint);
 
-      &:hover {
-        color: var(--muted);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--muted);
+        }
       }
     }
     &.is-current,
@@ -45,8 +47,10 @@
     &[aria-current="location"] {
       color: var(--paper);
     }
-    &:hover {
-      color: var(--paper);
+    @media (hover: hover) {
+      &:hover {
+        color: var(--paper);
+      }
     }
     &[data-depth="3"] {
       padding-left: 12px;

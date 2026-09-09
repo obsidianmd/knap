@@ -57,7 +57,12 @@
     font: inherit;
     cursor: pointer;
 
-    &[aria-selected="true"], &[aria-pressed="true"], &:hover {
+    @media (hover: hover) {
+      &:hover {
+        color: var(--paper);
+      }
+    }
+    &[aria-selected="true"], &[aria-pressed="true"] {
       color: var(--paper);
     }
     &:focus-visible {

@@ -125,7 +125,15 @@
     color: var(--muted);
     line-height: 1.5;
   }
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      background: #222120;
+
+      h3 {
+        color: #f2f0e5;
+      }
+    }
+  }
   &:focus-visible {
     background: #222120;
 
@@ -160,7 +168,15 @@
     font-weight: 400;
   }
 
-  &:hover,
+  @media (hover: hover) {
+    &:hover {
+      background: #222120;
+
+      h3 {
+        color: #f2f0e5;
+      }
+    }
+  }
   &:focus-visible {
     background: #222120;
 

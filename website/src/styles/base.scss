@@ -98,8 +98,10 @@ a {
     background: var(--accent);
     color: var(--ink);
   }
-  &-secondary:hover {
-    background: var(--panel);
+  @media (hover: hover) {
+    &-secondary:hover {
+      background: var(--panel);
+    }
   }
 }
 
