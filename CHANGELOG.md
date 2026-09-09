@@ -1,9 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - Add `knap batch` to render CSV rows, JSON arrays, or folders of JSON objects into individual files, with filename templates, explicit input formats, CSV piping, dry-run previews, and explicit overwrite support. Reject filename templates that produce empty or separator-only basenames, or leading whitespace.
 - Add a `knap render` CLI with file, inline, and stdin template inputs; JSON variables from files, inline data, or stdin; repeatable string overrides; and file or stdout output with automatic parent-directory creation. The existing library entry points remain available.
+- Add configurable limits for template size, output size, intermediate values, work operations, and nesting. Engines apply finite defaults, export `defaultRenderLimits`, and return `LIMIT_EXCEEDED` with empty output when a limit is reached.
+- Add `allowRegex: false` to make `split` use literal separators and disable regex searches in `replace`. Native regex matching remains enabled by default for compatibility and requires worker or process isolation for untrusted input.
+- Resolve only own data properties when reading template variables and filter paths, skipping inherited values and getters. Assign variables without invoking prototype setters.
+- Escape literal link labels, image alt text, and Markdown destination delimiters. Omit `javascript:`, `vbscript:`, and `data:` destinations while preserving relative links and application protocols.
+- Require literal tag names in `replace_tags`.
+- Check opened batch output files before truncating them and avoid following final-path symlinks where supported.
 
 ## 0.3.2
 
