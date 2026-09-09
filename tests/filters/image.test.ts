@@ -33,6 +33,6 @@ describe('image filter', () => {
 
 	test('preserves backslashes in alt text', () => {
 		expect(image('image.jpg', String.raw`"C:\\image"`))
-			.toBe(String.raw`![C:\\image](image.jpg)`);
+			.toBe(String.raw`![C:\\\\image](image.jpg)`);
 	});
 });

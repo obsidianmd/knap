@@ -38,11 +38,11 @@ describe('link filter', () => {
 
 	test('preserves backslashes in labels', async () => {
 		expect(link('https://example.com', String.raw`"C:\\label"`))
-			.toBe(String.raw`[C:\\label](https://example.com)`);
+			.toBe(String.raw`[C:\\\\label](https://example.com)`);
 
 		const template = String.raw`{{ url | link:"C:\\\\label" }}`;
 		await expect(engine.renderOrThrow(template, {
 			variables: { url: 'https://example.com' },
-		})).resolves.toBe(String.raw`[C:\\label](https://example.com)`);
+		})).resolves.toBe(String.raw`[C:\\\\label](https://example.com)`);
 	});
 });

@@ -1,4 +1,4 @@
-import { escapeMarkdown } from '../string-utils';
+import { escapeMarkdown, markdownDestination } from '../string-utils';
 import { unquoteScalarParam } from '../parser-utils';
 
 export const image = (str: string, param?: string): string | string[] => {
@@ -11,6 +11,8 @@ export const image = (str: string, param?: string): string | string[] => {
 		altText = unquoteScalarParam(param) ?? altText;
 	}
 
+	altText = escapeMarkdown(altText);
+
 	try {
 		const data = JSON.parse(str);
 
@@ -19,7 +21,7 @@ export const image = (str: string, param?: string): string | string[] => {
 				if (typeof value === 'object' && value !== null) {
 					return processObject(value);
 				}
-				return `![${escapeMarkdown(String(value))}](${escapeMarkdown(key)})`;
+				return `![${escapeMarkdown(String(value))}](${markdownDestination(key)})`;
 			}).flat();
 		};
 
@@ -28,14 +30,14 @@ export const image = (str: string, param?: string): string | string[] => {
 				if (typeof item === 'object' && item !== null) {
 					return processObject(item);
 				}
-				return item ? `![${altText}](${escapeMarkdown(String(item))})` : '';
+				return item ? `![${altText}](${markdownDestination(String(item))})` : '';
 			}).flat();
 		} else if (typeof data === 'object' && data !== null) {
 			return processObject(data);
 		}
 	} catch (error) {
 		// If parsing fails, treat it as a single URL string
-		return `![${altText}](${escapeMarkdown(str)})`;
+		return `![${altText}](${markdownDestination(str)})`;
 	}
 
 	return str;

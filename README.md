@@ -4,6 +4,9 @@ Knap is a flexible template language for creating Markdown. It is shared by Obsi
 
 Knap provides tokenization, parsing, logic, rendering, structured errors, and filters. Applications supply variables and runtime integrations. Knap uses an AST interpreter. It does not use `eval` or execute arbitrary JavaScript.
 
+Knap produces Markdown, including any HTML supplied in templates or variables. Render it as text, or use a Markdown renderer that sanitizes HTML and validates link protocols before inserting the result into a page. HTML manipulation filters such as `strip_tags` and `remove_html` are not sanitizers. The `link` and `image` filters escape literal labels and destinations and omit `javascript:`, `vbscript:`, and `data:` destinations; relative links and application protocols such as `obsidian:` remain supported. Hosts should apply their own protocol policy when displaying the result.
+
+
 The Obsidian Web Clipper documentation includes examples of Knap's shared [logic](https://obsidian.md/help/web-clipper/logic), [filters](https://obsidian.md/help/web-clipper/filters), and [variable syntax](https://obsidian.md/help/web-clipper/variables).
 
 ## Install
