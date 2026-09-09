@@ -1,4 +1,5 @@
-import { lstat, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { lstat, mkdir, open, readdir, readFile, stat } from 'node:fs/promises';
 import { dirname, extname, join, resolve } from 'node:path';
 import type { TemplateEngine, TemplateVariables } from '../types';
 import { parseCsv } from './csv';
@@ -155,7 +156,17 @@ export async function renderBatch(options: BatchOptions): Promise<void> {
 	try {
 		await mkdir(options.outputDir, { recursive: true });
 		for (const output of outputs) {
-			await writeFile(output.path, output.content, { encoding: 'utf8', flag: options.overwrite ? 'w' : 'wx' });
+			// Check the opened file before truncating, even if it changed during rendering.
+			const flags = constants.O_WRONLY | constants.O_CREAT | constants.O_NOFOLLOW | constants.O_NONBLOCK
+				| (options.overwrite ? 0 : constants.O_EXCL);
+			const file = await open(output.path, flags);
+			try {
+				if (!(await file.stat()).isFile()) throw new Error(`Output ${output.path} is not a regular file.`);
+				await file.truncate(0);
+				await file.writeFile(output.content, 'utf8');
+			} finally {
+				await file.close();
+			}
 			written++;
 		}
 	}
