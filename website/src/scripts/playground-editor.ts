@@ -1,3 +1,5 @@
+import { playgroundLimits, playgroundSizeError } from '../lib/playground-limits';
+import { setStatus } from './playground-status';
 import { Annotation, Compartment, EditorState, type Extension } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, drawSelection } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap, indentWithTab, isolateHistory } from '@codemirror/commands';
@@ -6,7 +8,12 @@ const silentChange = Annotation.define<boolean>();
 
 export function createPlaygroundEditor(name: 'input' | 'template' | 'output', extensions: Extension[], wrap: boolean) {
   const root = document.querySelector<HTMLElement>(`[data-editor="${name}"]`)!;
-  const value = root.querySelector('textarea')!.value;
+  const initialValue = root.querySelector('textarea')!.value;
+  const limit = playgroundLimits[name];
+  const value = initialValue.length <= limit ? initialValue : '';
+  const status = document.getElementById(`${name}-status`)!;
+  const showSizeError = () => setStatus(status, playgroundSizeError(name), 'error');
+  if (initialValue.length > limit) showSizeError();
   const readonly = name === 'output';
   const listeners: (() => void)[] = [];
   const wrapping = new Compartment();
@@ -16,6 +23,11 @@ export function createPlaygroundEditor(name: 'input' | 'template' | 'output', ex
     state: EditorState.create({
       doc: value,
       extensions: [
+        EditorState.transactionFilter.of(transaction => {
+          if (transaction.newDoc.length <= limit) return transaction;
+          showSizeError();
+          return [];
+        }),
         extensions,
         lineNumbers(), drawSelection(),
         wrapping.of(wrap ? EditorView.lineWrapping : []),
@@ -46,6 +58,7 @@ export function createPlaygroundEditor(name: 'input' | 'template' | 'output', ex
       view.dispatch({ effects: wrapping.reconfigure(enabled ? EditorView.lineWrapping : []) });
     },
     setValue(text: string, { reset = true, notify = true } = {}) {
+      if (text.length > limit) { showSizeError(); return; }
       const previous = view.state.doc.toString();
       if (previous === text && !reset) return;
       // Patch only the changed text so output selections and scroll anchors

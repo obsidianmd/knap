@@ -1,3 +1,4 @@
+import { maxHighlightLineLength } from './playground-limits';
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { Tag } from '@lezer/highlight';
 import { highlightLine } from './highlight';
@@ -7,6 +8,7 @@ interface HighlightRange { from: number; to: number; className: string | null }
 // Adapt the existing highlighter's escaped spans to editor ranges. Keeping a
 // single token source preserves the docs' JSON, Markdown, and YAML colors.
 export function editorHighlightRanges(line: string, language: 'json' | 'md', frontmatter = false): HighlightRange[] {
+  if (line.length > maxHighlightLineLength) return [{ from: 0, to: line.length, className: null }];
   const html = highlightLine(line, language, frontmatter);
   const classes: string[] = [];
   const ranges: HighlightRange[] = [];

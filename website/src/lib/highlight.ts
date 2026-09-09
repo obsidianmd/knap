@@ -1,3 +1,4 @@
+import { maxHighlightLineLength } from './playground-limits';
 import { markdownPunctuationAt } from './markdown-punctuation';
 
 export type CodeLanguage = 'knap' | 'ts' | 'shell' | 'md' | 'json';
@@ -211,6 +212,7 @@ function highlightKnapLine(line: string) {
 }
 
 export function highlightLine(line: string, language: CodeLanguage, inFrontmatter = false) {
+  if (line.length > maxHighlightLineLength) return escapeHtml(line);
   if (language === 'shell') return highlightShellLine(line);
   if (language === 'md') return highlightMarkdownLine(line, inFrontmatter);
   if (language === 'knap') return highlightKnapLine(line);

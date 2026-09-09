@@ -1,8 +1,11 @@
+import { playgroundLimits, playgroundSizeError } from './playground-limits';
+
 export type PlaygroundInput =
   | { variables: Record<string, unknown>; error: null }
   | { variables: null; error: string };
 
 export function parsePlaygroundInput(source: string): PlaygroundInput {
+  if (source.length > playgroundLimits.input) return { variables: null, error: playgroundSizeError('input') };
   try {
     const variables: unknown = JSON.parse(source);
     if (variables === null || typeof variables !== 'object' || Array.isArray(variables)) {

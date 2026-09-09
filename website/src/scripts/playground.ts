@@ -1,3 +1,4 @@
+import { playgroundLimits, playgroundSizeError, limitDiagnostics } from '../lib/playground-limits';
 import { editorHighlighting } from '../lib/editor-highlighting';
 import { createPlaygroundEditor } from './playground-editor';
 import type { PlaygroundResult } from '../lib/playground';
@@ -60,11 +61,12 @@ function showFailure(message: string) {
 }
 
 function showResult(result: PlaygroundResult) {
+  if (result.output.length > playgroundLimits.output) { showFailure(playgroundSizeError('output')); return; }
   template.element.setAttribute('aria-invalid', String(result.errors.length > 0));
 
   template.status.replaceChildren();
   template.status.dataset.state = result.errors.length ? 'error' : result.warnings.length ? 'warning' : 'success';
-  const diagnostics = [...result.errors, ...result.warnings];
+  const diagnostics = limitDiagnostics([...result.errors, ...result.warnings]);
   if (diagnostics.length) {
     for (const diagnostic of diagnostics) {
       const button = document.createElement('button');
@@ -89,6 +91,7 @@ function showResult(result: PlaygroundResult) {
 
 function render() {
   try {
+    if (template.value.length > playgroundLimits.template) { showFailure(playgroundSizeError('template')); return; }
     const currentInput = validateInput(input.value);
     if (currentInput !== validatedInput) {
       validatedInput = currentInput;

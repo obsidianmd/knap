@@ -17,8 +17,8 @@ export function setupPlaygroundShare(getExample: () => PlaygroundExample) {
     const current = ++revision;
     window.clearTimeout(timer);
     reset();
-    const url = new URL(playgroundHref(getExample()), window.location.origin).href;
     try {
+      const url = new URL(playgroundHref(getExample()), window.location.origin).href;
       await navigator.clipboard.writeText(url);
       if (current !== revision) return;
       label.textContent = 'Link copied';

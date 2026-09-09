@@ -1,3 +1,4 @@
+import { maxHighlightLineLength } from '../lib/playground-limits';
 import { EditorView, keymap } from '@codemirror/view';
 import { autocompletion, completionKeymap, acceptCompletion } from '@codemirror/autocomplete';
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from '@codemirror/language';
@@ -10,6 +11,10 @@ import { createPlaygroundEditor } from './playground-editor';
 const language = StreamLanguage.define({
   startState: () => ({ close: '', quote: '', filter: false }),
   token(stream, state) {
+    if (stream.string.length > maxHighlightLineLength) {
+      stream.skipToEnd(); state.close = ''; state.quote = ''; state.filter = false;
+      return null;
+    }
     if (!state.close) {
       if (stream.match('{{')) state.close = '}}';
       else if (stream.match('{%')) state.close = '%}';

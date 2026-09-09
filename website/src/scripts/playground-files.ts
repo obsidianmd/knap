@@ -1,3 +1,4 @@
+import { playgroundLimits, playgroundSizeError } from '../lib/playground-limits';
 import { setStatus } from './playground-status';
 
 export function setupPlaygroundFiles(editors: Record<string, (text: string) => void>) {
@@ -43,12 +44,18 @@ export function setupPlaygroundFiles(editors: Record<string, (text: string) => v
         showMessage(`Choose a ${fileTypes} file.`, 'error');
         return;
       }
+      const field = name === 'input' ? 'input' : 'template';
+      if (file.size > playgroundLimits[field]) {
+        showMessage(`File is too large. The limit is ${playgroundLimits[field].toLocaleString()} bytes.`, 'error');
+        return;
+      }
       const current = revision;
       showMessage(`Opening ${file.name}…`);
       try {
         const text = await file.text();
         // A newer import, edit, or reset takes precedence over this read.
         if (current !== revision) return;
+        if (text.length > playgroundLimits[field]) { showMessage(playgroundSizeError(field), 'error'); return; }
         setValue(text.replace(/^\uFEFF/, ''));
         clear();
       } catch {
