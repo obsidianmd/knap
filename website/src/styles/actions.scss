@@ -8,7 +8,7 @@
   color: var(--text-action-color, var(--muted));
   padding: 6px 8px;
   font: inherit;
-  font-size: 0.8125rem;
+  font-size: var(--font-size-small);
   cursor: pointer;
   svg { flex-shrink: 0; }
 

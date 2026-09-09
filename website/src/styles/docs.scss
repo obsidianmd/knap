@@ -112,7 +112,7 @@
     margin-top: -5px;
   }
 }
-.doc-section :not(pre) > code, .doc-note code, .api-list code {
+.doc-section :not(pre) > code, .api-list code {
   background: var(--panel);
   color: var(--link-color, var(--paper));
   padding: 0.12em 0.24em;
@@ -121,23 +121,6 @@
   font-size: var(--font-size-small);
 }
 
-.doc-note {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 20px;
-  margin: 28px 0;
-  border-radius: var(--radius-panel);
-  background: #1a1623;
-  padding: 18px 20px;
-  font-size: var(--font-size-small);
-
-  strong {
-    color: var(--paper);
-  }
-  p {
-    margin: 0;
-  }
-}
 .doc-muted-note {
   color: var(--muted);
   font-size: var(--font-size-small);
@@ -301,10 +284,6 @@
   .docs-title {
     margin-bottom: 44px;
 
-  }
-  .doc-note {
-    grid-template-columns: 1fr;
-    gap: 7px;
   }
   .type-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -71,7 +71,7 @@ const output = await engine.renderOrThrow(
 );
 ```
 
-> **renderOrThrow** — Warnings never make `renderOrThrow()` throw. Use it when exceptions fit the host application better than result inspection.
+**renderOrThrow** — Warnings never make `renderOrThrow()` throw. Use it when exceptions fit the host application better than result inspection.
 
 ## Engine methods
 

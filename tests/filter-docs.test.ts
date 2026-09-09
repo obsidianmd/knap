@@ -32,4 +32,12 @@ describe('filter documentation catalog', () => {
     expect(code).toBeDefined();
     expect(filterMarkdown(code!)).toContain('````md title="Output"\n```typescript\nconst answer = 42\n```\n````');
   });
+
+  test('exports HTML environment requirements as a regular paragraph', () => {
+    const htmlToJson = filterDocsByName.get('html_to_json');
+    expect(htmlToJson).toBeDefined();
+    const markdown = filterMarkdown(htmlToJson!);
+    expect(markdown).toContain('\n**HTML parsing** —');
+    expect(markdown).not.toContain('\n> **HTML parsing**');
+  });
 });

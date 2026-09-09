@@ -19,6 +19,7 @@
 .playground-header {
   width: 100%;
   min-height: var(--header-height);
+  font-size: var(--font-size-body);
   margin-inline: auto;
   flex-shrink: 0;
   display: flex;
@@ -29,7 +30,7 @@
   .playground-brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
   }
   h1 {

@@ -16,7 +16,6 @@
   align-items: center;
   gap: 20px;
   margin-left: auto;
-  font-size: var(--font-size-small);
   font-weight: 400;
 }
 .filter-search-trigger {
@@ -31,7 +30,7 @@
   color: var(--muted);
   padding: 6px 0;
   font: inherit;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-body);
   cursor: pointer;
   transition: border-color 150ms ease, color 150ms ease;
 
