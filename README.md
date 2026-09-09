@@ -1,17 +1,10 @@
 # Knap
 
-Knap is a flexible template language for creating Markdown. It is shared by
-Obsidian tools, including [Web Clipper](https://github.com/obsidianmd/obsidian-clipper)
-and [Importer](https://github.com/obsidianmd/obsidian-importer).
+Knap is a flexible template language for creating Markdown. It is shared by Obsidian tools, including [Web Clipper](https://github.com/obsidianmd/obsidian-clipper) and [Importer](https://github.com/obsidianmd/obsidian-importer).
 
-Knap provides tokenization, parsing, logic, rendering, structured errors, and
-filters. Applications supply variables and runtime integrations. Knap uses an
-AST interpreter. It does not use `eval` or execute arbitrary JavaScript.
+Knap provides tokenization, parsing, logic, rendering, structured errors, and filters. Applications supply variables and runtime integrations. Knap uses an AST interpreter. It does not use `eval` or execute arbitrary JavaScript.
 
-The Obsidian Web Clipper documentation includes examples of Knap's shared
-[logic](https://obsidian.md/help/web-clipper/logic),
-[filters](https://obsidian.md/help/web-clipper/filters), and
-[variable syntax](https://obsidian.md/help/web-clipper/variables).
+The Obsidian Web Clipper documentation includes examples of Knap's shared [logic](https://obsidian.md/help/web-clipper/logic), [filters](https://obsidian.md/help/web-clipper/filters), and [variable syntax](https://obsidian.md/help/web-clipper/variables).
 
 ## Install
 
@@ -21,9 +14,7 @@ pnpm add knap
 
 ## CLI
 
-The same package includes a Node.js CLI. Run it with `npx knap`, or install it
-globally with `npm install -g knap` to use the `knap` command. Node.js 20 or later
-is required. Library imports continue to work independently of the CLI.
+The same package includes a Node.js CLI. Run it with `npx knap`, or install it globally with `npm install -g knap` to use the `knap` command. Node.js 20 or later is required. Library imports continue to work independently of the CLI.
 
 ```sh
 # Render a template using variables from a JSON file
@@ -47,8 +38,7 @@ npx defuddle parse https://example.com/article --markdown --json \
   | npx knap render template.md --data - --output note.md
 ```
 
-In the Defuddle example, template variables such as `{{ title }}` and
-`{{ content }}` refer directly to properties of its JSON output.
+In the Defuddle example, template variables such as `{{ title }}` and `{{ content }}` refer directly to properties of its JSON output.
 
 ### CLI options
 
@@ -67,33 +57,17 @@ knap render [template-file] [options]
 | `--help` | `-h` | Show help. |
 | `--version` | `-v` | Show the package version. |
 
-Choose one template source and one data source. When no template file or
-`--template` is supplied, `render` reads the template from piped stdin. Only
-one input can read stdin: with `--data -`, provide a template file or
-`--template` explicitly.
+Choose one template source and one data source. When no template file or `--template` is supplied, `render` reads the template from piped stdin. Only one input can read stdin: with `--data -`, provide a template file or `--template` explicitly.
 
-Data must be a JSON object. Its properties become template variables, preserving
-nested objects, arrays, numbers, booleans, and null. Without data, variables
-default to `{}`. `--set` overrides are applied after the JSON data regardless of
-argument order; the last override for a key wins. Values are always strings,
-including `--set enabled=false`. Keys are literal top-level names, so use JSON
-for nested objects. Quote assignments containing spaces, such as
-`--set 'First name=Ada'`.
+Data must be a JSON object. Its properties become template variables, preserving nested objects, arrays, numbers, booleans, and null. Without data, variables default to `{}`. `--set` overrides are applied after the JSON data regardless of argument order; the last override for a key wins. Values are always strings, including `--set enabled=false`. Keys are literal top-level names, so use JSON for nested objects. Quote assignments containing spaces, such as `--set 'First name=Ada'`.
 
-The CLI enables the standard filters. DOM-dependent HTML filters and custom host
-integrations remain available through the library API.
+The CLI enables the standard filters. DOM-dependent HTML filters and custom host integrations remain available through the library API.
 
-Rendered text is written unchanged, without an added newline. An output file is
-created or overwritten only after rendering succeeds; missing parent directories
-are created automatically. Argument, input, rendering, and filesystem errors exit with status
-`1`. Template errors include their code and source location on stderr, leaving
-stdout empty and existing output files untouched on rendering failure. Non-fatal
-warnings go to stderr and allow output with exit status `0`.
+Rendered text is written unchanged, without an added newline. An output file is created or overwritten only after rendering succeeds; missing parent directories are created automatically. Argument, input, rendering, and filesystem errors exit with status `1`. Template errors include their code and source location on stderr, leaving stdout empty and existing output files untouched on rendering failure. Non-fatal warnings go to stderr and allow output with exit status `0`.
 
 ### Batch rendering
 
-Use `batch` to create one file per CSV row, JSON array object, or JSON file in
-a folder:
+Use `batch` to create one file per CSV row, JSON array object, or JSON file in a folder:
 
 ```sh
 # One file per CSV row, named using its title
@@ -117,18 +91,11 @@ cat articles.csv | npx knap batch template.md --data - --format csv --output-dir
 npx knap batch template.md --data articles.csv --output-dir notes --dry-run
 ```
 
-CSV files use the first nonempty row as column headers. Values remain strings,
-including numbers and booleans. Quoted commas, escaped quotes, embedded newlines,
-and UTF-8 BOMs are supported. Blank lines are skipped; duplicate or empty column
-headers and inconsistent row lengths are errors.
+CSV files use the first nonempty row as column headers. Values remain strings, including numbers and booleans. Quoted commas, escaped quotes, embedded newlines, and UTF-8 BOMs are supported. Blank lines are skipped; duplicate or empty column headers and inconsistent row lengths are errors.
 
-File input defaults to CSV for `.csv` and JSON otherwise; stdin defaults to JSON.
-Use `--format csv` or `--format json` to override detection. Folder input and
-`--data-json` require JSON. CSV uses commas; TSV is not supported.
+File input defaults to CSV for `.csv` and JSON otherwise; stdin defaults to JSON. Use `--format csv` or `--format json` to override detection. Folder input and `--data-json` require JSON. CSV uses commas; TSV is not supported.
 
-JSON array elements and individual JSON files must be objects. Folder input reads
-regular `.json` files in filename order, ignoring subfolders, symlinks, and other
-file types. File extensions are case-insensitive. Empty batches are errors.
+JSON array elements and individual JSON files must be objects. Folder input reads regular `.json` files in filename order, ignoring subfolders, symlinks, and other file types. File extensions are case-insensitive. Empty batches are errors.
 
 | Option | Short | Purpose |
 | --- | --- | --- |
@@ -140,29 +107,9 @@ file types. File extensions are case-insensitive. Empty batches are errors.
 | `--overwrite` |  | Allow replacing existing regular files. |
 | `--dry-run` |  | Validate and list output paths without creating directories or writing files. |
 
-Batch supports the same template sources and `--set` overrides as `render`.
-Overrides apply to every record, including filename templates. Without
-`--filename`, outputs use the source JSON basename with `.md`, or `1.md`, `2.md`,
-and so on for CSV rows and JSON array items. Custom filename templates must
-include the desired extension and produce a single filename without directories;
-use `safe_name` when including data values.
-Rendered basenames must contain more than whitespace, dots, hyphens, or
-underscores; `.md` and `-.md` are rejected. Leading whitespace is also rejected.
-Optional values may be empty if the remaining name is valid. For intentional
-dotfiles, start the template with a literal dot, such as `.env` or `.{{ name }}`.
+Batch supports the same template sources and `--set` overrides as `render`. Overrides apply to every record, including filename templates. Without `--filename`, outputs use the source JSON basename with `.md`, or `1.md`, `2.md`, and so on for CSV rows and JSON array items. Custom filename templates must include the desired extension and produce a single filename without directories; use `safe_name` when including data values. Rendered basenames must contain more than whitespace, dots, hyphens, or underscores; `.md` and `-.md` are rejected. Leading whitespace is also rejected. Optional values may be empty if the remaining name is valid. For intentional dotfiles, start the template with a literal dot, such as `.env` or `.{{ name }}`.
 
-Knap validates input, filenames, and rendered content before writing files.
-Duplicate filenames within a batch are errors even with `--overwrite`, including
-names that differ only by case or Unicode normalization. Existing files require
-`--overwrite`; directories and symlinks cannot be overwritten. Warnings and a
-completion summary go to stderr; stdout stays empty except for `--dry-run` paths.
-Dry runs perform the same validation and existing-file checks, print one output
-path per line only after validation succeeds, and write nothing. Use
-`--overwrite --dry-run` to preview replacements. A preview cannot guarantee that
-a later write will succeed.
-A filesystem failure during
-writing can leave some files written, and the error reports how many completed.
-Batch data and prepared outputs are held in memory.
+Knap validates input, filenames, and rendered content before writing files. Duplicate filenames within a batch are errors even with `--overwrite`, including names that differ only by case or Unicode normalization. Existing files require `--overwrite`; directories and symlinks cannot be overwritten. Warnings and a completion summary go to stderr; stdout stays empty except for `--dry-run` paths. Dry runs perform the same validation and existing-file checks, print one output path per line only after validation succeeds, and write nothing. Use `--overwrite --dry-run` to preview replacements. A preview cannot guarantee that a later write will succeed. A filesystem failure during writing can leave some files written, and the error reports how many completed. Batch data and prepared outputs are held in memory.
 
 ## Use
 
@@ -192,18 +139,13 @@ if (result.errors.length === 0) {
 }
 ```
 
-Every error contains a stable `code`, `message`, `line`, and `column`. Use
-`renderOrThrow()` when exceptions fit the calling application better:
+Every error contains a stable `code`, `message`, `line`, and `column`. Use `renderOrThrow()` when exceptions fit the calling application better:
 
 ```ts
 const output = await engine.renderOrThrow('{{ title | upper }}', { variables });
 ```
 
-Filters that deliberately preserve their input after invalid runtime data can
-report non-fatal diagnostics in `result.warnings`. Each warning includes a
-stable `code`, `message`, `filter`, `line`, and `column`. Warnings do not make
-`renderOrThrow()` throw. Identical warnings from repeated evaluation of the
-same filter expression are deduplicated within each render.
+Filters that deliberately preserve their input after invalid runtime data can report non-fatal diagnostics in `result.warnings`. Each warning includes a stable `code`, `message`, `filter`, `line`, and `column`. Warnings do not make `renderOrThrow()` throw. Identical warnings from repeated evaluation of the same filter expression are deduplicated within each render.
 
 ## Syntax
 
@@ -230,14 +172,11 @@ Unknown source
 {% set heading = title | upper %}
 ```
 
-The language supports chained filters, `if`/`elseif`/`else`, `for`, `set`,
-nested properties, array access, comparisons, boolean operators, nullish
-fallbacks, and whitespace control.
+The language supports chained filters, `if`/`elseif`/`else`, `for`, `set`, nested properties, array access, comparisons, boolean operators, nullish fallbacks, and whitespace control.
 
 ## Application variables
 
-Values absent from the variables object can be resolved asynchronously. Knap
-does not know what a browser tab, vault, selector, schema, or model is.
+Values absent from the variables object can be resolved asynchronously. Knap does not know what a browser tab, vault, selector, schema, or model is.
 
 ```ts
 const result = await engine.render('{{ remoteValue | upper }}', {
@@ -256,12 +195,9 @@ Local variables take precedence over the resolver.
 
 ## Filters
 
-Filters are registered explicitly when an engine is created. The standard
-registry is available as `standardFilters`; DOM-dependent filters are available
-separately from `knap/html`.
+Filters are registered explicitly when an engine is created. The standard registry is available as `standardFilters`; DOM-dependent filters are available separately from `knap/html`.
 
-Parameters follow a filter name after a colon, and filters can be chained with
-`|`:
+Parameters follow a filter name after a colon, and filters can be chained with `|`:
 
 ```liquid
 {{ title | trim | upper }}
@@ -271,9 +207,7 @@ Parameters follow a filter name after a colon, and filters can be chained with
 {{ json_text | parse_json | bold | join:", " }}
 ```
 
-Markdown formatting filters apply recursively to string values in arrays and
-objects while preserving keys and non-string values. `parse_json` explicitly
-turns JSON text into a typed value for collection-aware filter chains.
+Markdown formatting filters apply recursively to string values in arrays and objects while preserving keys and non-string values. `parse_json` explicitly turns JSON text into a typed value for collection-aware filter chains.
 
 ### Standard filters
 
@@ -331,12 +265,9 @@ turns JSON text into a typed value for collection-aware filter chains.
 | `yaml` | Serialize scalars, arrays, or objects as YAML; use `yaml:flow` for compact collections. |
 | `yaml_property` | Serialize a named YAML property with automatic indentation. |
 
-Filter metadata, including parameter validation and examples, is exported as
-`standardFilterMetadata`. Invalid filter names and invalid parameters are
-reported by `engine.validate()` and `engine.render()`.
+Filter metadata, including parameter validation and examples, is exported as `standardFilterMetadata`. Invalid filter names and invalid parameters are reported by `engine.validate()` and `engine.render()`.
 
-The `yaml_property` filter formats a complete frontmatter property. Scalars stay
-beside the key, and collections use block style with automatic indentation:
+The `yaml_property` filter formats a complete frontmatter property. Scalars stay beside the key, and collections use block style with automatic indentation:
 
 ```liquid
 ---
@@ -346,15 +277,9 @@ beside the key, and collections use block style with automatic indentation:
 ---
 ```
 
-For manual placement, use `yaml` followed by `indent:2` below a property name.
-Use `genre: {{ genres | yaml:flow }}` for an inline list. An entire metadata
-object can be serialized with `{{ metadata | yaml }}` between the `---` lines.
-Collection string values remain quoted, including wikilinks, while numbers,
-booleans, and null retain their types.
+For manual placement, use `yaml` followed by `indent:2` below a property name. Use `genre: {{ genres | yaml:flow }}` for an inline list. An entire metadata object can be serialized with `{{ metadata | yaml }}` between the `---` lines. Collection string values remain quoted, including wikilinks, while numbers, booleans, and null retain their types.
 
-When a filter cannot use runtime input but preserves that input for
-compatibility, `engine.render()` reports a non-fatal structured warning. This
-includes values such as an unparseable date or an invalid regular expression.
+When a filter cannot use runtime input but preserves that input for compatibility, `engine.render()` reports a non-fatal structured warning. This includes values such as an unparseable date or an invalid regular expression.
 
 ### HTML parsing
 
@@ -365,8 +290,7 @@ Import `htmlFilters` from `knap/html` to enable:
 | `html_to_json` | Convert HTML elements into structured JSON values. |
 | `remove_html` | Remove selected HTML elements and their contents. |
 
-These filters are opt-in because they require browser-compatible DOM globals
-such as `DOMParser`; they do not ship in the root runtime graph:
+These filters are opt-in because they require browser-compatible DOM globals such as `DOMParser`; they do not ship in the root runtime graph:
 
 ```ts
 import { createEngine, standardFilters } from 'knap';
@@ -382,8 +306,7 @@ const engine = createEngine({
 
 ## Custom filters
 
-The engine's filter registry is used for both validation and rendering.
-Filter parameters use Knap's colon-delimited parameter syntax.
+The engine's filter registry is used for both validation and rendering. Filter parameters use Knap's colon-delimited parameter syntax.
 
 ```ts
 import {
@@ -413,8 +336,7 @@ const engine = createEngine({
 });
 ```
 
-Custom filters may be asynchronous. A filter can also report a non-fatal
-diagnostic while returning a fallback value:
+Custom filters may be asynchronous. A filter can also report a non-fatal diagnostic while returning a fallback value:
 
 ```ts
 const lookup: TemplateFilter = async (value, _param, context) => {
@@ -427,13 +349,7 @@ const lookup: TemplateFilter = async (value, _param, context) => {
 };
 ```
 
-The filter parameter is passed in its serialized Knap form so filters that
-accept multiple parameters can preserve delimiters and quoting. A custom filter
-that expects one scalar parameter can normalize surrounding quotes as above.
-The original typed input is available as `context.rawValue` when a filter needs
-to distinguish an array or object from text containing JSON. Evaluated filter
-arguments are available as `context.rawArguments`; the serialized `param`
-string remains available for compatibility.
+The filter parameter is passed in its serialized Knap form so filters that accept multiple parameters can preserve delimiters and quoting. A custom filter that expects one scalar parameter can normalize surrounding quotes as above. The original typed input is available as `context.rawValue` when a filter needs to distinguish an array or object from text containing JSON. Evaluated filter arguments are available as `context.rawArguments`; the serialized `param` string remains available for compatibility.
 
 Host data needed by a custom filter belongs in the generic engine context:
 
@@ -457,17 +373,14 @@ await engine.render('{{ title | source_link }}', {
 ## API
 
 - `createEngine({ filters })` creates an immutable engine-scoped registry.
-- `engine.render(template, input, options?)` returns output, structured errors,
-  and non-fatal warnings.
+- `engine.render(template, input, options?)` returns output, structured errors, and non-fatal warnings.
 - `engine.renderOrThrow(template, input, options?)` returns output or throws `TemplateRenderError`.
 - `engine.parse(template)` returns the AST and parser diagnostics.
 - `engine.validate(templateOrAst)` validates syntax and the configured filters.
-- `tokenize(template)`, `parse(template)`, `validateVariables(ast)`, and
-  `validateFilters(ast, metadata)` support editor tooling.
+- `tokenize(template)`, `parse(template)`, `validateVariables(ast)`, and `validateFilters(ast, metadata)` support editor tooling.
 - `standardFilters` contains environment-neutral filters.
 - `standardFilterMetadata` describes the standard registry for standalone validation.
-- `applyFiltersWithRegistry(value, filterString, registry, context)` applies a filter
-  chain when a host needs filter syntax outside a full render.
+- `applyFiltersWithRegistry(value, filterString, registry, context)` applies a filter chain when a host needs filter syntax outside a full render.
 - `htmlFilters` is available from `knap/html`.
 
 ## Development
