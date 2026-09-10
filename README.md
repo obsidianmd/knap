@@ -43,6 +43,34 @@ npx defuddle parse https://example.com/article --markdown --json \
 
 In the Defuddle example, template variables such as `{{ title }}` and `{{ content }}` refer directly to properties of its JSON output.
 
+### Discover the language
+
+The CLI includes an offline reference for the filters and logic tags it supports:
+
+```sh
+knap help syntax
+knap help filters
+knap help filter date
+knap help tags
+knap help tag for
+```
+
+Filter and tag lists include short descriptions. Individual help pages show syntax, parameters, examples, and expected output. Filter help shares the website's documentation catalog and includes only CLI filters; DOM-dependent filters require the library API. Template diagnostics point to relevant help commands.
+
+### Validate a template
+
+Check syntax, filter names, and statically checkable filter arguments without data or rendering:
+
+```sh
+knap validate template.md
+knap validate -t '{{ title | upper }}'
+cat template.md | knap validate
+```
+
+Use a template file, `--template` (`-t`), or stdin, as with `render`. Validation does not check whether variables exist, inspect runtime values, or evaluate dynamic filter arguments. Render with real data to check runtime behavior. Data, output, and batch options are not accepted.
+
+Success exits with status `0`; errors exit with status `1`. Diagnostics and the success message go to stderr, stdout stays empty, and no files are written. Run `knap validate --help` for usage.
+
 ### CLI options
 
 ```text

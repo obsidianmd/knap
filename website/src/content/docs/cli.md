@@ -30,6 +30,38 @@ knap render template.md --data data.json --output note.md
 
 You can also install Knap in a project with `npm install knap` and run it with `npx knap` or through an npm script.
 
+## Language help
+
+Explore the language without leaving the terminal or needing a network connection:
+
+```shell
+knap help syntax
+knap help filters
+knap help filter date
+knap help tags
+knap help tag for
+```
+
+`knap help filters` lists every CLI filter and alias with a short description. `knap help tags` lists the logic tags. Individual filter and tag pages show syntax, parameters, examples, and expected output. Example strings use JSON quoting so newlines and whitespace are explicit.
+
+Filter help shares the website's documentation catalog. It lists only filters available in the CLI; DOM-dependent HTML filters require the library API. `knap --help` links to these commands, and template errors include relevant help commands.
+
+## Validation
+
+Check a template before supplying data:
+
+```shell
+knap validate template.md
+knap validate -t '{{ title | upper }}'
+cat template.md | knap validate
+```
+
+Validation checks template syntax, filter names, and statically checkable filter arguments. It does not render the template, check whether variables exist, inspect runtime values, or evaluate dynamic filter arguments. Render with real data to check runtime behavior.
+
+Choose one template source: a file, `--template` (`-t`), or stdin. Omit the template argument or use `-` for piped input. Data, output, and batch options are not accepted. No files are written.
+
+Success exits with status `0`; errors exit with status `1`. Diagnostics and the success message go to stderr; stdout stays empty. Use `knap validate --help` for usage.
+
 ## Templates
 
 Pass a template file as the argument after `render`, or use `--template` (`-t`) for an inline template:

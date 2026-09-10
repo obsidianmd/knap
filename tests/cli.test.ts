@@ -124,7 +124,7 @@ describe('CLI', () => {
 		[['render', '-t', 'text', '--set', '=value'], 'nonempty key'],
 		[['render', '-t', 'one', '--template', 'two'], 'may only be supplied once'],
 		[['render', 'one.md', 'two.md'], 'only one template file'],
-		[['unknown'], 'Expected the "render" or "batch" command'],
+		[['unknown'], 'Expected "render", "batch", "validate", or "help"'],
 		[['render', '--unknown'], 'Unknown option'],
 		[['render', '--template'], 'argument missing'],
 	])('rejects invalid arguments %j', (args, message) => {
@@ -474,5 +474,133 @@ describe('batch CLI', () => {
 		const result = run(args);
 		expect(result.status).toBe(1);
 		expect(result.stderr).toContain(message);
+	});
+});
+
+
+describe('CLI language help and validation', () => {
+	test.each(['syntax', 'filters', 'tags'])('reads %s help without input or data', topic => {
+		const result = run(['help', topic]);
+		expect(result.status).toBe(0);
+		expect(result.stdout).toContain('knap help');
+		expect(result.stderr).toBe('');
+	});
+
+	test('help without a topic lists discovery commands', () => {
+		const result = run(['help']);
+		expect(result.status).toBe(0);
+		for (const command of ['help syntax', 'help filters', 'help filter date', 'help tags', 'help tag for', 'validate']) {
+			expect(result.stdout).toContain(`knap ${command}`);
+		}
+	});
+
+	test('shows filter parameters, examples, and exact output', () => {
+		const result = run(['help', 'filter', 'date']);
+		expect(result.status).toBe(0);
+		expect(result.stdout).toContain('YYYY-MM-DD');
+		expect(result.stdout).toContain('output format');
+		expect(result.stdout).toContain('Data:');
+		expect(result.stdout).toContain('Template:');
+		expect(result.stdout).toContain('Output: "December 1, 2024"');
+	});
+
+	test('shows aliases and rejects unavailable filters', () => {
+		expect(run(['help', 'filter', 'stripmd']).stdout).toContain('alias for strip_md');
+		for (const filter of ['html_to_json', 'remove_html']) {
+			const result = run(['help', 'filter', filter]);
+			expect(result.status).toBe(1);
+			expect(result.stdout).toBe('');
+			expect(result.stderr).toContain('not available in the CLI');
+		}
+	});
+
+	test.each([
+		['filter'], ['tag'], ['filter', 'unknown'], ['tag', 'unknown'],
+		['filter', '__proto__'], ['tag', 'constructor'], ['unknown'], ['syntax', 'extra'],
+		['filter', 'date', 'extra'], ['tags', '--data-json', '{}'],
+	])('rejects invalid help requests %j', (...args) => {
+		const result = run(['help', ...args]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe('');
+		expect(result.stderr).toContain('knap help');
+	});
+
+	test('explains validation scope and accepted options', () => {
+		const result = run(['validate', '--help']);
+		expect(result.status).toBe(0);
+		expect(result.stdout).toContain('Usage: knap validate');
+		expect(result.stdout).toContain('dynamic filter arguments are not checked');
+	});
+
+	test.each([
+		['template.md'], ['-t', '{{ missing | upper }}'], ['-'], [], ['-t', ''],
+	])('validates a template without data (%j)', (...args) => {
+		const result = run(['validate', ...args], '{{ missing | upper }}');
+		expect(result.status).toBe(0);
+		expect(result.stdout).toBe('');
+		expect(result.stderr).toContain('Template is valid');
+	});
+
+	test('does not evaluate filters or require dynamic argument values', () => {
+		const result = run(['validate', '-t', '{{ "not-a-date" | date }} {{ value | truncate:limit }}']);
+		expect(result.status).toBe(0);
+		expect(result.stderr).not.toContain('warning');
+		expect(result.stderr).toContain('runtime values are not checked');
+	});
+
+	test.each([
+		['{{ title', 'PARSE_ERROR', 'knap help syntax'],
+		['{% unknown %}', 'PARSE_ERROR', 'knap help tags'],
+		['{{ title | uppper }}', 'UNKNOWN_FILTER', 'knap help filter upper'],
+		['{{ title | nonexistent }}', 'UNKNOWN_FILTER', 'knap help filters'],
+		['{{ title | truncate:-1 }}', 'INVALID_FILTER_ARGUMENTS', 'knap help filter truncate'],
+	])('reports static errors and help (%s)', (template, code, help) => {
+		const result = run(['validate', '-t', template]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe('');
+		expect(result.stderr).toMatch(/<template>:1:\d+: error /);
+		expect(result.stderr).toContain(code);
+		expect(result.stderr).toContain(help);
+	});
+
+	test('checks filters in branches without executing them', () => {
+		const result = run(['validate', '-t', '{% if false %}{{ value | nonexistent }}{% endif %}']);
+		expect(result.status).toBe(1);
+		expect(result.stderr).toContain('UNKNOWN_FILTER');
+	});
+
+	test('adds a help command to render errors while preserving suggestions', () => {
+		const result = run(['render', '-t', '{{ value | uppper }}']);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe('');
+		expect(result.stderr).toContain('Did you mean "upper"?');
+		expect(result.stderr).toContain('knap help filter upper');
+	});
+
+	test.each([
+		['--data', 'missing.json'], ['--data-json', '{}'], ['--set', 'title=Hello'],
+		['--output', 'validation-output.md'], ['--output-dir', 'validation-notes'],
+		['--dry-run'], ['--overwrite'], ['--format', 'csv'], ['--filename', '{{ title }}'],
+	])('rejects options outside validation scope (%j)', (...options) => {
+		const result = run(['validate', '-t', 'Hello', ...options]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe('');
+		expect(result.stderr).toContain('not supported by validate');
+	});
+
+	test('validation refuses output options before touching existing files', async () => {
+		const path = join(directory, 'validate-preserved.md');
+		await writeFile(path, 'Existing');
+		expect(run(['validate', '-t', 'Replacement', '-o', path]).status).toBe(1);
+		expect(await readFile(path, 'utf8')).toBe('Existing');
+	});
+
+	test.each([
+		['template.md', '-t', 'text'], ['template.md', 'another.md'],
+		['-t', 'one', '--template', 'two'], ['missing.md'],
+	])('rejects invalid template inputs (%j)', (...args) => {
+		const result = run(['validate', ...args]);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe('');
 	});
 });

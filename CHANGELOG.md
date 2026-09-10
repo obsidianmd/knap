@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add offline CLI help for syntax, filters, and logic tags, with per-filter and per-tag examples and help hints in template diagnostics.
+- Add `knap validate` to check template syntax and static filter arguments without data or rendering.
+
 ## 0.4.0
 
 - Add `knap batch` to render CSV rows, JSON arrays, or folders of JSON objects into individual files, with filename templates, explicit input formats, CSV piping, dry-run previews, and explicit overwrite support. Reject filename templates that produce empty or separator-only basenames, or leading whitespace.

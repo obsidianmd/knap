@@ -8,53 +8,7 @@ import { createEngine, standardFilters, type TemplateVariables } from './index';
 import { renderBatch } from './cli/batch';
 import { parseData } from './cli/data';
 import { reportDiagnostics } from './cli/diagnostics';
-
-const help = `Usage: knap render [template-file] [options]
-       knap batch [template-file] --data <source> --output-dir <dir> [options]
-
-Render a Knap template using JSON variables and standard filters.
-
-Arguments:
-  template-file            Template file, or "-" for stdin. If omitted, read
-                           piped stdin unless --template supplies the template.
-
-Options:
-  -t, --template <text>    Inline template (instead of a template file)
-  -d, --data <file>        JSON variables file, or "-" for stdin
-      --data-json <json>   Inline JSON variables object (instead of --data)
-      --set <key=value>    Override a top-level variable with a string; repeatable
-  -o, --output <file>      Output file, or "-" for stdout (default: stdout)
-  -h, --help               Show help
-  -v, --version            Show version
-
-Batch options:
-  -d, --data <source>      CSV file, JSON array file, folder of JSON objects,
-                           or "-" for stdin (JSON by default)
-      --format <csv|json>  Input format: csv or json (overrides file extension)
-      --data-json <json>   Inline JSON array of objects (instead of --data)
-      --output-dir <dir>   Destination directory (created if needed)
-      --filename <text>    Filename template, e.g. '{{ title | safe_name }}.md'
-      --overwrite          Replace existing files (duplicates in a batch fail)
-      --dry-run            Validate and list output paths without writing files
-
-Batch also accepts --template and --set. Default filenames preserve JSON file
-names or number CSV rows and array items as 1.md, 2.md, etc. CSV values stay
-strings. Filenames must not contain directories. Output summaries go to stderr.
-Dry runs list paths on stdout; existing files still require --overwrite.
-Render output creates parent directories if needed.
-
-Examples:
-  knap render template.md --data article.json -o note.md
-  knap render -t '# {{ title }}' --set title=Hello
-  cat article.json | knap render template.md --data -
-  cat template.md | knap render --data article.json
-  knap batch template.md --data articles.csv --output-dir notes
-  knap batch template.md --data ./articles --output-dir notes
-
-Only one input may use stdin. Render data must be a JSON object; defaults to {}.
-Diagnostics go to stderr. Rendering errors exit with status 1 without writing
-output. Warnings do not prevent output. Rendered text is written unchanged.
-`;
+import { help, topicHelp, validationHelp } from './cli/help';
 
 async function readStdin(): Promise<string> {
 	if (process.stdin.isTTY) {
@@ -87,16 +41,22 @@ async function main(): Promise<void> {
 	});
 
 	if (values.help || process.argv.length === 2) {
-		process.stdout.write(help);
+		process.stdout.write(positionals[0] === 'validate' ? validationHelp : help);
 		return;
 	}
 	if (values.version) {
 		process.stdout.write(`${version}\n`);
 		return;
 	}
+	if (positionals[0] === 'help') {
+		if (Object.keys(values).length > 0) throw new Error('The help command does not accept rendering options. Run knap help for usage.');
+		process.stdout.write(topicHelp(positionals.slice(1)));
+		return;
+	}
+	const validate = positionals[0] === 'validate';
 	const batch = positionals[0] === 'batch';
-	if (positionals[0] !== 'render' && !batch) {
-		throw new Error('Expected the "render" or "batch" command. Run knap --help for usage.');
+	if (positionals[0] !== 'render' && !batch && !validate) {
+		throw new Error('Expected "render", "batch", "validate", or "help". Run knap --help for usage.');
 	}
 	if (positionals.length > 2) {
 		throw new Error('Expected only one template file.');
@@ -106,6 +66,11 @@ async function main(): Promise<void> {
 		if (token.kind !== 'option' || token.name === 'set') continue;
 		if (seen.has(token.name)) throw new Error(`Option --${token.name} may only be supplied once.`);
 		seen.add(token.name);
+	}
+	if (validate) {
+		for (const name of Object.keys(values)) {
+			if (name !== 'template') throw new Error(`Option --${name} is not supported by validate. Run knap validate --help for usage.`);
+		}
 	}
 	if (batch) {
 		if (values.output !== undefined) throw new Error('Use --output-dir with batch, not --output.');
@@ -141,6 +106,13 @@ async function main(): Promise<void> {
 		: await readFile(source!, 'utf8'));
 	const engine = createEngine({ filters: standardFilters });
 	const label = templateFromStdin ? '<stdin>' : source ?? '<template>';
+	if (validate) {
+		const errors = engine.validate(template);
+		reportDiagnostics({ errors, warnings: [] }, label);
+		if (errors.length) process.exitCode = 1;
+		else process.stderr.write(`${label}: Template is valid (static checks only; runtime values are not checked).\n`);
+		return;
+	}
 	if (batch) {
 		await renderBatch({
 			data: values.data,
