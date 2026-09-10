@@ -3,7 +3,11 @@
   margin-inline: auto;
 }
 
-.home-page > .site-footer {
+.docs-layout.home-layout {
+  padding-top: 0;
+}
+
+.home-content > .site-footer {
   width: min(var(--page-width), var(--reading));
   margin-inline: auto;
 }

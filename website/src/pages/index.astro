@@ -3,6 +3,7 @@ import { createEngine, standardFilters } from '../../../src';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TemplateExample from '../components/TemplateExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import DocsNavigation from '../components/DocsNavigation.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import GetStarted from '../components/GetStarted.astro';
 import CairnHeadline from '../components/CairnHeadline.astro';
@@ -40,55 +41,60 @@ const headings = [
 ---
 
 <BaseLayout markdownPath="/index.md" description="Knap is a simple language that turns data into Markdown using logic, variables, and filters.">
-  <main id="top" class="home-page">
+  <main id="top" class="docs-page home-page">
     <SiteHeader current="introduction" headings={headings} markdownPath="/index.md" />
-    <section class="hero-shell">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <CairnHeadline />
-          <p class="lede">Knap is a simple template language that turns data into Markdown using <a href="/logic">logic</a>, <a href="/variables">variables</a>, and <a href="/filters">filters</a>.</p>
-        </div>
+    <div class="docs-layout home-layout">
+      <DocsNavigation class="docs-toc" current="introduction" headings={headings} markdownPath="/index.md" />
+      <div class="home-content">
+        <section class="hero-shell">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <CairnHeadline />
+              <p class="lede">Knap is a simple template language that turns data into Markdown using <a href="/logic">logic</a>, <a href="/variables">variables</a>, and <a href="/filters">filters</a>.</p>
+            </div>
 
+          </div>
+        </section>
+
+        <LiveTemplateDemo />
+
+        <section class="markdown-native" aria-labelledby="more-title">
+          <header class="markdown-native-heading">
+            <h2 id="more-title">Knap can do more</h2>
+          </header>
+          <TemplateExample examples={moreExamples} defaultExample="movie" />
+        </section>
+
+        <GetStarted />
+
+        <section class="guide-section" aria-labelledby="explore-title">
+          <header class="guide-heading"><h2 id="explore-title">Explore</h2></header>
+          <nav class="guide-links" aria-label="Language guides">
+            <a class="guide-link-card" data-guide="variables" href="/variables">
+              <h3>Variables</h3>
+              <p>Insert values from your data into a template.</p>
+            </a>
+            <a class="guide-link-card" data-guide="filters" href="/filters">
+              <h3>Filters</h3>
+              <p>Transform values and format Markdown.</p>
+            </a>
+            <a class="guide-link-card" data-guide="logic" href="/logic">
+              <h3>Logic</h3>
+              <p>Include content conditionally and repeat it over arrays.</p>
+            </a>
+          </nav>
+        </section>
+
+        <section class="used-by" aria-labelledby="knap-in-use">
+          <header class="used-by-heading"><div><h2 id="knap-in-use">Knap in use</h2></div><p>Knap was created for <a href="https://obsidian.md" target="_blank" rel="noopener noreferrer">Obsidian</a>. It is named after <a href="https://en.wikipedia.org/wiki/Knapping" target="_blank" rel="noopener noreferrer">knapping</a>, the process of shaping stones to form arrowheads, scrapers, and other tools.</p></header>
+          <div class="used-by-list">
+            <a href="https://obsidian.md/clipper" class="used-by-card" target="_blank" rel="noopener noreferrer"><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Browser extension for saving web pages and highlights to Obsidian with customizable templates.</span></div><strong aria-hidden="true">↗</strong></a>
+            <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card" target="_blank" rel="noopener noreferrer"><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Obsidian plugin for bringing notes from other apps into a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
+          </div>
+        </section>
+
+        <SiteFooter />
       </div>
-    </section>
-
-    <LiveTemplateDemo />
-
-    <section class="markdown-native" aria-labelledby="more-title">
-      <header class="markdown-native-heading">
-        <h2 id="more-title">Knap can do more</h2>
-      </header>
-      <TemplateExample examples={moreExamples} defaultExample="movie" />
-    </section>
-
-    <GetStarted />
-
-    <section class="guide-section" aria-labelledby="explore-title">
-      <header class="guide-heading"><h2 id="explore-title">Explore</h2></header>
-      <nav class="guide-links" aria-label="Language guides">
-        <a class="guide-link-card" data-guide="variables" href="/variables">
-          <h3>Variables</h3>
-          <p>Insert values from your data into a template.</p>
-        </a>
-        <a class="guide-link-card" data-guide="filters" href="/filters">
-          <h3>Filters</h3>
-          <p>Transform values and format Markdown.</p>
-        </a>
-        <a class="guide-link-card" data-guide="logic" href="/logic">
-          <h3>Logic</h3>
-          <p>Include content conditionally and repeat it over arrays.</p>
-        </a>
-      </nav>
-    </section>
-
-    <section class="used-by" aria-labelledby="knap-in-use">
-      <header class="used-by-heading"><div><h2 id="knap-in-use">Knap in use</h2></div><p>Knap was created for <a href="https://obsidian.md" target="_blank" rel="noopener noreferrer">Obsidian</a>. It is named after <a href="https://en.wikipedia.org/wiki/Knapping" target="_blank" rel="noopener noreferrer">knapping</a>, the process of shaping stones to form arrowheads, scrapers, and other tools.</p></header>
-      <div class="used-by-list">
-        <a href="https://obsidian.md/clipper" class="used-by-card" target="_blank" rel="noopener noreferrer"><div class="used-by-copy"><h3>Obsidian Web Clipper</h3><span>Browser extension for saving web pages and highlights to Obsidian with customizable templates.</span></div><strong aria-hidden="true">↗</strong></a>
-        <a href="https://community.obsidian.md/plugins/obsidian-importer" class="used-by-card" target="_blank" rel="noopener noreferrer"><div class="used-by-copy"><h3>Obsidian Importer</h3><span>Obsidian plugin for bringing notes from other apps into a consistent Markdown structure.</span></div><strong aria-hidden="true">↗</strong></a>
-      </div>
-    </section>
-
-    <SiteFooter />
+    </div>
   </main>
 </BaseLayout>

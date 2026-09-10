@@ -1,4 +1,7 @@
 .docs-page {
+  --docs-sidebar-width: 180px;
+  --docs-sidebar-gap: clamp(40px, 3.5vw, 56px);
+  --docs-sidebar-nav-top: 148px;
   min-height: 100vh;
 }
 .docs-layout {
@@ -24,12 +27,12 @@
 
   a {
     color: var(--muted);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-small);
     line-height: 1.25;
     transition: color 200ms ease;
 
     &.docs-toc-title {
-      font-size: 0.8125rem;
+      font-size: var(--font-size-small);
       font-weight: 400;
     }
 
@@ -60,10 +63,10 @@
 
 .docs-toc {
   position: fixed;
-  top: 128px;
-  left: 24px;
+  top: var(--docs-sidebar-nav-top);
+  left: max(24px, calc((100vw - var(--reading)) / 2 - var(--docs-sidebar-width) - var(--docs-sidebar-gap)));
   width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
-  max-height: calc(100dvh - 148px);
+  max-height: calc(100dvh - var(--docs-sidebar-nav-top) - 20px);
   overflow-y: auto;
 }
 
@@ -267,18 +270,63 @@
 }
 
 @media (min-width: 761px) {
-  .docs-page > .site-header-slot, .docs-layout {
+  .docs-layout {
     // Keep room for the sidebar while letting the right gutter shrink first.
     width: min(var(--reading), calc(100vw - 268px));
     margin-left: max(244px, calc((100vw - var(--reading)) / 2));
     margin-right: 24px;
   }
+
+  .docs-page > .site-header-slot {
+    height: 0;
+  }
+
   .docs-page > .site-header-slot > .site-header {
-    width: 100%;
+    position: fixed;
+    z-index: 20;
+    top: 24px;
+    left: max(24px, calc((100vw - var(--reading)) / 2 - var(--docs-sidebar-width) - var(--docs-sidebar-gap)));
+    width: var(--docs-sidebar-width);
+    min-height: 0;
+    display: grid;
+    justify-items: start;
+    gap: 0;
+    margin: 0;
+
+    > .wordmark {
+      margin-bottom: 12px;
+    }
+
+    .site-header-links {
+      display: none;
+    }
+
+    > .filter-search-trigger {
+      justify-self: start;
+      min-height: 26px;
+      color: var(--paper);
+      padding-block: 2px;
+      font-size: var(--font-size-small);
+      font-weight: 500;
+
+      kbd {
+        border: 0;
+        padding: 0;
+      }
+    }
+
+    > .sidebar-playground {
+      display: inline-flex;
+      min-height: 26px;
+      color: var(--paper);
+      padding-block: 2px;
+      font-size: var(--font-size-small);
+      font-weight: 500;
+    }
   }
 
   .docs-toc {
-    width: 180px;
+    width: var(--docs-sidebar-width);
   }
 }
 

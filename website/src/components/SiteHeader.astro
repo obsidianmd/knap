@@ -26,6 +26,12 @@ const { current, title, headings = [], markdownPath } = Astro.props;
       <SiteNavigation />
     </div>
     <Search />
+    <a class="header-action sidebar-playground" href="/playground">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="6 3 20 12 6 21 6 3" />
+      </svg>
+      <span>Playground</span>
+    </a>
     <MobileDocsMenu current={current} title={title} headings={headings} markdownPath={markdownPath} />
   </nav>
 </div>
