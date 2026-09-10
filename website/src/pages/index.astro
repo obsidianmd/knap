@@ -7,11 +7,19 @@ import GetStarted from '../components/GetStarted.astro';
 import CairnHeadline from '../components/CairnHeadline.astro';
 
 import { homeExamples as examples } from '../lib/home-examples';
+
+const headings = [
+  { depth: 2, slug: 'markdown-native-title', text: 'Example' },
+  { depth: 2, slug: 'terminal-title', text: 'Knap in your terminal' },
+  { depth: 2, slug: 'install-title', text: 'Knap in your app' },
+  { depth: 2, slug: 'explore-title', text: 'Explore' },
+  { depth: 2, slug: 'knap-in-use', text: 'Knap in use' },
+];
 ---
 
 <BaseLayout markdownPath="/index.md" description="Knap is a simple language that turns data into Markdown using logic, variables, and filters.">
-  <main class="home-page">
-    <SiteHeader />
+  <main id="top" class="home-page">
+    <SiteHeader current="introduction" headings={headings} markdownPath="/index.md" />
     <section class="hero-shell">
       <div class="hero-grid">
         <div class="hero-copy">

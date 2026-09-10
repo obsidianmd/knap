@@ -1,4 +1,5 @@
 .site-header {
+  position: relative;
   width: min(var(--page-width), var(--reading));
   min-height: var(--header-height);
   display: flex;

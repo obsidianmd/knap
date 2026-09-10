@@ -24,12 +24,16 @@ export function setupPlaygroundSettings() {
     if (restoreFocus) trigger.focus();
   };
   const open = (index = 0) => {
+    document.dispatchEvent(new CustomEvent('knap:overlay-open', { detail: 'playground-settings' }));
     menu.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
     items[index].focus();
   };
 
   trigger.addEventListener('click', () => menu.hidden ? open() : close());
+  document.addEventListener('knap:overlay-open', (event) => {
+    if ((event as CustomEvent<string>).detail !== 'playground-settings') close();
+  });
   trigger.addEventListener('keydown', (event) => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
     event.preventDefault();

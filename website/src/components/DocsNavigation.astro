@@ -7,7 +7,7 @@ interface Heading {
 
 interface Props {
   class?: string;
-  current?: 'variables' | 'logic' | 'filters' | 'api' | 'cli';
+  current?: 'introduction' | 'variables' | 'logic' | 'filters' | 'api' | 'cli';
   title?: string;
   headings?: Heading[];
   markdownPath?: string;
@@ -24,22 +24,22 @@ const {
 } = Astro.props;
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 const pages = [
+  { id: 'introduction', title: 'Introduction' },
   { id: 'variables', title: 'Variables' },
   { id: 'filters', title: 'Filters' },
   { id: 'logic', title: 'Logic' },
   { id: 'cli', title: 'CLI' },
   { id: 'api', title: 'API' },
 ] as const;
-const isNestedPage = Boolean(current && markdownPath && markdownPath !== `/${current}.md`);
+const isNestedPage = Boolean(current && current !== 'introduction' && markdownPath && markdownPath !== `/${current}.md`);
 ---
 
 <nav class:list={['docs-navigation', className]} aria-label={ariaLabel}>
-  <a class="docs-toc-title" href="/">Introduction</a>
   {pages.map((page) => (
     <div class="docs-toc-page">
       <a
         class:list={['docs-toc-title', { 'is-current': page.id === current }]}
-        href={page.id === current && !isNestedPage ? '#top' : `/${page.id}`}
+        href={page.id === current && !isNestedPage ? '#top' : page.id === 'introduction' ? '/' : `/${page.id}`}
         aria-current={page.id === current && !isNestedPage ? 'page' : undefined}
       >
         {page.title}

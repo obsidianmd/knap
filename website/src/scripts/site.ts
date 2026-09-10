@@ -223,14 +223,21 @@ function setupSearch() {
 function setupMobileDocsMenu() {
   const trigger = document.querySelector<HTMLButtonElement>('[data-docs-menu-trigger]');
   const backdrop = document.querySelector<HTMLElement>('[data-docs-menu-backdrop]');
-  const closeButton = document.querySelector<HTMLButtonElement>('[data-docs-menu-close]');
-  if (!trigger || !backdrop || !closeButton) return;
+  const header = trigger?.closest<HTMLElement>('[data-scroll-header]');
+  if (!trigger || !backdrop || !header) return;
 
   const mobile = window.matchMedia('(max-width: 760px)');
+  const updateMenuTop = () => {
+    backdrop.style.top = `${header.getBoundingClientRect().bottom}px`;
+  };
+  new ResizeObserver(updateMenuTop).observe(header);
+  window.addEventListener('resize', updateMenuTop);
   const close = () => {
     if (backdrop.hidden) return;
+    if (backdrop.contains(document.activeElement)) trigger.focus({ preventScroll: true });
     backdrop.hidden = true;
     trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', 'Open documentation menu');
     document.documentElement.classList.remove('docs-menu-open');
   };
   const open = () => {
@@ -238,18 +245,19 @@ function setupMobileDocsMenu() {
     document.dispatchEvent(new CustomEvent('knap:overlay-open', { detail: 'docs-menu' }));
     backdrop.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
+    trigger.setAttribute('aria-label', 'Close documentation menu');
     document.documentElement.classList.add('docs-menu-open');
-    closeButton.focus({ preventScroll: true });
+    updateMenuTop();
   };
 
-  trigger.addEventListener('click', open);
-  closeButton.addEventListener('click', close);
+  trigger.addEventListener('click', () => backdrop.hidden ? open() : close());
   backdrop.addEventListener('click', (event) => {
     if (event.target === backdrop) close();
   });
-  backdrop.addEventListener('click', (event) => {
+  header.addEventListener('click', (event) => {
     if ((event.target as Element).closest('a')) close();
   });
+  window.addEventListener('pagehide', close);
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') close();
   });

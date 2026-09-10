@@ -8,7 +8,7 @@ interface Heading {
 }
 
 interface Props {
-  current?: 'variables' | 'logic' | 'filters' | 'api' | 'cli';
+  current?: 'introduction' | 'variables' | 'logic' | 'filters' | 'api' | 'cli';
   title?: string;
   headings?: Heading[];
   markdownPath?: string;
@@ -27,19 +27,12 @@ const { current, title, headings = [], markdownPath } = Astro.props;
   data-docs-menu-trigger
 >
   <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
-    <path d="M4 6h16M4 12h16M4 18h16"></path>
+    <path class="mobile-docs-menu-icon" d="M4 6h16M4 12h16M4 18h16"></path>
+    <path class="mobile-docs-close-icon" d="M18 6 6 18M6 6l12 12"></path>
   </svg>
 </button>
 <div class="mobile-docs-backdrop" data-docs-menu-backdrop hidden>
-  <section id="mobile-docs-panel" class="mobile-docs-panel" role="dialog" aria-modal="true" aria-label="Documentation menu">
-    <header class="mobile-docs-header">
-      <a class="wordmark" href="/">Knap</a>
-      <button class="header-action mobile-docs-close" type="button" aria-label="Close documentation menu" data-docs-menu-close>
-        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
-          <path d="M18 6 6 18M6 6l12 12"></path>
-        </svg>
-      </button>
-    </header>
+  <section id="mobile-docs-panel" class="mobile-docs-panel" role="dialog" aria-label="Documentation menu">
     <div class="mobile-docs-content">
       <DocsNavigation
         class="mobile-docs-navigation"
