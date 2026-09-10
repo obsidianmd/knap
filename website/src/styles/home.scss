@@ -49,6 +49,53 @@
   margin-bottom: 18px;
 }
 
+.live-template-section {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.live-template-intro {
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  .live-template-copy {
+    flex: 1 1 30rem;
+    margin: 0;
+  }
+}
+
+.live-template-content {
+  position: relative;
+  display: grid;
+}
+
+.live-template-current {
+  position: absolute;
+  inset: 0;
+}
+
+.live-template-final {
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+.template-output-template .live-template-cursor {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 1.1em;
+  vertical-align: -0.15em;
+
+  &::after {
+    position: absolute;
+    inset: 0 auto 0 -1px;
+    width: 2px;
+    background: var(--paper);
+    content: '';
+  }
+}
+
 .markdown-native-intro {
   margin: 0;
 }
