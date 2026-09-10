@@ -104,7 +104,7 @@ Include content conditionally and repeat it over arrays.
 
 ## Knap in use
 
-Knap was created for [Obsidian](https://obsidian.md). It is named after [knapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.
+Knap is [open source](https://github.com/obsidianmd/knap). It started as the templating language for [Obsidian](https://obsidian.md) tools. Now any tool can use it. Knap is named after [knapping](https://en.wikipedia.org/wiki/Knapping), the process of shaping stones to form arrowheads, scrapers, and other tools.
 
 - [Obsidian Web Clipper](https://obsidian.md/clipper) — Save web pages to Markdown with customizable templates.
 - [Obsidian Importer](https://community.obsidian.md/plugins/obsidian-importer) — Convert data from many apps and file formats to portable Markdown files.
