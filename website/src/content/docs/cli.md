@@ -118,7 +118,7 @@ Only one input can use stdin. When piping data, supply a template file or `--tem
 
 ### From Defuddle
 
-[Defuddle](https://defuddle.md/) extracts content and metadata from web pages. Pipe its JSON output into Knap to format the result with your template:
+[Defuddle](https://defuddle.md/docs#cli) extracts content and metadata from web pages. Pipe its JSON output into Knap to format the result with your template:
 
 ```shell
 npx defuddle parse https://example.com/article --markdown --json \
