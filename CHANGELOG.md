@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1
 
 - Add offline CLI help for syntax, filters, and logic tags, with per-filter and per-tag examples and help hints in template diagnostics.
 - Add `knap validate` to check template syntax and static filter arguments without data or rendering.
