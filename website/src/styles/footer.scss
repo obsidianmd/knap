@@ -15,6 +15,26 @@
   gap: 20px;
 }
 
+.footer-author {
+  margin-top: 48px;
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 12px;
+
+  .footer-author-by {
+    color: var(--muted);
+  }
+
+  > svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
+}
+
 @media (max-width: 760px) {
   .site-footer {
     gap: 32px;
