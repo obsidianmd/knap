@@ -113,7 +113,7 @@ describe('website playground', () => {
     expect(result.output).toContain('# The Matrix');
     expect(result.output).toContain('| Keanu Reeves | Neo |');
     expect(result.output).toContain('{% endif %');
-    expect(result.errors.some((error) => error.line === 14)).toBe(true);
+    expect(result.errors.some((error) => error.line === 15)).toBe(true);
   });
 
   test('retains original diagnostic positions after recovering multiline syntax', async () => {

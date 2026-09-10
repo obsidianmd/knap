@@ -19,7 +19,7 @@ Only registered filters are available. Unknown names and invalid parameters appe
 
 Markdown filters add common syntax without building delimiters into a template.
 
-```knap title="template.md"
+```knap
 {{ title | h1 }}
 {{ summary | italic }}
 {{ source | code:"typescript" }}
@@ -31,7 +31,7 @@ Markdown filters add common syntax without building delimiters into a template.
 
 Markdown formatting filters recognize typed and serialized arrays and objects, and apply recursively to their string values. Object keys and non-string values remain unchanged, so the result can continue through a collection filter such as <code><span class="syn-filter">join</span></code>.
 
-```knap title="template.md"
+```knap
 {{ tags | bold | join:", " }}
 {{ json_text | italic | join:", " }}
 ```

@@ -10,6 +10,7 @@ year: {{ year }}
 
 {{ title | h1 }}
 
+**Plot:**
 {{ plot | blockquote }}
 
 {% if cast %}
@@ -26,6 +27,7 @@ directors:
 
 # The Matrix
 
+**Plot:**
 > A hacker discovers that reality is a simulation and joins a rebellion against its machines.
 
 ## Cast

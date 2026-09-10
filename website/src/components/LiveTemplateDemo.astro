@@ -81,6 +81,7 @@ const frontmatterSteps = await Promise.all(frontmatterTemplates.map(async (templ
   id="live-template-title"
   label="Use logic to render variables conditionally and iterate over arrays."
   labelAs="p"
+  playground={{ href: '/playground' }}
   steps={steps}
 />
 
@@ -88,6 +89,7 @@ const frontmatterSteps = await Promise.all(frontmatterTemplates.map(async (templ
   id="frontmatter-template-example"
   label="Generate YAML frontmatter and use extended Markdown syntax for apps like Obsidian."
   labelAs="p"
+  playground={{ href: '/playground' }}
   steps={frontmatterSteps}
   timeline="frontmatter"
 />
