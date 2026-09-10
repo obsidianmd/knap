@@ -280,6 +280,11 @@ function setupMobileHeader() {
   let frame = 0;
   let revealFrame = 0;
   let dismissTimer = 0;
+  let keepVisibleForHeading = false;
+
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty('--mobile-header-height', `${header.getBoundingClientRect().height}px`);
+  }).observe(header);
 
   const reset = () => {
     if (revealFrame) window.cancelAnimationFrame(revealFrame);
@@ -320,6 +325,8 @@ function setupMobileHeader() {
     const reachedOriginalPosition = currentScrollY <= slot.offsetTop;
     if (!mobile.matches || reachedOriginalPosition) {
       reset();
+    } else if (keepVisibleForHeading) {
+      reveal();
     } else if (currentScrollY > previousScrollY + 2) {
       dismiss();
     } else if (
@@ -335,11 +342,26 @@ function setupMobileHeader() {
   };
 
   window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  header.addEventListener('click', (event) => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>('[data-docs-menu-backdrop] a[href^="#"]');
+    if (!mobile.matches || !link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    if (!document.getElementById(decodeURIComponent(link.hash.slice(1)))) return;
+    keepVisibleForHeading = true;
+    reveal();
+  });
+  const resumeScrollBehavior = () => { keepVisibleForHeading = false; };
+  window.addEventListener('wheel', resumeScrollBehavior, { passive: true });
+  window.addEventListener('touchmove', resumeScrollBehavior, { passive: true });
+  window.addEventListener('keydown', (event) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) resumeScrollBehavior();
+  });
   window.addEventListener('pageshow', () => {
+    keepVisibleForHeading = false;
     previousScrollY = window.scrollY;
     reset();
   });
   mobile.addEventListener('change', () => {
+    keepVisibleForHeading = false;
     previousScrollY = window.scrollY;
     reset();
   });

@@ -62,6 +62,10 @@
 }
 
 @media (max-width: 760px) {
+  html {
+    scroll-padding-top: calc(var(--mobile-header-height, var(--header-height)) + 16px);
+  }
+
   .site-header {
     width: 100%;
     gap: 12px;
