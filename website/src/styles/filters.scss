@@ -86,40 +86,34 @@
   margin-top: 24px;
 }
 .filter-directory .filter-row {
-  position: relative;
-  isolation: isolate;
   border-bottom: 1px solid var(--line) !important;
   border-radius: 0;
   background: transparent;
   padding: 13px 0;
   transition: none;
 
-  &::before {
-    position: absolute;
-    z-index: -1;
-    inset: 3px -12px;
-    border-radius: var(--radius-panel);
-    background: var(--panel);
-    opacity: 0;
-    content: '';
-    transition: opacity 150ms ease;
+  > span {
+    transition: color 150ms ease, transform 150ms ease;
   }
 
   @media (hover: hover) {
     &:hover {
       background: transparent;
 
-      &::before {
-        opacity: 1;
+      > span {
+        color: var(--paper);
+        transform: translateX(3px);
       }
     }
   }
 
   &:focus-visible {
-    outline: 0;
+    outline: 1px solid var(--faint);
+    outline-offset: 3px;
 
-    &::before {
-      opacity: 1;
+    > span {
+      color: var(--paper);
+      transform: translateX(3px);
     }
   }
 }

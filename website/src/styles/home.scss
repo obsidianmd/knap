@@ -1,5 +1,5 @@
 .hero-grid, .markdown-native, .get-started, .install-section, .guide-section, .used-by {
-  width: min(var(--page-width), var(--reading));
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -8,7 +8,7 @@
 }
 
 .home-content > .site-footer {
-  width: min(var(--page-width), var(--reading));
+  width: 100%;
   margin-inline: auto;
 }
 
@@ -279,7 +279,7 @@
 
 @media (max-width: 760px) {
   .hero-grid, .markdown-native, .install-section, .guide-section, .used-by {
-    width: min(var(--page-width), var(--reading));
+    width: 100%;
   }
 
   .guide-links {
