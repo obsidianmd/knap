@@ -1,15 +1,37 @@
 ---
+import { createEngine, standardFilters } from '../../../src';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TemplateExample from '../components/TemplateExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import GetStarted from '../components/GetStarted.astro';
 import CairnHeadline from '../components/CairnHeadline.astro';
+import LiveTemplateDemo from '../components/LiveTemplateDemo.astro';
 
-import { homeExamples as examples } from '../lib/home-examples';
+import { homeExamples } from '../lib/home-examples';
+
+const movie = homeExamples.find((example) => example.key === 'movie')!;
+const moreTemplate = `---
+{{ year | yaml_property:"year" }}
+{{ directors | wikilink | yaml_property:"directors" }}
+---
+{% set heading = title ?? "Untitled" %}
+{{ heading | h1 }}
+
+{{ plot | blockquote }}
+
+## Cast
+
+{% for member in cast %}
+- **{{ member.Actor }}** as {{ member.Role }}
+{% endfor %}`;
+const moreResult = await createEngine({ filters: standardFilters }).render(moreTemplate, { variables: movie.variables });
+if (moreResult.errors.length) throw new Error(moreResult.errors[0].message);
+const moreExamples = [{ ...movie, template: moreTemplate, markdown: moreResult.output }];
 
 const headings = [
   { depth: 2, slug: 'markdown-native-title', text: 'Example' },
+  { depth: 2, slug: 'more-title', text: 'Knap can do more' },
   { depth: 2, slug: 'terminal-title', text: 'Knap in your terminal' },
   { depth: 2, slug: 'install-title', text: 'Knap in your app' },
   { depth: 2, slug: 'explore-title', text: 'Explore' },
@@ -30,11 +52,13 @@ const headings = [
       </div>
     </section>
 
-    <section class="markdown-native" aria-labelledby="markdown-native-title">
+    <LiveTemplateDemo />
+
+    <section class="markdown-native" aria-labelledby="more-title">
       <header class="markdown-native-heading">
-        <h2 id="markdown-native-title">Example</h2>
+        <h2 id="more-title">Knap can do more</h2>
       </header>
-      <TemplateExample examples={examples} defaultExample="movie" />
+      <TemplateExample examples={moreExamples} defaultExample="movie" />
     </section>
 
     <GetStarted />

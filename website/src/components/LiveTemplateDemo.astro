@@ -1,0 +1,100 @@
+---
+import { createEngine, standardFilters } from '../../../src';
+import { homeExamples } from '../lib/home-examples';
+import { highlightCode, highlightLines } from '../lib/highlight';
+import CopyButton from './CopyButton.astro';
+import PlaygroundLink from './PlaygroundLink.astro';
+
+const movie = homeExamples.find((example) => example.key === 'movie')!;
+const variables = { cast: movie.variables.cast };
+const playground = { input: JSON.stringify(movie.variables, null, 2), template: movie.template };
+const engine = createEngine({ filters: standardFilters });
+const castPrefix = '{% if cast %}\n{{ ';
+const castSuffix = ' }}\n{% endif %}';
+const steps = await Promise.all([
+  { expression: 'if cast', prefix: '{% ', suffix: ' %}\n{% endif %}' },
+  { expression: 'cast', prefix: castPrefix, suffix: castSuffix },
+  { expression: 'cast | sort:"Actor"', prefix: castPrefix, suffix: castSuffix },
+  { expression: 'cast | sort:"Actor" | table', prefix: castPrefix, suffix: castSuffix },
+].map(async (step) => {
+  const template = step.prefix + step.expression + step.suffix;
+  const result = await engine.render(template, { variables });
+  if (result.errors.length) throw new Error(result.errors[0].message);
+  return {
+    ...step,
+    template,
+    rawOutput: result.output,
+    output: highlightCode(result.output, 'md'),
+  };
+}));
+const initial = steps[steps.length - 1];
+const final = steps[steps.length - 1];
+---
+
+<section id="live-template-title" class="live-template-section" aria-labelledby="markdown-native-title" data-live-template data-steps={JSON.stringify(steps)}>
+  <header class="home-example-heading">
+    <h2 id="markdown-native-title">Example</h2>
+    <PlaygroundLink {...playground} />
+  </header>
+
+  <div class="template-output-panel">
+    <div class="template-output-block template-output-template">
+      <div class="template-output-label">
+        <span>Template</span>
+        <span class="doc-code-actions">
+          <button class="doc-code-copy" type="button" title="Replay animation" aria-label="Replay animation" data-demo-rewind>
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </button>
+          <CopyButton copyText={final.template} label="Copy final template" />
+        </span>
+      </div>
+      <pre aria-label="Template"><code data-demo-template set:html={highlightLines(initial.template.split('\n'), 'knap').join('\n')} /></pre>
+    </div>
+    <div class="template-output-block template-output-result">
+      <div class="template-output-label">
+        <span>Output</span>
+        <span class="doc-code-actions"><CopyButton copyText={final.rawOutput} label="Copy final output" /></span>
+      </div>
+      <div class="template-output-content" data-demo-output-container>
+        <div class="doc-code"><pre aria-label="Template output"><code data-demo-output set:html={initial.output} /></pre></div>
+        <div class="template-output-measure" data-demo-output-measure aria-hidden="true" inert>
+          {steps.map((step) => (
+            <div class="doc-code"><pre><code set:html={step.output} /></pre></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+  import '../scripts/live-template-demo';
+</script>
+
+<style lang="scss">
+  .live-template-section {
+    width: min(var(--page-width), var(--reading));
+    margin: 0 auto 56px;
+  }
+  .template-output-template :global(.live-template-cursor) {
+    position: relative;
+    display: inline-block;
+    width: 0;
+    height: 1.1em;
+    vertical-align: -0.15em;
+  }
+  .template-output-template :global(.live-template-cursor::after) {
+    position: absolute;
+    inset: 0 auto 0 -1px;
+    width: 2px;
+    background: var(--paper);
+    content: '';
+  }
+  [data-demo-output-container] {
+    min-height: max(190px, var(--demo-output-height, 0px));
+  }
+</style>

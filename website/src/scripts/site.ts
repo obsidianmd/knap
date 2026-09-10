@@ -4,6 +4,7 @@ const checkIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 2
 const copyTimers = new WeakMap<HTMLButtonElement, number>();
 
 function codeText(button: HTMLButtonElement) {
+  if (button.dataset.copyText !== undefined) return button.dataset.copyText;
   const block = button.closest('[data-code-block], .code-window');
   if (!block) return '';
   const sourceLines = block.querySelectorAll<HTMLElement>('.doc-code-source, .code-source');
@@ -14,6 +15,7 @@ function codeText(button: HTMLButtonElement) {
 document.addEventListener('click', async (event) => {
   const button = (event.target as Element).closest<HTMLButtonElement>('[data-copy-code]');
   if (!button) return;
+  const label = button.dataset.copyLabel ?? 'Copy code';
   try {
     await navigator.clipboard.writeText(codeText(button));
     button.dataset.copied = '';
@@ -24,8 +26,8 @@ document.addEventListener('click', async (event) => {
     if (previous) window.clearTimeout(previous);
     copyTimers.set(button, window.setTimeout(() => {
       delete button.dataset.copied;
-      button.title = 'Copy code';
-      button.setAttribute('aria-label', 'Copy code');
+      button.title = label;
+      button.setAttribute('aria-label', label);
       button.innerHTML = copyIcon;
     }, 2000));
   } catch {

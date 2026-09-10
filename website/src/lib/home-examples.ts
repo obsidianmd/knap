@@ -34,7 +34,7 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
       year: 1909,
       isbn: '9781409903291',
       genres: ['Sci-fi'],
-      url: 'https://en.wikisource.org/wiki/The_Machine_Stops',
+      url: 'https://stephango.com/the-machine-stops',
       summary: 'Humanity lives underground, dependent on a vast Machine for every need. A mother and son confront the limits of a life mediated by technology.',
       chapters: ['The Air Ship', 'The Mending Apparatus', 'The Homeless'],
     },
@@ -61,7 +61,7 @@ year: 1909
 isbn: 9781409903291
 genres:
   - "Sci-fi"
-source: "https://en.wikisource.org/wiki/The_Machine_Stops"
+source: "https://stephango.com/the-machine-stops"
 ---
 
 # The Machine Stops
