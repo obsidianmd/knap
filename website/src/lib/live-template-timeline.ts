@@ -59,3 +59,63 @@ export function buildDemoTimeline(steps: DemoStep[]): DemoFrame[] {
   });
   return frames;
 }
+
+// Type a Markdown heading, then add a second expression and transform it with a filter.
+export function buildMarkdownDemoTimeline(steps: DemoStep[]): DemoFrame[] {
+  const frames: DemoFrame[] = [{ source: '', cursor: 0, output: '', delay: 200 }];
+  let output = '';
+
+  frames.push({ source: '#', cursor: 1, output, delay: 85 });
+  frames.push({ source: '# ', cursor: 2, output, delay: 150 });
+  frames.push({ source: '# {', cursor: 3, output, delay: 85 });
+  frames.push({ source: '# {{  }}', cursor: 5, output, delay: 150 });
+
+  const title = steps[0];
+  for (let length = 1; length <= title.expression.length; length += 1) {
+    const complete = length === title.expression.length;
+    if (complete) output = title.output;
+    frames.push({
+      source: title.prefix + title.expression.slice(0, length) + title.suffix,
+      cursor: title.prefix.length + length,
+      output,
+      delay: complete ? 800 : 85,
+    });
+  }
+
+  const titleSource = title.prefix + title.expression + title.suffix;
+  const titleCursor = title.prefix.length + title.expression.length;
+  for (let offset = 1; offset <= title.suffix.length; offset += 1) {
+    frames.push({ source: titleSource, cursor: titleCursor + offset, output, delay: 85 });
+  }
+  const plot = steps[1];
+  const secondLinePrefix = plot.prefix.slice(0, -3);
+  const markdownBetweenExpressions = secondLinePrefix.slice(titleSource.length);
+  for (let length = 1; length <= markdownBetweenExpressions.length; length += 1) {
+    const character = markdownBetweenExpressions[length - 1];
+    frames.push({
+      source: titleSource + markdownBetweenExpressions.slice(0, length),
+      cursor: titleSource.length + length,
+      output,
+      delay: character === '\n' ? 150 : 85,
+    });
+  }
+  frames.push({ source: `${secondLinePrefix}{`, cursor: secondLinePrefix.length + 1, output, delay: 85 });
+  frames.push({ source: plot.prefix + plot.suffix, cursor: plot.prefix.length, output, delay: 150 });
+
+  steps.slice(1).forEach((step, index) => {
+    const previous = steps[index];
+    const start = index === 0 ? 0 : previous.expression.length;
+    for (let length = start + 1; length <= step.expression.length; length += 1) {
+      const complete = length === step.expression.length;
+      if (complete) output = step.output;
+      frames.push({
+        source: step.prefix + step.expression.slice(0, length) + step.suffix,
+        cursor: step.prefix.length + length,
+        output,
+        delay: complete ? 800 : 85,
+      });
+    }
+  });
+
+  return frames;
+}

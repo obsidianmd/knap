@@ -85,7 +85,8 @@
 .filter-directory > .filter-directory-group:first-child {
   margin-top: 24px;
 }
-.filter-directory .filter-row {
+.filter-directory .filter-row,
+.related-filters .filter-row {
   border-bottom: 1px solid var(--line) !important;
   border-radius: 0;
   background: transparent;
@@ -235,22 +236,13 @@
 }
 .related-filters {
   display: grid;
+  border-top: 1px solid var(--line);
   margin: 0;
   padding: 0;
   list-style: none;
 
   > li {
     margin: 0;
-  }
-
-  .filter-row {
-    padding-block: 7px;
-
-    @media (hover: hover) {
-      &:hover {
-        background: var(--panel);
-      }
-    }
   }
 }
 @media (max-width: 760px) {

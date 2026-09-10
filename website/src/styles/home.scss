@@ -57,6 +57,7 @@
   overflow: hidden;
   border-radius: var(--radius-panel);
   background: var(--panel);
+  margin-block: 28px;
 }
 
 .template-output-block {
@@ -76,7 +77,6 @@
 
 .template-output-template {
   pre {
-    min-height: calc(3 * var(--code-line-height) * 1em);
     margin: 18px 0 0;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
@@ -98,17 +98,6 @@
   }
   .doc-code pre { padding-block: 16px; }
   .doc-code-line { padding: 0; }
-}
-
-.template-output-content { position: relative; }
-
-.template-output-measure {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  pointer-events: none;
 }
 
 .markdown-transform {
@@ -162,7 +151,7 @@
   margin-top: 24px;
 
   .doc-code {
-    margin-block: 16px;
+    margin-block: 28px;
   }
 }
 

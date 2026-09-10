@@ -91,7 +91,10 @@
     pointer-events: auto;
   }
   .site-header-links {
-    gap: 16px;
+    display: none;
+  }
+  .filter-search-trigger {
+    margin-left: auto;
   }
   .header-action {
     min-height: 32px;

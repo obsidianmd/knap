@@ -282,6 +282,7 @@
   }
   .playground-tabs { display: grid; flex-shrink: 0; margin: 0 8px 8px; }
   .playground-tabs > button { min-height: 40px; }
+  #playground-settings > span { display: none; }
   .playground #playground-settings:focus-visible,
   .playground .menu button:focus-visible { outline: 0; }
   .playground-columns { grid-template-columns: minmax(0, 1fr); }

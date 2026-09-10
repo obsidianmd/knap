@@ -1,9 +1,9 @@
 .site-footer {
   width: 100%;
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 14px 20px;
+  gap: 20px;
   margin-top: 72px;
   padding-block: 24px 48px;
   color: var(--muted);
@@ -16,13 +16,27 @@
 }
 
 @media (max-width: 760px) {
-  .footer-nav {
-    gap: 16px;
-  }
-}
-
-@media (max-width: 480px) {
   .site-footer {
-    flex-direction: column;
+    gap: 32px;
+  }
+
+  .footer-nav {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(4, auto);
+    gap: 16px;
+
+    > a[href="/playground"] {
+      order: 1;
+    }
+
+    > a[href="/cli"] {
+      order: 2;
+    }
+
+    > a[href="/api"] {
+      order: 3;
+    }
   }
 }

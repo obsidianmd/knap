@@ -34,6 +34,12 @@ const { current, title, headings = [], markdownPath } = Astro.props;
 <div class="mobile-docs-backdrop" data-docs-menu-backdrop hidden>
   <section id="mobile-docs-panel" class="mobile-docs-panel" role="dialog" aria-label="Documentation menu">
     <div class="mobile-docs-content">
+      <a class="mobile-docs-playground" href="/playground">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="6 3 20 12 6 21 6 3" />
+        </svg>
+        <span>Playground</span>
+      </a>
       <DocsNavigation
         class="mobile-docs-navigation"
         current={current}

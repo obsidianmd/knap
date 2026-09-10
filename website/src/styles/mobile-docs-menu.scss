@@ -59,6 +59,22 @@
     padding-block: 32px calc(48px + env(safe-area-inset-bottom));
   }
 
+  .mobile-docs-playground {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding-block: 5px;
+    color: var(--paper);
+    font-size: var(--font-size-body);
+    font-weight: 500;
+
+    svg {
+      flex: 0 0 auto;
+      color: var(--muted);
+    }
+  }
+
   .mobile-docs-navigation {
     gap: 10px;
 

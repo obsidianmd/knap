@@ -1,11 +1,11 @@
 ---
 title: Variables
-description: Variables contain the content used in a template.
+description: Variables make data accessible in a template.
 ---
 
-Variables are defined by apps. For example, Obsidian Web Clipper [offers variables](https://help.obsidian.md/web-clipper/variables) that standardize content from web pages.
+Variables are defined by apps. For example, Obsidian Web Clipper [offers Knap variables](https://help.obsidian.md/web-clipper/variables) that standardize content from web pages.
 
-When a template runs through Knap, [variables](/variables) are replaced with values. Variables are wrapped in double braces `{{` and `}}`. Whitespace is optional.
+When a template is rendered by Knap, [variables](/variables) are replaced with values. Variables are wrapped in double braces `{{` and `}}`. Whitespace is optional.
 
 ```knap title="Template"
 {{ title }}

@@ -1,30 +1,19 @@
 import { highlightLines } from '../lib/highlight';
-import { buildDemoTimeline, type DemoStep } from '../lib/live-template-timeline';
+import { buildDemoTimeline, buildMarkdownDemoTimeline, type DemoStep } from '../lib/live-template-timeline';
 
 document.querySelectorAll<HTMLElement>('[data-live-template]').forEach((demo) => {
   const steps: DemoStep[] = JSON.parse(demo.dataset.steps!);
-  const frames = buildDemoTimeline(steps);
+  const frames = demo.dataset.demoTimeline === 'markdown'
+    ? buildMarkdownDemoTimeline(steps)
+    : buildDemoTimeline(steps);
   const template = demo.querySelector<HTMLElement>('[data-demo-template]')!;
   const output = demo.querySelector<HTMLElement>('[data-demo-output]')!;
-  const outputContainer = demo.querySelector<HTMLElement>('[data-demo-output-container]')!;
-  const outputSamples = [...demo.querySelectorAll<HTMLElement>('[data-demo-output-measure] > .doc-code')];
   const rewind = demo.querySelector<HTMLButtonElement>('[data-demo-rewind]')!;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let timer: ReturnType<typeof setTimeout> | undefined;
   let playing = false;
   let inView = false;
   let position = reducedMotion.matches ? frames.length - 1 : 0;
-
-  // Measure real, identically styled output at the available width before animation starts.
-  // Observe the samples so wrapping, orientation, and font changes can grow or shrink the space.
-  const reserveOutputHeight = () => {
-    const height = Math.ceil(Math.max(...outputSamples.map((sample) => sample.getBoundingClientRect().height)));
-    outputContainer.style.setProperty('--demo-output-height', `${height}px`);
-  };
-  reserveOutputHeight();
-  const outputResizeObserver = new ResizeObserver(reserveOutputHeight);
-  outputSamples.forEach((sample) => outputResizeObserver.observe(sample));
-  void document.fonts.ready.then(reserveOutputHeight);
 
   const draw = () => {
     const frame = frames[position];
