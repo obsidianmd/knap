@@ -65,7 +65,7 @@ describe('website syntax highlighting', () => {
 	test('preserves shell URLs, redirections, variables, and comments', () => {
 		const html = highlightLine('curl https://example.com/a?q=1#part > out.json && cat $FILE # inspect', 'shell');
 		expect(html).toContain('<span class="syn-string">https://example.com/a?q=1#part</span> <span class="syn-punctuation">&gt;</span> <span class="syn-string">out.json</span>');
-		expect(html).toContain('<span class="syn-command">cat</span> <span class="syn-variable">$FILE</span> <span class="syn-punctuation"># inspect</span>');
+		expect(html).toContain('<span class="syn-command">cat</span> <span class="syn-variable">$FILE</span> <span class="syn-comment"># inspect</span>');
 	});
 
 	test.each(["knap -t 'unfinished", 'knap --set title="hello"', 'knap render \\', '  --filename "{{ title }}.md"'])('preserves all shell source characters in %s', (source) => {

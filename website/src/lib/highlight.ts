@@ -15,7 +15,7 @@ const span = (className: string | undefined, value: string) => className
   : escapeHtml(value);
 
 function tokenClass(token: string, language: CodeLanguage) {
-  if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-language';
+  if (/^(\{\{|\}\}|\{%|%\})$/.test(token)) return 'syn-punctuation';
   if (/^(===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|])$/.test(token)) return 'syn-punctuation';
   if (/^['"`]/.test(token)) return 'syn-string';
   if (/^\d/.test(token)) return 'syn-number';
@@ -105,7 +105,7 @@ function highlightShellLine(line: string, state = shellHighlightState()) {
 
   const highlighted = tokens.map((token) => {
     if (/^\s+$/.test(token)) return escapeHtml(token);
-    if (token.startsWith('#')) return span('syn-punctuation', token);
+    if (token.startsWith('#')) return span('syn-comment', token);
     continued = false;
     if (/^[|;&]+$/.test(token)) {
       expectsCommand = true;
@@ -211,8 +211,31 @@ function highlightKnapLine(line: string) {
   ).join('');
 }
 
+// Identify comments outside quoted strings before applying the token highlighter.
+// Processing the whole block keeps multiline comments quiet on every line.
+function highlightTypeScript(code: string): string[] {
+  const lines = [''];
+  const append = (value: string, comment = false) => {
+    value.split('\n').forEach((line, index) => {
+      if (index) lines.push('');
+      lines[lines.length - 1] += comment ? span('syn-comment', line) : highlightTokenLine(line, 'ts');
+    });
+  };
+  let offset = 0;
+  const tokens = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\/\/[^\n]*|\/\*[\s\S]*?(?:\*\/|$)/g;
+  for (const match of code.matchAll(tokens)) {
+    if (!match[0].startsWith('//') && !match[0].startsWith('/*')) continue;
+    append(code.slice(offset, match.index));
+    append(match[0], true);
+    offset = match.index! + match[0].length;
+  }
+  append(code.slice(offset));
+  return lines;
+}
+
 export function highlightLine(line: string, language: CodeLanguage, inFrontmatter = false) {
   if (line.length > maxHighlightLineLength) return escapeHtml(line);
+  if (language === 'ts') return highlightTypeScript(line)[0];
   if (language === 'shell') return highlightShellLine(line);
   if (language === 'md') return highlightMarkdownLine(line, inFrontmatter);
   if (language === 'knap') return highlightKnapLine(line);
@@ -220,6 +243,7 @@ export function highlightLine(line: string, language: CodeLanguage, inFrontmatte
 }
 
 export function highlightLines(lines: string[], language: CodeLanguage) {
+  if (language === 'ts') return highlightTypeScript(lines.join('\n'));
   if (language === 'shell') {
     const state = shellHighlightState();
     return lines.map((line) => highlightShellLine(line, state));

@@ -14,6 +14,7 @@
   --page-width: 88vw;
   --desktop-navigation-left: max(24px, calc((100vw - var(--reading)) / 2 - 180px - clamp(40px, 3.5vw, 56px)));
   --desktop-wordmark-top: calc((var(--header-height) - var(--font-size-heading)) / 2);
+  --font-sans: -apple-system, BlinkMacSystemFont, InterVariable, Inter, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "IBM Plex Mono", "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco, "Consolas", "Source Code Pro", monospace;
   --ink: #100f0f;
   --panel: #1c1b1a;
@@ -33,16 +34,18 @@
   --blue: #4385be;
   --purple: #8b7ec8;
   --magenta: #ce5d97;
+  /* Flexoki 300 accents; base-400 punctuation and base-600 comments. */
   --syntax-red: #e8705f;
   --syntax-orange: #ec8b49;
   --syntax-yellow: #dfb431;
   --syntax-green: #a0af54;
   --syntax-cyan: #5abdac;
   --syntax-blue: #66a0c8;
-  --syntax-purple: #8b7ec8;
+  --syntax-purple: #a699d0;
   --syntax-magenta: #e47da8;
   --syntax-muted: #9f9d96;
-  --accent: var(--purple);
+  --syntax-comment: #6f6e69;
+  --accent: var(--paper);
   --selection-background: rgb(255 252 240 / 15%);
   --content: 960px;
   --reading: calc(var(--font-size-body) * 42);
@@ -65,7 +68,7 @@ body {
   margin: 0;
   background: var(--ink);
   color: var(--body);
-  font-family: -apple-system, BlinkMacSystemFont, "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--font-size-body);
   line-height: 1.55;
   text-rendering: optimizeLegibility;
@@ -102,6 +105,9 @@ a {
     color: var(--ink);
   }
   @media (hover: hover) {
+    &-primary:hover {
+      background: color-mix(in srgb, var(--accent), var(--ink) 12%);
+    }
     &-secondary:hover {
       background: var(--panel);
     }

@@ -1,6 +1,4 @@
 ---
-import '@fontsource-variable/inter/wght.css';
-import '@fontsource-variable/inter/wght-italic.css';
 import '../styles/global.scss';
 
 interface Props {
@@ -28,6 +26,8 @@ const socialImage = new URL('/social.png', Astro.site);
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="preconnect" href="https://rsms.me/" crossorigin />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} title={`${title ?? 'Knap'} as Markdown`} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />

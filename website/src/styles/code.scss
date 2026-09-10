@@ -42,10 +42,7 @@
   color: var(--faint);
   user-select: none;
 }
-.tok-punctuation {
-  color: var(--syntax-muted);
-}
-.tok-language {
+.tok-punctuation, .tok-language {
   color: var(--syntax-muted);
 }
 .tok-keyword {
@@ -151,6 +148,9 @@
   white-space: pre-wrap;
   color-scheme: light;
 }
+.doc-code pre > code, .code-window pre > code {
+  font: inherit;
+}
 .doc-code-line {
   display: grid;
   min-height: calc(var(--code-line-height) * 1em);
@@ -166,10 +166,7 @@
   user-select: none;
 }
 
-.syn-punctuation {
-  color: var(--syntax-muted);
-}
-.syn-language {
+.syn-punctuation, .syn-language {
   color: var(--syntax-muted);
 }
 .syn-keyword {
@@ -203,5 +200,9 @@
   color: var(--syntax-blue);
 }
 .syn-md-link {
-  color: var(--syntax-purple);
+  color: var(--syntax-cyan);
+}
+
+.syn-comment {
+  color: var(--syntax-comment);
 }
