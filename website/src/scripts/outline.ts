@@ -1,6 +1,39 @@
 // Match Reader mode: brighten the current section and fade those above it.
 export function setupOutline() {
   const links = document.querySelectorAll<HTMLAnchorElement>('.docs-toc-outline a[href^="#"]');
+  const sidebarLinks = document.querySelectorAll<HTMLAnchorElement>('.docs-toc a[href^="#"]');
+  let scrollFrame = 0;
+
+  const scrollToTarget = (target: HTMLElement) => {
+    if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
+    const start = window.scrollY;
+    const scrollMargin = Number.parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0;
+    const destination = Math.max(0, start + target.getBoundingClientRect().top - scrollMargin);
+    const distance = destination - start;
+    const duration = Math.min(300, Math.max(100, Math.abs(distance) * 0.15));
+    let startedAt: number | undefined;
+
+    const step = (timestamp: number) => {
+      startedAt ??= timestamp;
+      let progress = Math.min((timestamp - startedAt) / duration, 1);
+      progress *= 2 - progress;
+      window.scrollTo({ top: start + distance * progress, behavior: 'instant' });
+      scrollFrame = progress < 1 ? window.requestAnimationFrame(step) : 0;
+    };
+    scrollFrame = window.requestAnimationFrame(step);
+  };
+
+  sidebarLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      if (!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      event.preventDefault();
+      window.history.pushState(null, '', link.hash);
+      scrollToTarget(target);
+    });
+  });
+
   const linksByHash = new Map<string, HTMLAnchorElement[]>();
   links.forEach((link) => {
     const matchingLinks = linksByHash.get(link.hash) ?? [];

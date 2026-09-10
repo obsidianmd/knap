@@ -43,9 +43,20 @@ const socialImage = new URL('/social.png', Astro.site);
     <meta name="twitter:image" content={socialImage} />
     <title>{pageTitle}</title>
     <style is:inline>
+      html[data-initial-hash] { scroll-behavior: auto; }
       a { color: inherit; text-decoration: none; }
       button.header-action { appearance: none; border: 1px solid transparent; outline: 0; background: transparent; color: inherit; font: inherit; }
     </style>
+    <script is:inline>
+      if (window.location.hash) {
+        document.documentElement.dataset.initialHash = '';
+        window.addEventListener('load', () => {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => delete document.documentElement.dataset.initialHash);
+          });
+        }, { once: true });
+      }
+    </script>
   </head>
   <body><slot /></body>
 </html>

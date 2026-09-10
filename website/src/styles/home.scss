@@ -26,7 +26,7 @@
   line-height: 1.4;
 }
 
-.markdown-native-heading, .home-example-heading, .used-by-heading, .install-heading, .guide-heading {
+.home-example-heading, .used-by-heading, .install-heading, .guide-heading {
   h2, h3 {
     margin: 0;
     font-size: var(--font-size-heading);
@@ -47,6 +47,10 @@
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 18px;
+}
+
+.markdown-native-intro {
+  margin: 0;
 }
 
 .template-output-panel {

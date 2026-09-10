@@ -32,7 +32,6 @@ const moreExamples = [{ ...movie, template: moreTemplate, markdown: moreResult.o
 
 const headings = [
   { depth: 2, slug: 'markdown-native-title', text: 'Example' },
-  { depth: 2, slug: 'more-title', text: 'Knap can do more' },
   { depth: 2, slug: 'terminal-title', text: 'Knap in your terminal' },
   { depth: 2, slug: 'install-title', text: 'Knap in your app' },
   { depth: 2, slug: 'explore-title', text: 'Explore' },
@@ -58,10 +57,8 @@ const headings = [
 
         <LiveTemplateDemo />
 
-        <section class="markdown-native" aria-labelledby="more-title">
-          <header class="markdown-native-heading">
-            <h2 id="more-title">Knap can do more</h2>
-          </header>
+        <section class="markdown-native" aria-label="More Knap features">
+          <p class="markdown-native-intro">If you’ve used other template languages, Knap’s syntax will feel familiar. But Knap is designed for plain text and includes built-in filters that make it easy to generate Markdown, frontmatter, and app-specific syntax for tools like Obsidian.</p>
           <TemplateExample examples={moreExamples} defaultExample="movie" />
         </section>
 

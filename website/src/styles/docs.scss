@@ -34,6 +34,10 @@
     &.docs-toc-title {
       font-size: var(--font-size-small);
       font-weight: 400;
+
+      &[aria-current="page"] {
+        font-weight: 500;
+      }
     }
 
     &.is-read {
@@ -58,6 +62,10 @@
     &[data-depth="3"] {
       padding-left: 12px;
     }
+  }
+
+  .docs-toc-outline a[aria-current="location"] {
+    font-weight: 400;
   }
 }
 

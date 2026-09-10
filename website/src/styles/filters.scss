@@ -56,14 +56,13 @@
 }
 .filter-directory-group {
   margin-top: 28px;
-  border-radius: var(--radius-panel);
-  background: var(--panel);
-  padding: 18px;
+  background: transparent;
+  padding: 0;
 
   > header {
     display: grid;
     gap: 4px;
-    padding: 10px 12px 0;
+    padding: 0;
   }
   h3 {
     margin: 0;
@@ -79,12 +78,50 @@
     font-weight: 400;
   }
   .filter-list {
-    border-top: 0;
-    margin-top: 14px;
+    border-top: 1px solid var(--line);
+    margin-top: 18px;
   }
 }
 .filter-directory > .filter-directory-group:first-child {
   margin-top: 24px;
+}
+.filter-directory .filter-row {
+  position: relative;
+  isolation: isolate;
+  border-bottom: 1px solid var(--line) !important;
+  border-radius: 0;
+  background: transparent;
+  padding: 13px 0;
+  transition: none;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    inset: 3px -12px;
+    border-radius: var(--radius-panel);
+    background: var(--panel);
+    opacity: 0;
+    content: '';
+    transition: opacity 150ms ease;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: transparent;
+
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: 0;
+
+    &::before {
+      opacity: 1;
+    }
+  }
 }
 .filter-row {
   display: grid;
