@@ -51,7 +51,19 @@ jobs:
       - name: Deploy website
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: website
-        run: pnpm exec wrangler deploy
+        run: |
+          for attempt in 1 2 3; do
+            if pnpm exec wrangler deploy; then
+              exit 0
+            fi
+
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+
+            echo "Deployment failed; retrying with a fresh upload session in 15 seconds..."
+            sleep 15
+          done
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
