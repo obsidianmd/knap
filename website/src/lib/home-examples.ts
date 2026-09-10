@@ -3,7 +3,12 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
     key: 'movie',
     variables: { title: 'The Matrix', year: 1999, directors: ['Lana Wachowski', 'Lilly Wachowski'], genres: ['Action', 'Sci-fi'], plot: 'A hacker discovers that reality is a simulation and joins a rebellion against its machines.', cast: [{ Actor: 'Keanu Reeves', Role: 'Neo' }, { Actor: 'Laurence Fishburne', Role: 'Morpheus' }, { Actor: 'Carrie-Anne Moss', Role: 'Trinity' }, { Actor: 'Hugo Weaving', Role: 'Agent Smith' }] },
     label: 'Movie',
-    template: `{{ title | h1 }}
+    template: `---
+year: {{ year }}
+{{ directors | wikilink | yaml_property:"directors" }}
+---
+
+{{ title | h1 }}
 
 {{ plot | blockquote }}
 
@@ -12,7 +17,14 @@ export const homeExamples: { key: string; label: string; variables: Record<strin
 
 {{ cast | sort:"Actor" | table }}
 {% endif %}`,
-    markdown: `# The Matrix
+    markdown: `---
+year: 1999
+directors:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+---
+
+# The Matrix
 
 > A hacker discovers that reality is a simulation and joins a rebellion against its machines.
 

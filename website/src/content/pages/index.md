@@ -7,20 +7,17 @@ description: Knap is a simple template language that turns data into Markdown us
 
 Knap is a simple template language that turns data into Markdown using [logic](/logic), [variables](/variables), and [filters](/filters).
 
-## Example
+## How it works
+
+Add variables inline with Markdown. Filters let you modify values and formatting.
 
 ### Template
 
 ```knap
-{{ title | h1 }}
+# {{ title }}
 
+**Plot:**
 {{ plot | blockquote }}
-
-{% if cast %}
-## Cast
-
-{{ cast | sort:"Actor" | table }}
-{% endif %}
 ```
 
 ### Output
@@ -28,10 +25,23 @@ Knap is a simple template language that turns data into Markdown using [logic](/
 ```md
 # The Matrix
 
+**Plot:**
 > A hacker discovers that reality is a simulation and joins a rebellion against its machines.
+```
 
-## Cast
+Use logic to render variables conditionally and iterate over arrays.
 
+### Template
+
+```knap
+{% if cast %}
+{{ cast | sort:"Actor" | table }}
+{% endif %}
+```
+
+### Output
+
+```md
 | Actor | Role |
 | - | - |
 | Carrie-Anne Moss | Trinity |
@@ -40,9 +50,31 @@ Knap is a simple template language that turns data into Markdown using [logic](/
 | Laurence Fishburne | Morpheus |
 ```
 
+Knap also supports generating YAML frontmatter and Markdown extensions for apps like Obsidian.
+
+### Template
+
+```knap
+---
+year: {{ year }}
+{{ directors | wikilink | yaml_property:"directors" }}
+---
+```
+
+### Output
+
+```md
+---
+year: 1999
+directors:
+  - "[[Lana Wachowski]]"
+  - "[[Lilly Wachowski]]"
+---
+```
+
 ## Knap in your terminal
 
-Generate Markdown using a Knap template. Read the [CLI guide](/cli) for options.
+Generate Markdown from Knap templates. Read the [CLI guide](/cli) for options.
 
 ```shell
 npx knap render template.md --data data.json --output note.md
@@ -50,7 +82,7 @@ npx knap render template.md --data data.json --output note.md
 
 ## Knap in your app
 
-Add Knap to your app to render templates with your own data using the [API](/api).
+Add Knap templating to your app using the [API](/api).
 
 ```shell
 npm install knap

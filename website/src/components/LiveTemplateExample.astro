@@ -12,17 +12,19 @@ interface Step extends DemoStep {
 interface Props {
   id: string;
   label: string;
+  description?: string;
   labelAs?: 'h2' | 'p';
   labelId?: string;
-  playground: { input: string; template: string };
+  playground?: { href: string } | { input: string; template: string };
   steps: Step[];
-  timeline?: 'logic' | 'markdown';
+  timeline?: 'logic' | 'markdown' | 'typing' | 'frontmatter';
 }
 
-const { id, label, labelAs = 'h2', labelId = `${id}-label`, playground, steps, timeline = 'logic' } = Astro.props;
+const { id, label, description, labelAs = 'h2', labelId = `${id}-label`, playground, steps, timeline = 'logic' } = Astro.props;
 const initial = steps[steps.length - 1];
 const final = steps[steps.length - 1];
-const finalTemplate = highlightLines(final.template.split('\n'), 'knap').join('\n');
+const templateSizers = [...new Set(steps.map((step) => highlightLines(step.template.split('\n'), 'knap').join('\n')))];
+const outputSizers = [...new Set(steps.map((step) => step.output))];
 ---
 
 <section
@@ -37,8 +39,9 @@ const finalTemplate = highlightLines(final.template.split('\n'), 'knap').join('\
     {labelAs === 'h2'
       ? <h2 id={labelId}>{label}</h2>
       : <p id={labelId} class="live-template-copy">{label}</p>}
-    <PlaygroundLink {...playground} />
+    {playground && <PlaygroundLink {...playground} />}
   </header>
+  {description && <p class="live-template-description">{description}</p>}
 
   <div class="template-output-panel">
     <div class="template-output-block template-output-template">
@@ -56,7 +59,7 @@ const finalTemplate = highlightLines(final.template.split('\n'), 'knap').join('\
       </div>
       <div class="live-template-content">
         <pre class="live-template-current" aria-label="Template"><code data-demo-template set:html={highlightLines(initial.template.split('\n'), 'knap').join('\n')} /></pre>
-        <pre class="live-template-final" aria-hidden="true" inert><code set:html={finalTemplate} /></pre>
+        {templateSizers.map((template) => <pre class="live-template-final" aria-hidden="true" inert><code set:html={template} /></pre>)}
       </div>
     </div>
     <div class="template-output-block template-output-result">
@@ -66,7 +69,7 @@ const finalTemplate = highlightLines(final.template.split('\n'), 'knap').join('\
       </div>
       <div class="template-output-content live-template-content">
         <div class="doc-code live-template-current"><pre aria-label="Template output"><code data-demo-output set:html={initial.output} /></pre></div>
-        <div class="doc-code live-template-final" aria-hidden="true" inert><pre><code set:html={final.output} /></pre></div>
+        {outputSizers.map((result) => <div class="doc-code live-template-final" aria-hidden="true" inert><pre><code set:html={result} /></pre></div>)}
       </div>
     </div>
   </div>

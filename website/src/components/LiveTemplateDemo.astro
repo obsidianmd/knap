@@ -6,7 +6,6 @@ import LiveTemplateExample from './LiveTemplateExample.astro';
 
 const movie = homeExamples.find((example) => example.key === 'movie')!;
 const variables = { cast: movie.variables.cast };
-const playground = { input: JSON.stringify(movie.variables, null, 2), template: movie.template };
 const engine = createEngine({ filters: standardFilters });
 const castPrefix = '{% if cast %}\n{{ ';
 const castSuffix = ' }}\n{% endif %}';
@@ -27,12 +26,7 @@ const steps = await Promise.all([
   };
 }));
 
-const markdownTemplate = `# {{ title }}
-
-**Plot:**
-{{ plot | blockquote }}`;
 const markdownVariables = { title: movie.variables.title, plot: movie.variables.plot };
-const markdownPlayground = { input: JSON.stringify(markdownVariables, null, 2), template: markdownTemplate };
 const markdownPrefix = '# {{ title }}\n\n**Plot:**\n{{ ';
 const markdownSteps = await Promise.all([
   { expression: 'title', prefix: '# {{ ', suffix: ' }}' },
@@ -49,23 +43,53 @@ const markdownSteps = await Promise.all([
     output: highlightCode(result.output, 'md'),
   };
 }));
+const frontmatterTemplate = `---
+year: {{ year }}
+{{ directors | wikilink | yaml_property:"directors" }}
+---`;
+const frontmatterVariables = { year: movie.variables.year, directors: movie.variables.directors };
+const frontmatterTemplates = [
+  `---\n\n---`,
+  `---\nyear: {{ year }}\n---`,
+  frontmatterTemplate,
+];
+const frontmatterSteps = await Promise.all(frontmatterTemplates.map(async (template) => {
+  const result = await engine.render(template, { variables: frontmatterVariables });
+  if (result.errors.length) throw new Error(result.errors[0].message);
+  return {
+    expression: '',
+    prefix: '',
+    suffix: '',
+    template,
+    rawOutput: result.output,
+    output: highlightCode(result.output, 'md'),
+  };
+}));
 ---
 
 <LiveTemplateExample
-  id="live-template-title"
+  id="markdown-template-example"
   label="How it works"
+  description="Add variables inline with Markdown. Filters modify values and formatting."
   labelId="markdown-native-title"
-  playground={playground}
+  playground={{ href: '/playground' }}
+  steps={markdownSteps}
+  timeline="markdown"
+/>
+
+<LiveTemplateExample
+  id="live-template-title"
+  label="Use logic to render variables conditionally and iterate over arrays."
+  labelAs="p"
   steps={steps}
 />
 
 <LiveTemplateExample
-  id="markdown-template-example"
-  label="Knap lets you mix Markdown and dynamic content in the same template."
+  id="frontmatter-template-example"
+  label="Generate YAML frontmatter and use extended Markdown syntax for apps like Obsidian."
   labelAs="p"
-  playground={markdownPlayground}
-  steps={markdownSteps}
-  timeline="markdown"
+  steps={frontmatterSteps}
+  timeline="frontmatter"
 />
 
 <script>

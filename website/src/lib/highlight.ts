@@ -204,8 +204,8 @@ export function highlightInlineKnap(value: string) {
 }
 
 function highlightKnapLine(line: string) {
-  return line.split(/(\{\{.*?\}\}|\{%.*?%\})/g).filter(Boolean).map((segment) =>
-    /^(?:\{\{.*\}\}|\{%.*%\})$/.test(segment)
+  return line.split(/(\{\{.*?\}\}|\{%.*?%\}|(?:\{\{|\{%).*?$)/g).filter(Boolean).map((segment) =>
+    /^(?:\{\{|\{%)/.test(segment)
       ? highlightTokenLine(segment, 'knap')
       : highlightMarkdownLine(segment)
   ).join('');

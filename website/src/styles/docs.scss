@@ -72,7 +72,7 @@
 .docs-toc {
   position: fixed;
   top: var(--docs-sidebar-nav-top);
-  left: max(24px, calc((100vw - var(--reading)) / 2 - var(--docs-sidebar-width) - var(--docs-sidebar-gap)));
+  left: var(--desktop-navigation-left);
   width: min(180px, calc((100vw - var(--reading)) / 2 - 56px));
   max-height: calc(100dvh - var(--docs-sidebar-nav-top) - 20px);
   overflow-y: auto;
@@ -100,7 +100,7 @@
     max-width: 650px;
     margin: 18px 0 0;
     color: var(--body);
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-heading);
     line-height: 1.55;
   }
 }
@@ -109,7 +109,7 @@
   flex-wrap: wrap;
   gap: 4px;
   margin-left: -8px;
-  margin-top: 18px;
+  margin-top: 6px;
 }
 .doc-section {
   scroll-margin-top: 32px;
@@ -292,8 +292,8 @@
   .docs-page > .site-header-slot > .site-header {
     position: fixed;
     z-index: 20;
-    top: 24px;
-    left: max(24px, calc((100vw - var(--reading)) / 2 - var(--docs-sidebar-width) - var(--docs-sidebar-gap)));
+    top: var(--desktop-wordmark-top);
+    left: var(--desktop-navigation-left);
     width: var(--docs-sidebar-width);
     min-height: 0;
     display: grid;

@@ -103,7 +103,10 @@ function setupSearch() {
 
   const items = JSON.parse(data) as SearchItem[];
   const mobileSearch = window.matchMedia('(max-width: 760px)');
-  let results = items.filter((item) => item.kind === 'filter').slice(0, 12);
+  const defaultResults = () => items
+    .filter((item) => (item.kind === 'syntax' && item.category === 'Logic') || item.kind === 'filter')
+    .slice(0, 12);
+  let results = defaultResults();
   let activeIndex = 0;
 
   const syncClearButton = () => {
@@ -149,7 +152,7 @@ function setupSearch() {
     results = items
       .filter((item) => query
         ? [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.searchTerms ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)
-        : item.kind === 'filter')
+        : (item.kind === 'syntax' && item.category === 'Logic') || item.kind === 'filter')
       .slice(0, 12);
     activeIndex = 0;
     render();

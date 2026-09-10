@@ -8,11 +8,11 @@ import Install from './Install.astro';
     <header class="install-heading">
       <h2 id="terminal-title">Knap in your terminal</h2>
     </header>
-    <p class="get-started-link">Generate Markdown using a Knap template. Read the <a href="/cli">CLI guide</a> for options.</p>
+    <p class="get-started-link">Generate Markdown from Knap templates. Read the <a href="/cli">CLI guide</a> for options.</p>
     <CodeBlock language="shell" code="npx knap render template.md --data data.json --output note.md" />
   </section>
 
   <Install title="Knap in your app" showDescription={false}>
-    <p slot="description" class="get-started-link">Add Knap to your app to render templates with your own data using the <a href="/api">API</a>.</p>
+    <p slot="description" class="get-started-link">Add Knap templating to your app using the <a href="/api">API</a>.</p>
   </Install>
 </div>

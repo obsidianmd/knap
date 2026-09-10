@@ -12,6 +12,10 @@ export interface DemoFrame {
   delay: number;
 }
 
+export interface TypingDemoStep extends DemoStep {
+  template: string;
+}
+
 // Store each typing position with its caret and output for playback.
 export function buildDemoTimeline(steps: DemoStep[]): DemoFrame[] {
   const frames: DemoFrame[] = [{ source: '', cursor: 0, output: '', delay: 200 }];
@@ -115,6 +119,72 @@ export function buildMarkdownDemoTimeline(steps: DemoStep[]): DemoFrame[] {
         delay: complete ? 800 : 85,
       });
     }
+  });
+
+  return frames;
+}
+
+// Type a sequence of progressively longer templates, updating output at each checkpoint.
+export function buildTypingDemoTimeline(steps: TypingDemoStep[]): DemoFrame[] {
+  const frames: DemoFrame[] = [{ source: '', cursor: 0, output: '', delay: 200 }];
+  let source = '';
+  let output = '';
+
+  steps.forEach((step) => {
+    if (!step.template.startsWith(source)) throw new Error('Typing demo steps must extend the previous template');
+    for (let length = source.length + 1; length <= step.template.length; length += 1) {
+      const complete = length === step.template.length;
+      if (complete) output = step.output;
+      const nextSource = step.template.slice(0, length);
+      frames.push({
+        source: nextSource,
+        cursor: nextSource.length,
+        output,
+        delay: complete ? 500 : nextSource.endsWith('\n') ? 150 : 55,
+      });
+    }
+    source = step.template;
+  });
+
+  return frames;
+}
+
+// Type an opening frontmatter fence, auto-pair its closing fence, then fill it in.
+export function buildFrontmatterDemoTimeline(steps: TypingDemoStep[]): DemoFrame[] {
+  const opening = '---\n';
+  const closing = '\n---';
+  const frames: DemoFrame[] = [
+    { source: '', cursor: 0, output: '', delay: 200 },
+    { source: '-', cursor: 1, output: '', delay: 55 },
+    { source: '--', cursor: 2, output: '', delay: 55 },
+  ];
+  let content = '';
+  let output = '';
+
+  steps.forEach((step, index) => {
+    if (!step.template.startsWith(opening) || !step.template.endsWith(closing)) {
+      throw new Error('Frontmatter demo steps must include paired fences');
+    }
+    const nextContent = step.template.slice(opening.length, -closing.length);
+    if (!nextContent.startsWith(content)) throw new Error('Frontmatter demo steps must extend the previous content');
+
+    if (index === 0) {
+      output = step.output;
+      frames.push({ source: step.template, cursor: opening.length, output, delay: 500 });
+    } else {
+      for (let length = content.length + 1; length <= nextContent.length; length += 1) {
+        const complete = length === nextContent.length;
+        if (complete) output = step.output;
+        const typedContent = nextContent.slice(0, length);
+        frames.push({
+          source: opening + typedContent + closing,
+          cursor: opening.length + typedContent.length,
+          output,
+          delay: complete ? 500 : typedContent.endsWith('\n') ? 150 : 55,
+        });
+      }
+    }
+    content = nextContent;
   });
 
   return frames;

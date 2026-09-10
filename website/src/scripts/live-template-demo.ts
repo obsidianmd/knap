@@ -1,11 +1,15 @@
 import { highlightLines } from '../lib/highlight';
-import { buildDemoTimeline, buildMarkdownDemoTimeline, type DemoStep } from '../lib/live-template-timeline';
+import { buildDemoTimeline, buildFrontmatterDemoTimeline, buildMarkdownDemoTimeline, buildTypingDemoTimeline, type TypingDemoStep } from '../lib/live-template-timeline';
 
 document.querySelectorAll<HTMLElement>('[data-live-template]').forEach((demo) => {
-  const steps: DemoStep[] = JSON.parse(demo.dataset.steps!);
+  const steps: TypingDemoStep[] = JSON.parse(demo.dataset.steps!);
   const frames = demo.dataset.demoTimeline === 'markdown'
     ? buildMarkdownDemoTimeline(steps)
-    : buildDemoTimeline(steps);
+    : demo.dataset.demoTimeline === 'frontmatter'
+      ? buildFrontmatterDemoTimeline(steps)
+    : demo.dataset.demoTimeline === 'typing'
+      ? buildTypingDemoTimeline(steps)
+      : buildDemoTimeline(steps);
   const template = demo.querySelector<HTMLElement>('[data-demo-template]')!;
   const output = demo.querySelector<HTMLElement>('[data-demo-output]')!;
   const rewind = demo.querySelector<HTMLButtonElement>('[data-demo-rewind]')!;
