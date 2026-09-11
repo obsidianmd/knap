@@ -23,51 +23,51 @@ const loopExample: FilterExample = {
 
 export const tagHelp: Record<string, TagHelp> = {
 	if: {
-		summary: 'Render content when a condition is truthy.',
+		summary: 'Render content when a condition is true.',
 		syntax: '{% if condition %}...{% elseif other %}...{% else %}...{% endif %}',
 		notes: [
-			'elseif and else branches are optional. Conditions can nest.',
-			'False, null, undefined, an empty string, zero, and an empty array are falsy.',
-			'Use comparisons (==, !=, >, <, >=, <=, contains), and / &&, or / ||, and not / !. Parentheses group expressions.',
+			'`elseif` and `else` branches are optional. Conditions can nest.',
+			'Conditions treat `false`, `null`, `undefined`, an empty string, `0`, and an empty array as false. Other values are treated as true.',
+			'Use comparisons (`==`, `!=`, `>`, `<`, `>=`, `<=`, `contains`), `and` / `&&`, `or` / `||`, and `not` / `!`. Parentheses group expressions.',
 		],
 		example: conditionExample,
 	},
 	elseif: {
 		summary: 'Try another condition after an if or elseif branch.',
 		syntax: '{% if condition %}...{% elseif other %}...{% endif %}',
-		notes: ['Use inside an if block, before any else branch. Multiple elseif branches are allowed.'],
+		notes: ['Use inside an `if` block, before any `else` branch. Multiple `elseif` branches are allowed.'],
 		example: conditionExample,
 	},
 	else: {
 		summary: 'Render the fallback branch of an if block.',
 		syntax: '{% if condition %}...{% else %}...{% endif %}',
-		notes: ['Use once, after all conditional branches. Knap does not support for-else blocks.'],
+		notes: ['Use once, after all conditional branches. Knap does not support `else` branches in `for` blocks.'],
 		example: conditionExample,
 	},
 	endif: {
 		summary: 'Close an if block.',
 		syntax: '{% if condition %}...{% endif %}',
-		notes: ['Each if block requires a matching endif, including nested blocks.'],
+		notes: ['Each `if` block requires a matching `endif`, including nested blocks.'],
 		example: conditionExample,
 	},
 	for: {
-		summary: 'Repeat a block for each value in an array.',
+		summary: 'Repeat content for each item in an array.',
 		syntax: '{% for item in items %}...{% endfor %}',
 		notes: [
-			'Use item properties inside the block, for example {{ item.name }}.',
-			'Loop values: loop.index (1-based), loop.index0 (0-based), loop.first, loop.last, loop.length, and item_index (0-based, named after the iterator).',
-			'Iterations are separated by a line break. Extra blank lines before endfor are preserved.',
+			'Use item properties inside the block, for example `{{ item.name }}`.',
+			'Loop values: `loop.index` (1-based), `loop.index0` (0-based), `loop.first`, `loop.last`, `loop.length`, and `item_index` (0-based, named after the iterator).',
+			'Iterations are separated by a line break. Extra blank lines before `endfor` are preserved.',
 		],
 		example: loopExample,
 	},
 	endfor: {
 		summary: 'Close a for loop.',
 		syntax: '{% for item in items %}...{% endfor %}',
-		notes: ['Each for block requires a matching endfor, including nested loops.'],
+		notes: ['Each `for` block requires a matching `endfor`, including nested loops.'],
 		example: loopExample,
 	},
 	set: {
-		summary: 'Assign a local variable for later use in the template.',
+		summary: 'Save a value to use later in the template.',
 		syntax: '{% set name = expression %}',
 		notes: ['Assign a literal, expression, or filtered value. Assignments are evaluated in order and produce no output.'],
 		example: {
@@ -99,15 +99,15 @@ Logic:
   {% set slug = title | kebab %}{{ slug }}
 
 Comments:
-  {# Removed from the output; contents are not evaluated. #}
+  {# Removed from the output. Contents are not evaluated. #}
 Comments can span multiple lines and preserve surrounding whitespace.
 They end at the first #}, do not nest, and require a closing #}.
 
 Conditions accept ==, !=, >, <, >=, <=, contains, and / &&, or / ||,
-not / !, and parentheses. False, null, undefined, empty strings, zero,
-and empty arrays are falsy.
+not / !, and parentheses. Conditions treat false, null, undefined, empty
+strings, zero, and empty arrays as false. Other values are treated as true.
 
-Fallbacks use the first truthy value (including fallback for zero or false):
+Fallbacks use the first value treated as true (so zero and false use the fallback):
   {{ title ?? headline ?? "Untitled" }}
 Filters bind before ??, which has the lowest precedence.
 

@@ -8,7 +8,7 @@ import { emptyTemplatePair, pairTemplateInput } from '../lib/playground-pairs';
 import { markdownPunctuationAt } from '../lib/markdown-punctuation';
 import { createPlaygroundEditor } from './playground-editor';
 
-const language = StreamLanguage.define({
+export const templateLanguage = StreamLanguage.define({
   startState: () => ({ close: '', quote: '', filter: false }),
   token(stream, state) {
     if (stream.string.length > maxHighlightLineLength) {
@@ -18,6 +18,7 @@ const language = StreamLanguage.define({
     if (!state.close) {
       if (stream.match('{{')) state.close = '}}';
       else if (stream.match('{%')) state.close = '%}';
+      else if (stream.match('{#')) { state.close = '#}'; return 'comment'; }
       else {
         const length = markdownPunctuationAt(stream.string, stream.pos);
         if (length) { stream.pos += length; return 'punctuation'; }
@@ -25,6 +26,11 @@ const language = StreamLanguage.define({
         return null;
       }
       return 'punctuation';
+    }
+    if (state.close === '#}') {
+      if (stream.skipTo('#}')) { stream.match('#}'); state.close = ''; }
+      else stream.skipToEnd();
+      return 'comment';
     }
     if (!state.quote && stream.match(state.close)) {
       state.close = ''; state.filter = false;
@@ -56,7 +62,7 @@ const language = StreamLanguage.define({
 export function createTemplateEditor(variables: () => Record<string, unknown>, wrap = false) {
   const filters: TemplateSuggestion[] = JSON.parse(document.getElementById('playground-filter-completions')!.textContent!);
   return createPlaygroundEditor('template', [
-    language,
+    templateLanguage,
     EditorView.inputHandler.of((view, from, to, text, insert) => {
       if (view.composing || view.state.selection.ranges.length !== 1 || !insert().isUserEvent('input.type')) return false;
       const paired = pairTemplateInput(view.state.doc.toString(), from, to, text);
@@ -75,6 +81,7 @@ export function createTemplateEditor(variables: () => Record<string, unknown>, w
       { tag: tags.keyword, class: 'syn-keyword' },
       { tag: tags.string, class: 'syn-string' },
       { tag: tags.number, class: 'syn-number' },
+      { tag: tags.comment, class: 'syn-comment' },
       { tag: [tags.punctuation, tags.operator], class: 'syn-punctuation' },
     ])),
     autocompletion({

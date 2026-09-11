@@ -34,7 +34,7 @@ Use `{% set %}` to name a literal, expression, or filtered value for the rest of
 File: {{ slug }}.md
 ```
 
-Assignments are evaluated in order and can be used by later output and [logic](/logic).
+Assignments are evaluated in order and can be used by later output and [logic](/logic). See the [`set` reference](/logic/set) for assignment syntax and variable scope.
 
 ## Nested values
 

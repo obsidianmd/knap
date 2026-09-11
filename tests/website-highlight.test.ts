@@ -1,8 +1,50 @@
 import { describe, expect, test } from 'vitest';
-import { highlightCode, highlightInlineKnap, highlightLine, highlightLines } from '../website/src/lib/highlight';
+import { highlightCode, highlightInlineKnap, highlightLine, highlightLines, renderInlineCode } from '../website/src/lib/highlight';
 import { markdownPunctuationAt } from '../website/src/lib/markdown-punctuation';
 
 describe('website syntax highlighting', () => {
+
+	test('uses syntax colors for inline reference code without interpreting prose as HTML', () => {
+		const html = renderInlineCode('Use `else`, `false`, `0`, `<`, and `{% if enabled -%}`. <script> & `--set`');
+		expect(html).toContain('<code class="inline-syntax language-knap"><span class="syn-keyword">else</span></code>');
+		expect(html).toContain('<span class="syn-constant">false</span>');
+		expect(html).toContain('<span class="syn-number">0</span>');
+		expect(html).toContain('<span class="syn-punctuation">&lt;</span>');
+		expect(html).toContain('<span class="syn-variable">enabled</span>');
+		expect(html).toContain('&lt;script&gt; &amp; <code>--set</code>');
+	});
+
+	test('keeps inline comments muted and ordinary code safely escaped', () => {
+		const html = renderInlineCode('`{# {{ ignored }} #}` and `#}` and `<img src=x>`');
+		expect(html).toContain('<span class="syn-comment">{# {{ ignored }} #}</span>');
+		expect(html).toContain('<span class="syn-comment">#}</span>');
+		expect(html).toContain('<code>&lt;img src=x&gt;</code>');
+	});
+
+	test('mutes entire multiline template comments and resumes syntax highlighting afterwards', () => {
+		const lines = highlightLines(['{#', '{{ title }} and {% if true %} are ignored.', '#}{{ title }}'], 'knap');
+		expect(lines[0]).toBe('<span class="syn-comment">{#</span>');
+		expect(lines[1]).toBe('<span class="syn-comment">{{ title }} and {% if true %} are ignored.</span>');
+		expect(lines[2]).toContain('<span class="syn-comment">#}</span>');
+		expect(lines[2]).toContain('<span class="syn-variable">title</span>');
+	});
+
+	test('mutes adjacent and unclosed comments while escaping their content', () => {
+		expect(highlightLine('A{# <script> #}{# unfinished', 'knap')).toBe('A<span class="syn-comment">{# &lt;script&gt; #}</span><span class="syn-comment">{# unfinished</span>');
+		expect(highlightLine('{#}', 'knap')).toBe('<span class="syn-comment">{#}</span>');
+	});
+
+	test('keeps comment delimiters literal within quoted template expressions', () => {
+		const html = highlightLine('{{ "{# literal #}" }}{# real #}', 'knap');
+		expect(html).toContain('<span class="syn-string">{# literal #}</span>');
+		expect(html).toContain('<span class="syn-comment">{# real #}</span>');
+		const lines = highlightLines(['{% set text = "{#', '#}" %}', '{{ text }}'], 'knap');
+		expect(lines.join('')).not.toContain('syn-comment');
+	});
+
+	test.each(['{#', '#}', '{# {{ ignored }} #}'])('mutes inline comment syntax %s', source => {
+		expect(highlightInlineKnap(source)).toBe(`<span class="syn-comment">${source}</span>`);
+	});
 
 	test.each(['npx knap render', 'npx --yes knap render'])('colors the command invoked through %s', (source) => {
 		const html = highlightLine(source, 'shell');

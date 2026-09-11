@@ -4,6 +4,7 @@ import FilterExample from '../../components/FilterExample.astro';
 import PlaygroundLink from '../../components/PlaygroundLink.astro';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import { filterDocs, filterDocsByName } from '../../../lib/filter-docs';
+import { renderInlineCode } from '../../lib/highlight';
 
 export function getStaticPaths() {
   return filterDocs.map((filter) => ({ params: { slug: filter.slug }, props: { filter } }));
@@ -13,8 +14,6 @@ const { filter } = Astro.props;
 const singleBasicExample = filter.examples.length === 1 && filter.examples[0].title === 'Basic usage';
 const runnable = filter.environment !== 'html';
 const slugifyHeading = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character] ?? character);
-const renderInlineCode = (value: string) => escapeHtml(value).replace(/`([^`]+)`/g, '<code>$1</code>');
 const exampleHeadings = filter.examples.flatMap((item) =>
   filter.examples.length === 1 && item.title === 'Basic usage'
     ? []

@@ -1,0 +1,58 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro';
+import FilterExample from '../../components/FilterExample.astro';
+import PlaygroundLink from '../../components/PlaygroundLink.astro';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { logicDocs } from '../../../lib/logic-docs';
+import { renderInlineCode as inlineCode } from '../../lib/highlight';
+
+export function getStaticPaths() {
+  return logicDocs.map(doc => ({ params: { slug: doc.slug }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const singleExample = doc.examples.length === 1;
+const exampleId = (index: number) => `example-${index + 1}`;
+const headings = [
+  { depth: 2, slug: 'syntax', text: 'Syntax' },
+  ...doc.sections.map(section => ({ depth: 2, slug: section.id, text: section.title })),
+  { depth: 2, slug: 'examples', text: singleExample ? 'Example' : 'Examples' },
+  ...(!singleExample ? doc.examples.map((example, index) => ({ depth: 3, slug: exampleId(index), text: example.title })) : []),
+  { depth: 2, slug: 'related', text: 'Related' },
+];
+---
+
+<DocsLayout current="logic" title={doc.title} description={doc.summary} headings={headings} markdownPath={`/logic/${doc.slug}.md`}>
+  <section id="syntax" class="doc-section"><h2>Syntax</h2><CodeBlock code={doc.syntax} /></section>
+  {doc.sections.map(section => (
+    <section id={section.id} class="doc-section">
+      <h2>{section.title}</h2>
+      <ul class="behavior-list">{section.notes.map(note => <li set:html={inlineCode(note)} />)}</ul>
+    </section>
+  ))}
+  <section id="examples" class:list={['doc-section', 'filter-examples-section', { 'has-playground-link': singleExample }]}>
+    <h2>{singleExample ? 'Example' : 'Examples'}</h2>
+    {singleExample && <PlaygroundLink input={JSON.stringify(doc.examples[0].variables, null, 2)} template={doc.examples[0].template} />}
+    <div class="filter-examples">
+      {doc.examples.map((example, index) => (
+        <article class:list={['filter-example-card', { 'filter-example-card-untitled': singleExample, 'has-playground-link': !singleExample }]}>
+          {!singleExample && <header><h3 id={exampleId(index)}>{example.title}</h3></header>}
+          {!singleExample && <PlaygroundLink input={JSON.stringify(example.variables, null, 2)} template={example.template} />}
+          <FilterExample input={JSON.stringify(example.variables, null, 2)} template={example.template} output={example.expected} />
+        </article>
+      ))}
+    </div>
+  </section>
+  <section id="related" class="doc-section">
+    <h2>Related</h2>
+    <ul class="related-filters">
+      {doc.links.map(link => (
+        <li><a class="filter-row" href={link.href}>
+          <div set:html={inlineCode(link.label)} />
+          <p>{link.summary}</p>
+          <span aria-hidden="true">→</span>
+        </a></li>
+      ))}
+    </ul>
+  </section>
+</DocsLayout>

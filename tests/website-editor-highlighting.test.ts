@@ -1,10 +1,28 @@
 import { describe, expect, test } from 'vitest';
 import { editorHighlightRanges, editorLanguage } from '../website/src/lib/editor-highlighting';
+import { templateLanguage } from '../website/src/scripts/playground-template-editor';
 
 const tokens = (line: string, language: 'json' | 'md', frontmatter = false) =>
   editorHighlightRanges(line, language, frontmatter).map((range) => [line.slice(range.from, range.to), range.className]);
 
 describe('CodeMirror highlighting uses the existing website colors', () => {
+  test('mutes template comments across lines, including embedded template syntax', () => {
+    const source = '{#\n{{ ignored }}\n#}{{ title }}';
+    const tree = templateLanguage.parser.parse(source);
+    const comments: string[] = [];
+    tree.iterate({ enter(node) { if (node.name === 'comment') comments.push(source.slice(node.from, node.to)); } });
+    expect(comments.join('\n')).toBe('{#\n{{ ignored }}\n#}');
+    expect(tree.length).toBe(source.length);
+  });
+
+  test('does not treat comment delimiters inside template strings as comments', () => {
+    const source = '{{ "{# literal #}" }}';
+    const comments: string[] = [];
+    templateLanguage.parser.parse(source).iterate({ enter(node) {
+      if (node.name === 'comment') comments.push(source.slice(node.from, node.to));
+    } });
+    expect(comments).toEqual([]);
+  });
   test('keeps JSON keys, strings, quotes, constants, and numbers distinct', () => {
     const result = tokens('"year": 1999, "title": "The Matrix", "flag": true, "empty": null', 'json');
     expect(result).toEqual(expect.arrayContaining([

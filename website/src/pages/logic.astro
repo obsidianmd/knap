@@ -1,9 +1,15 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
-import { Content, frontmatter, getHeadings } from '../content/docs/logic.md';
+import { compiledContent, frontmatter, getHeadings } from '../content/docs/logic.md';
+import { logicDocs } from '../../lib/logic-docs';
+import { renderInlineCode } from '../lib/highlight';
+
+const rows = logicDocs.map(doc => `<a class="filter-row" href="/logic/${doc.slug}"><div>${renderInlineCode('`' + doc.title + '`')}</div><p>${renderInlineCode(doc.summary)}</p><span aria-hidden="true">→</span></a>`).join('');
+const directory = `<div class="filter-directory"><div class="filter-list">${rows}</div></div>`;
+const content = (await compiledContent()).replace('<!-- LOGIC_DIRECTORY -->', directory);
 const headings = getHeadings();
 ---
 
 <DocsLayout current="logic" title={frontmatter.title} description={frontmatter.description} headings={headings} markdownPath="/logic.md">
-  <Content />
+  <Fragment set:html={content} />
 </DocsLayout>

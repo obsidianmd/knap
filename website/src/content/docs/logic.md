@@ -3,7 +3,7 @@ title: Logic
 description: Include content conditionally, use fallbacks, iterate over arrays, and add template comments.
 ---
 
-Logic tags are wrapped by brace percentage delimiters `{%` and `%}`. The text they surround does not produce any visible output when the template runs, so you can keep logic hidden.
+Logic tags use `{% ... %}` to control which content is rendered. The tags themselves produce no output.
 
 ## Conditions
 
@@ -41,9 +41,9 @@ Featured reading
 {% endif %}
 ```
 
-## Truthiness
+## True and false
 
-`false`, `null`, `undefined`, an empty string, `0`, and an empty array are falsy. Other values are truthy.
+Conditions treat `false`, `null`, `undefined`, an empty string, `0`, and an empty array as false. Other values are treated as true.
 
 ```knap
 {% if content %}
@@ -53,7 +53,7 @@ Featured reading
 
 ## Fallback values
 
-The `??` operator returns the first truthy value and has the lowest precedence, so filters run before the fallback check.
+The `??` operator returns the first value treated as true. Values treated as false, including `0` and `false`, use the fallback. Filters run before the fallback check because `??` has the lowest precedence.
 
 ```knap
 {{ title ?? headline ?? "Untitled" }}
@@ -133,3 +133,7 @@ This template is used for reading notes.
 Surrounding spaces and line breaks are preserved. A comment on its own line leaves that line blank. Comments end at the first `#}` and do not nest. An unclosed comment is a syntax error.
 
 To include an Obsidian-flavored `%%` comment in the rendered Markdown, use the [`comment`](/filters/comment) filter.
+
+## Reference
+
+<!-- LOGIC_DIRECTORY -->

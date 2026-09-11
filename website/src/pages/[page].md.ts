@@ -5,6 +5,9 @@ import filters from '../content/docs/filters.md?raw';
 import logic from '../content/docs/logic.md?raw';
 import variables from '../content/docs/variables.md?raw';
 import { filterDocs, filterGroups } from '../../lib/filter-docs';
+import { logicDocs } from '../../lib/logic-docs';
+
+const logicDirectory = logicDocs.map(doc => `- [\`${doc.title}\`](/logic/${doc.slug}). ${doc.summary}`).join('\n');
 
 const byName = new Map(filterDocs.map((filter) => [filter.name, filter]));
 const filterDirectory = filterGroups.map((group) => [
@@ -29,7 +32,7 @@ const documents = {
   api: api.replace('<!-- INSTALL -->', install),
   cli,
   filters: filters.replace('<!-- FILTER_DIRECTORY -->', filterDirectory),
-  logic,
+  logic: logic.replace('<!-- LOGIC_DIRECTORY -->', logicDirectory),
   variables,
 } as const;
 

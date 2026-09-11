@@ -195,12 +195,26 @@ function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md' |
 export function highlightInlineKnap(value: string) {
   // Inline CLI options are prose references, not Knap expressions.
   if (/^\s*--?[A-Za-z]/.test(value)) return undefined;
+  if (value === '#}') return span('syn-comment', value);
+  if (value.startsWith('{#')) return highlightKnapComments(value);
   const isKnapSyntax = /(\{\{|\}\}|\{%|%\}|\?\?|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains)\b)/.test(value)
     || /(?:==|!=|>=|<=|&&|\|\|)/.test(value)
     || /(?:^|\s)[<>!](?:\s|$)/.test(value)
+    || /^(?:true|false|null|undefined|-?\d+(?:\.\d+)?)$/.test(value)
     || /^loop\.(?:index|index0|first|last|length)$/.test(value)
     || value === 'item_index';
   return isKnapSyntax ? highlightTokenLine(value, 'knap', false) : undefined;
+}
+
+export function renderInlineCode(value: string): string {
+  return value.split(/(`[^`]+`)/g).map(part => {
+    if (!part.startsWith('`') || !part.endsWith('`') || part.length < 3) return escapeHtml(part);
+    const code = part.slice(1, -1);
+    const highlighted = highlightInlineKnap(code);
+    return highlighted === undefined
+      ? `<code>${escapeHtml(code)}</code>`
+      : `<code class="inline-syntax language-knap">${highlighted}</code>`;
+  }).join('');
 }
 
 function highlightKnapLine(line: string) {
@@ -209,6 +223,45 @@ function highlightKnapLine(line: string) {
       ? highlightTokenLine(segment, 'knap')
       : highlightMarkdownLine(segment)
   ).join('');
+}
+
+interface KnapHighlightState { comment: boolean; close: string; quote: string }
+const knapHighlightState = (): KnapHighlightState => ({ comment: false, close: '', quote: '' });
+
+function highlightKnapComments(line: string, state = knapHighlightState()): string {
+  let output = '';
+  let start = 0;
+  const plain = (value: string) => line.length > maxHighlightLineLength ? escapeHtml(value) : highlightKnapLine(value);
+  for (let index = 0; index < line.length;) {
+    if (state.comment) {
+      const end = line.indexOf('#}', index);
+      if (end === -1) break;
+      output += span('syn-comment', line.slice(start, end + 2));
+      index = start = end + 2;
+      state.comment = false;
+    } else if (state.quote) {
+      if (line[index] === '\\') index += 2;
+      else {
+        if (line[index] === state.quote) state.quote = '';
+        index++;
+      }
+    } else if (state.close) {
+      if (line.startsWith(state.close, index)) { state.close = ''; index += 2; }
+      else {
+        if (line[index] === '"' || line[index] === "'") state.quote = line[index];
+        index++;
+      }
+    } else if (line.startsWith('{#', index)) {
+      output += plain(line.slice(start, index));
+      start = index;
+      index += 2;
+      state.comment = true;
+    } else if (line.startsWith('{{', index) || line.startsWith('{%', index)) {
+      state.close = line[index + 1] === '{' ? '}}' : '%}';
+      index += 2;
+    } else index++;
+  }
+  return output + (state.comment ? span('syn-comment', line.slice(start)) : plain(line.slice(start)));
 }
 
 // Identify comments outside quoted strings before applying the token highlighter.
@@ -238,12 +291,16 @@ export function highlightLine(line: string, language: CodeLanguage, inFrontmatte
   if (language === 'ts') return highlightTypeScript(line)[0];
   if (language === 'shell') return highlightShellLine(line);
   if (language === 'md') return highlightMarkdownLine(line, inFrontmatter);
-  if (language === 'knap') return highlightKnapLine(line);
+  if (language === 'knap') return highlightKnapComments(line);
   return highlightTokenLine(line, language);
 }
 
 export function highlightLines(lines: string[], language: CodeLanguage) {
   if (language === 'ts') return highlightTypeScript(lines.join('\n'));
+  if (language === 'knap') {
+    const state = knapHighlightState();
+    return lines.map(line => highlightKnapComments(line, state));
+  }
   if (language === 'shell') {
     const state = shellHighlightState();
     return lines.map((line) => highlightShellLine(line, state));

@@ -1,3 +1,5 @@
+import { searchDocumentation, type SearchItem } from '../lib/search';
+
 const copyIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
 const checkIcon = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>';
 
@@ -76,17 +78,6 @@ document.addEventListener('click', async (event) => {
   }
 });
 
-type SearchItem = {
-  title: string;
-  kind: 'page' | 'filter' | 'section' | 'syntax';
-  category: string;
-  summary: string;
-  href: string;
-  aliases?: string[];
-  searchTerms?: string[];
-  syntax?: string[];
-  tone?: 'variable';
-};
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -103,10 +94,7 @@ function setupSearch() {
 
   const items = JSON.parse(data) as SearchItem[];
   const mobileSearch = window.matchMedia('(max-width: 760px)');
-  const defaultResults = () => items
-    .filter((item) => (item.kind === 'syntax' && item.category === 'Logic') || item.kind === 'filter')
-    .slice(0, 12);
-  let results = defaultResults();
+  let results = searchDocumentation(items, '');
   let activeIndex = 0;
 
   const syncClearButton = () => {
@@ -148,12 +136,7 @@ function setupSearch() {
   };
 
   const update = () => {
-    const query = input.value.trim().toLowerCase();
-    results = items
-      .filter((item) => query
-        ? [item.title, item.category, item.summary, ...(item.aliases ?? []), ...(item.searchTerms ?? []), ...(item.syntax ?? [])].join(' ').toLowerCase().includes(query)
-        : (item.kind === 'syntax' && item.category === 'Logic') || item.kind === 'filter')
-      .slice(0, 12);
+    results = searchDocumentation(items, input.value);
     activeIndex = 0;
     render();
   };

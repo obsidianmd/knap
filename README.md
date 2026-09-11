@@ -207,7 +207,7 @@ Unknown source
 
 The language supports chained filters, `if`/`elseif`/`else`, `for`, `set`, nested properties, array access, comparisons, boolean operators, nullish fallbacks, and whitespace control.
 
-Template comments use `{# ... #}` and can span multiple lines. Their contents are not evaluated or included in the output. Surrounding whitespace is preserved, including the newline after a standalone comment. Comments end at the first `#}` and do not nest; an unclosed comment is a syntax error. Unlike the `comment` filter, template comments do not produce Obsidian `%%` markers.
+Template comments use `{# ... #}` and can span multiple lines. Their contents are not evaluated or included in the output. Surrounding whitespace is preserved, including the newline after a standalone comment. Comments end at the first `#}` and do not nest. An unclosed comment is a syntax error. Unlike the `comment` filter, template comments do not produce Obsidian `%%` markers.
 
 ## Application variables
 
