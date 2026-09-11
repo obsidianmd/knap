@@ -5,6 +5,7 @@
 // - Text content
 // - Variable tags: {{ variable|filter }} (preserves whitespace)
 // - Logic tags: {% if condition %}, {% for item in array %}, etc. (trims whitespace)
+// - Template comments: {# ... #} (discarded, preserves surrounding whitespace)
 
 import { decodeStringEscape, parseRegexPattern } from './parser-utils';
 
@@ -136,6 +137,7 @@ const KEYWORDS: Record<string, TokenType> = {
 
 const CHAR_OPEN_BRACE = 0x7b; // {
 const CHAR_PERCENT = 0x25; // %
+const CHAR_HASH = 0x23; // #
 
 // ============================================================================
 // Main Tokenizer Function
@@ -204,8 +206,9 @@ function tokenizeText(state: TokenizerState): void {
 		const next = input.charCodeAt(brace + 1);
 		const isVariable = next === CHAR_OPEN_BRACE;
 		const isTag = next === CHAR_PERCENT;
+		const isComment = next === CHAR_HASH;
 
-		if (!isVariable && !isTag) {
+		if (!isVariable && !isTag && !isComment) {
 			advanceTo(state, brace + 1);
 			continue;
 		}
@@ -219,6 +222,19 @@ function tokenizeText(state: TokenizerState): void {
 				line: startLine,
 				column: startColumn,
 			});
+		}
+
+		if (isComment) {
+			const end = input.indexOf('#}', state.pos + 2);
+			if (end === -1) {
+				state.errors.push({
+					message: "Unclosed comment - missing '#}'",
+					line: state.line,
+					column: state.column,
+				});
+			}
+			advanceTo(state, end === -1 ? input.length : end + 2);
+			return;
 		}
 
 		advance(state, 2);

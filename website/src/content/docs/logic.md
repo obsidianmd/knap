@@ -1,6 +1,6 @@
 ---
 title: Logic
-description: Include content conditionally, use fallbacks, and iterate over arrays.
+description: Include content conditionally, use fallbacks, iterate over arrays, and add template comments.
 ---
 
 Logic tags are wrapped by brace percentage delimiters `{%` and `%}`. The text they surround does not produce any visible output when the template runs, so you can keep logic hidden.
@@ -108,3 +108,28 @@ Conditions, loops, and assignments can be nested to work with structured data.
 {% endfor %}
 {% endfor %}
 ```
+
+## Comments
+
+Use `{# ... #}` to leave a comment in a template. Comments are removed from the output, and variables, filters, and logic inside them are not evaluated.
+
+```knap title="Template"
+Hello{# A note for template authors #} world!
+```
+
+```md title="Output"
+Hello world!
+```
+
+Comments can span multiple lines:
+
+```knap
+{#
+This template is used for reading notes.
+{{ title }} is ignored inside this comment.
+#}
+```
+
+Surrounding spaces and line breaks are preserved. A comment on its own line leaves that line blank. Comments end at the first `#}` and do not nest. An unclosed comment is a syntax error.
+
+To include an Obsidian-flavored `%%` comment in the rendered Markdown, use the [`comment`](/filters/comment) filter.

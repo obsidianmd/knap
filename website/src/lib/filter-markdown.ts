@@ -25,6 +25,8 @@ export function filterMarkdown(filter: FilterDoc) {
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
   if (behavior.length) lines.push('## Usage', '', ...behavior.map((note) => `- ${note}`), '');
 
+  if (filter.name === 'comment') lines.push('This filter produces Obsidian `%%` comments that remain in the generated Markdown. To leave a comment that is removed during rendering, use [template comments](/logic#comments).', '');
+
   lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
   filter.examples.forEach((item) => {
     if (!(filter.examples.length === 1 && item.title === 'Basic usage')) lines.push(`### ${item.title}`, '');

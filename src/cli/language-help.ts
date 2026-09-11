@@ -98,6 +98,11 @@ Logic:
   {% for item in items %}{{ item.name }}{% endfor %}
   {% set slug = title | kebab %}{{ slug }}
 
+Comments:
+  {# Removed from the output; contents are not evaluated. #}
+Comments can span multiple lines and preserve surrounding whitespace.
+They end at the first #}, do not nest, and require a closing #}.
+
 Conditions accept ==, !=, >, <, >=, <=, contains, and / &&, or / ||,
 not / !, and parentheses. False, null, undefined, empty strings, zero,
 and empty arrays are falsy.

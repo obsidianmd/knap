@@ -94,13 +94,18 @@ export function buildMarkdownDemoTimeline(steps: DemoStep[]): DemoFrame[] {
   const plot = steps[1];
   const secondLinePrefix = plot.prefix.slice(0, -3);
   const markdownBetweenExpressions = secondLinePrefix.slice(titleSource.length);
+  const boldStart = markdownBetweenExpressions.indexOf('**');
+  const boldEnd = boldStart < 0 ? -1 : markdownBetweenExpressions.indexOf('**', boldStart + 2);
   for (let length = 1; length <= markdownBetweenExpressions.length; length += 1) {
     const character = markdownBetweenExpressions[length - 1];
+    // Auto-pair bold markers, type inside them, then move past the existing closing pair.
+    const pairedBold = boldEnd >= 0 && length >= boldStart + 2 && length < boldEnd + 2;
+    const closingBold = pairedBold ? '**'.slice(Math.max(0, length - boldEnd)) : '';
     frames.push({
-      source: titleSource + markdownBetweenExpressions.slice(0, length),
+      source: titleSource + markdownBetweenExpressions.slice(0, length) + closingBold,
       cursor: titleSource.length + length,
       output,
-      delay: character === '\n' ? 150 : 85,
+      delay: character === '\n' || (pairedBold && length === boldStart + 2) ? 150 : 85,
     });
   }
   frames.push({ source: `${secondLinePrefix}{`, cursor: secondLinePrefix.length + 1, output, delay: 85 });

@@ -265,9 +265,13 @@ function parseNode(state: ParserState): ASTNode | null {
 
 function parseText(state: ParserState): TextNode {
 	const token = advance(state);
+	// Comments can separate text tokens without separating their rendered text.
+	// Combine them so whitespace control still sees the whole adjacent text span.
+	const parts = [token.value];
+	while (check(state, 'text')) parts.push(advance(state).value);
 	return {
 		type: 'text',
-		value: token.value,
+		value: parts.join(''),
 		line: token.line,
 		column: token.column,
 	};

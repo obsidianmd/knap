@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add `{# ... #}` template comments, including multiline comments, with syntax errors for unclosed comments.
+
 ## 0.4.1
 
 - Add offline CLI help for syntax, filters, and logic tags, with per-filter and per-tag examples and help hints in template diagnostics.
