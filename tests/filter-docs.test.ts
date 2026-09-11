@@ -33,11 +33,11 @@ describe('filter documentation catalog', () => {
     expect(filterMarkdown(code!)).toContain('````md title="Output"\n```typescript\nconst answer = 42\n```\n````');
   });
 
-  test('exports HTML environment requirements as a regular paragraph', () => {
+  test('exports HTML environment requirements in the Usage list', () => {
     const htmlToJson = filterDocsByName.get('html_to_json');
     expect(htmlToJson).toBeDefined();
     const markdown = filterMarkdown(htmlToJson!);
-    expect(markdown).toContain('\n**HTML parsing** —');
-    expect(markdown).not.toContain('\n> **HTML parsing**');
+    expect(markdown).toContain('\n- Requires browser-compatible DOM globals. Register `htmlFilters` from `knap/html` before using it.');
+    expect(markdown).not.toContain('\nThis filter needs browser-compatible DOM globals.');
   });
 });

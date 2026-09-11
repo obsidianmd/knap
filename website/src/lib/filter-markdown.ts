@@ -19,8 +19,6 @@ export function filterMarkdown(filter: FilterDoc) {
     '',
   ];
 
-  if (filter.environment === 'html') lines.push('**HTML parsing** — This filter needs browser-compatible DOM globals. Register `htmlFilters` from `knap/html` before using it.', '');
-
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
   if (behavior.length) lines.push('## Usage', '', ...behavior.map((note) => `- ${note}`), '');

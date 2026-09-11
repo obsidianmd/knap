@@ -15,7 +15,7 @@ const filterDirectory = filterGroups.map((group) => [
   '',
   group.intro,
   '',
-  ...group.filters.map((name) => byName.get(name)).filter(Boolean).map((filter) => `- [\`${filter!.name}\`](/filters/${filter!.slug}) — ${filter!.summary}`),
+  ...group.filters.map((name) => byName.get(name)).filter(Boolean).map((filter) => `- [\`${filter!.name}\`](/filters/${filter!.slug}): ${filter!.summary}`),
 ].join('\n')).join('\n\n');
 
 const install = [

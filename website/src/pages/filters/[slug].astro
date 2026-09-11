@@ -30,8 +30,6 @@ const headings = [
 ---
 
 <DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`} fitTitle>
-  {filter.environment === 'html' && <p><strong>HTML parsing</strong> — This filter needs browser-compatible DOM globals. Register <code>htmlFilters</code> from <code>knap/html</code> before using it.</p>}
-
   <section id="syntax" class="doc-section">
     <h2>Syntax</h2>
     <CodeBlock code={filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')} />

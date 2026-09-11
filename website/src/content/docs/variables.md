@@ -50,7 +50,7 @@ Bracket expressions can also use another variable, which is useful when two arra
 
 ```knap
 {% for line in transcript %}
-{{ timestamps[loop.index0] }} — {{ line }}
+{{ timestamps[loop.index0] }}: {{ line }}
 {% endfor %}
 ```
 
@@ -74,7 +74,7 @@ Variables can contain strings, numbers, booleans, arrays, objects, and nullish v
 | `boolean` | Feature and state flags |
 | `array` | Tags, authors, sections |
 | `object` | Nested structured data |
-| `null` | Missing or empty values |
+| <code>null</code> | Missing or empty values |
 
 
 Building an app with Knap? See [Variables and resolvers](/api#variables-and-resolvers) in the API reference.

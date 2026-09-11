@@ -64,7 +64,7 @@ function mapWithArrow(str: string, param: string): string {
 						mappedItem[cleanKey] = cleanValue;
 					});
 				} else {
-					// Handle string literal — return plain string
+					// Handle a string literal and return a plain string
 					const stringLiteral = expr.slice(1, -1);
 					return stringLiteral.replace(new RegExp(`\\$\\{${argName}\\}`, 'g'), item);
 				}
