@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.2
 
 - Add `{# ... #}` template comments, including multiline comments, with syntax errors for unclosed comments.
 
