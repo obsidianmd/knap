@@ -1,6 +1,7 @@
 ---
 title: Variables
 description: Variables make data accessible in a template.
+url: https://knap.md/variables
 ---
 
 Variables are defined by apps. For example, Obsidian Web Clipper [offers Knap variables](https://help.obsidian.md/web-clipper/variables) that standardize content from web pages.

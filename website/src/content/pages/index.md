@@ -1,6 +1,7 @@
 ---
-title: Knap
+title: Knap · Turn data into Markdown
 description: Knap is a simple template language that turns data into Markdown using logic, variables, and filters.
+url: https://knap.md/
 ---
 
 # for data shaped into .md

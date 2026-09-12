@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { formatPageTitle } from '../lib/page-title';
 import api from '../content/docs/api.md?raw';
 import cli from '../content/docs/cli.md?raw';
 import filters from '../content/docs/filters.md?raw';
@@ -40,6 +41,8 @@ export function getStaticPaths() {
   return Object.keys(documents).map((page) => ({ params: { page } }));
 }
 
-export const GET: APIRoute = ({ params }) => new Response(documents[params.page as keyof typeof documents], {
+export const GET: APIRoute = ({ params }) => new Response(documents[params.page as keyof typeof documents].replace(
+  /^title: (.+)$/m, (_line, title: string) => `title: ${formatPageTitle(title)}`,
+), {
   headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
 });

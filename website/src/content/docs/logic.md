@@ -1,6 +1,7 @@
 ---
 title: Logic
 description: Include content conditionally, use fallbacks, iterate over arrays, and add template comments.
+url: https://knap.md/logic
 ---
 
 Logic tags use `{% ... %}` to control which content is rendered. The tags themselves produce no output.

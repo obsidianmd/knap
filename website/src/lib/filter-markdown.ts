@@ -1,4 +1,5 @@
 import type { FilterDoc } from '../../lib/filter-docs';
+import { formatPageTitle } from './page-title';
 
 const fence = (language: string, code: string, title?: string) => {
   const longestRun = Math.max(0, ...Array.from(code.matchAll(/`+/g), (match) => match[0].length));
@@ -9,8 +10,9 @@ const fence = (language: string, code: string, title?: string) => {
 export function filterMarkdown(filter: FilterDoc) {
   const lines = [
     '---',
-    `title: ${filter.name}`,
+    `title: ${formatPageTitle(filter.name)}`,
     `description: ${JSON.stringify(filter.summary)}`,
+    `url: https://knap.md/filters/${filter.slug}`,
     '---',
     '',
     `# ${filter.name}`,

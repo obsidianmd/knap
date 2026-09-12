@@ -1,6 +1,7 @@
 ---
 title: Filters
 description: Filters transform variables.
+url: https://knap.md/filters
 ---
 
 Apply a filter to a [variable](/variables) by placing it after a `|` pipe symbol. Filters can be chained, and run from left to right. For example:

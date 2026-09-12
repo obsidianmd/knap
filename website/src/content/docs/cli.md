@@ -1,6 +1,7 @@
 ---
 title: CLI
 description: Generate Markdown files in the terminal using templates, JSON, and CSV data.
+url: https://knap.md/cli
 ---
 
 ## Get started

@@ -1,6 +1,7 @@
 ---
 title: API
 description: Add Knap to your app to parse, validate, and render templates.
+url: https://knap.md/api
 ---
 
 <!-- INSTALL -->

@@ -1,8 +1,9 @@
 import type { LogicDoc } from '../../lib/logic-docs';
+import { formatPageTitle } from './page-title';
 
 export function logicMarkdown(doc: LogicDoc): string {
   const fence = (language: string, content: string) => `\`\`\`${language}\n${content}\n\`\`\``;
-  const lines = ['---', `title: ${doc.title}`, `description: ${JSON.stringify(doc.summary)}`, '---', '', `# ${doc.title}`, '', doc.summary, '', '## Syntax', '', fence('knap', doc.syntax), ''];
+  const lines = ['---', `title: ${formatPageTitle(doc.title)}`, `description: ${JSON.stringify(doc.summary)}`, `url: https://knap.md/logic/${doc.slug}`, '---', '', `# ${doc.title}`, '', doc.summary, '', '## Syntax', '', fence('knap', doc.syntax), ''];
   for (const section of doc.sections) lines.push(`## ${section.title}`, '', ...section.notes.map(note => `- ${note}`), '');
   lines.push(doc.examples.length === 1 ? '## Example' : '## Examples', '');
   for (const example of doc.examples) {
