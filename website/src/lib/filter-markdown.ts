@@ -21,9 +21,8 @@ export function filterMarkdown(filter: FilterDoc) {
 
   lines.push('## Syntax', '', fence('knap', filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')), '');
   const behavior = [...(filter.parameters ?? []), ...(filter.notes ?? [])];
+  if (filter.name === 'comment') behavior.push('This filter produces Obsidian `%%` comments that remain in the generated Markdown. To leave a comment that is removed during rendering, use [template comments](/logic#comments).');
   if (behavior.length) lines.push('## Usage', '', ...behavior.map((note) => `- ${note}`), '');
-
-  if (filter.name === 'comment') lines.push('This filter produces Obsidian `%%` comments that remain in the generated Markdown. To leave a comment that is removed during rendering, use [template comments](/logic#comments).', '');
 
   lines.push(`## ${filter.examples.length === 1 ? 'Example' : 'Examples'}`, '');
   filter.examples.forEach((item) => {

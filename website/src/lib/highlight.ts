@@ -145,7 +145,7 @@ function highlightShellLine(line: string, state = shellHighlightState()) {
 }
 
 function highlightTokenLine(line: string, language: Exclude<CodeLanguage, 'md' | 'shell'>, constrainKnapToTags = true) {
-  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*)/g;
+  const pattern = /(\{\{|\}\}|\{%|%\}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|===|!==|==|!=|=>|<=|>=|&&|\|\||\?\?|[{}()[\].,:;=+\-*/<>!?|]|\b(?:if|elseif|else|endif|for|in|endfor|set|and|or|not|contains|true|false|null|undefined|import|from|const|let|type|async|await|return|new|throw|export|pnpm|npm|npx)\b|\b\d(?:_?\d)*(?:\.\d(?:_?\d)*)?\b|[A-Za-z_$][\w$]*)/g;
   const tokens = line.split(pattern).filter(Boolean);
   let expectsFilter = false;
   let inKnapExpression = false;

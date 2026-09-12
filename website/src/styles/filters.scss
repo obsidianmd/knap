@@ -273,6 +273,7 @@
 @media (max-width: 480px) {
   .filter-row {
     grid-template-columns: 1fr 18px;
+    row-gap: 4px;
 
     > div > code, p {
       font-size: var(--font-size-body);

@@ -14,6 +14,15 @@ describe('website syntax highlighting', () => {
 		expect(html).toContain('&lt;script&gt; &amp; <code>--set</code>');
 	});
 
+	test('colors TypeScript numeric separators as part of the number', () => {
+		expect(highlightLine('maxTemplateLength: 100_000, maxValueLength: 1_000_000', 'ts')).toContain(
+			'<span class="syn-number">100_000</span>',
+		);
+		expect(highlightLine('maxTemplateLength: 100_000, maxValueLength: 1_000_000', 'ts')).toContain(
+			'<span class="syn-number">1_000_000</span>',
+		);
+	});
+
 	test('keeps inline comments muted and ordinary code safely escaped', () => {
 		const html = renderInlineCode('`{# {{ ignored }} #}` and `#}` and `<img src=x>`');
 		expect(html).toContain('<span class="syn-comment">{# {{ ignored }} #}</span>');

@@ -35,9 +35,7 @@ const headings = [
     <CodeBlock code={filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')} />
   </section>
 
-  {(filter.parameters?.length || filter.notes?.length) && <section id="usage" class="doc-section"><h2>Usage</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li set:html={renderInlineCode(note)} />)}</ul></section>}
-
-  {filter.name === 'comment' && <p>This filter produces Obsidian <code>%%</code> comments that remain in the generated Markdown. To leave a comment that is removed during rendering, use <a href="/logic#comments">template comments</a>.</p>}
+  {(filter.parameters?.length || filter.notes?.length) && <section id="usage" class="doc-section"><h2>Usage</h2><ul class="behavior-list">{[...(filter.parameters ?? []), ...(filter.notes ?? [])].map((note) => <li set:html={renderInlineCode(note)} />)}{filter.name === 'comment' && <li>This filter produces Obsidian <code>%%</code> comments that remain in the generated Markdown. To leave a comment that is removed during rendering, use <a href="/logic#comments">template comments</a>.</li>}</ul></section>}
 
   <section id="examples" class:list={['doc-section', 'filter-examples-section', singleBasicExample && runnable && 'has-playground-link']}>
     <h2>{filter.examples.length === 1 ? 'Example' : 'Examples'}</h2>

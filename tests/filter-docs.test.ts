@@ -40,4 +40,12 @@ describe('filter documentation catalog', () => {
     expect(markdown).toContain('\n- Requires browser-compatible DOM globals. Register `htmlFilters` from `knap/html` before using it.');
     expect(markdown).not.toContain('\nThis filter needs browser-compatible DOM globals.');
   });
+
+  test('exports the comment explanation as a Usage bullet', () => {
+    const comment = filterDocsByName.get('comment');
+    expect(comment).toBeDefined();
+    const markdown = filterMarkdown(comment!);
+    expect(markdown).toContain('\n- This filter produces Obsidian `%%` comments');
+    expect(markdown).not.toContain('\nThis filter produces Obsidian `%%` comments');
+  });
 });
