@@ -22,7 +22,7 @@ const headings = [
 ];
 ---
 
-<DocsLayout current="logic" title={doc.title} description={doc.summary} headings={headings} markdownPath={`/logic/${doc.slug}.md`}>
+<DocsLayout current="logic" title={doc.title} description={doc.summary} headings={headings} markdownPath={`/logic/${doc.slug}.md`} titleSyntax="keyword">
   <section id="syntax" class="doc-section"><h2>Syntax</h2><CodeBlock code={doc.syntax} /></section>
   {doc.sections.map(section => (
     <section id={section.id} class="doc-section">

@@ -12,9 +12,10 @@ interface Props {
   headings?: Heading[];
   markdownPath: string;
   fitTitle?: boolean;
+  titleSyntax?: 'filter' | 'keyword';
 }
 
-const { current, title, description, headings = [], markdownPath, fitTitle = false } = Astro.props;
+const { current, title, description, headings = [], markdownPath, fitTitle = false, titleSyntax } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} markdownPath={markdownPath}>
@@ -25,7 +26,7 @@ const { current, title, description, headings = [], markdownPath, fitTitle = fal
 
       <article class="docs-content">
         <header class="docs-title">
-          <h1 class:list={{ 'docs-title-fit': fitTitle }} style={fitTitle ? `--docs-title-fit: ${205 / title.length}cqw` : undefined}>{title}</h1>
+          <h1 class:list={{ 'docs-title-fit': fitTitle, 'docs-title-code': titleSyntax }} data-syntax={titleSyntax} style={fitTitle ? `--docs-title-fit: ${(titleSyntax ? 165 : 205) / title.length}cqw` : undefined}>{title}</h1>
           <p>{description}</p>
           <div class="docs-title-actions">
             <button class="docs-title-action text-action" type="button" data-copy-markdown={markdownPath} aria-live="polite">

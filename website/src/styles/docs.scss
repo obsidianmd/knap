@@ -90,6 +90,20 @@
     line-height: 1.2;
     letter-spacing: -0.025em;
 
+    &.docs-title-code {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      letter-spacing: normal;
+
+      &[data-syntax="filter"] {
+        color: var(--syntax-orange);
+      }
+
+      &[data-syntax="keyword"] {
+        color: var(--syntax-green);
+      }
+    }
+
     &.docs-title-fit {
       font-size: min(var(--font-size-title), var(--docs-title-fit));
       white-space: nowrap;

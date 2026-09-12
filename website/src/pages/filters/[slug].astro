@@ -29,7 +29,7 @@ const headings = [
 ];
 ---
 
-<DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`} fitTitle>
+<DocsLayout current="filters" title={filter.name} description={filter.summary} headings={headings} markdownPath={`/filters/${filter.slug}.md`} titleSyntax="filter" fitTitle>
   <section id="syntax" class="doc-section">
     <h2>Syntax</h2>
     <CodeBlock code={filter.syntax.map((syntax) => `{{ value | ${syntax} }}`).join('\n')} />
