@@ -1284,6 +1284,23 @@
       }
     },
     {
+      "id": "filters/yaml/ambiguous-strings",
+      "source": "src/docs/filter-docs.ts: yaml: Ambiguous strings",
+      "template": "{{ values | yaml }}",
+      "variables": {
+        "values": [
+          "123",
+          "true",
+          "null"
+        ]
+      },
+      "expected": {
+        "output": "- \"123\"\n- \"true\"\n- \"null\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
       "id": "filters/yaml/block-list",
       "source": "src/docs/filter-docs.ts: yaml: Block list",
       "template": "genre:\n{{ genres | yaml | indent:2 }}",
@@ -1359,6 +1376,19 @@
       },
       "expected": {
         "output": "year: 1999",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml-property/ambiguous-string",
+      "source": "src/docs/filter-docs.ts: yaml_property: Ambiguous string",
+      "template": "{{ value | yaml_property:\"value\" }}",
+      "variables": {
+        "value": "null"
+      },
+      "expected": {
+        "output": "value: \"null\"",
         "errors": [],
         "warnings": []
       }
@@ -1510,6 +1540,19 @@
       }
     },
     {
+      "id": "filters/first/empty-array",
+      "source": "src/docs/filter-docs.ts: first: Empty array",
+      "template": "{{ items | first | yaml }}",
+      "variables": {
+        "items": []
+      },
+      "expected": {
+        "output": "null",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
       "id": "filters/compact/array",
       "source": "src/docs/filter-docs.ts: compact: Array",
       "template": "{{ items | compact }}",
@@ -1577,6 +1620,19 @@
       },
       "expected": {
         "output": "c",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/last/empty-array",
+      "source": "src/docs/filter-docs.ts: last: Empty array",
+      "template": "{{ items | last | yaml }}",
+      "variables": {
+        "items": []
+      },
+      "expected": {
+        "output": "null",
         "errors": [],
         "warnings": []
       }
@@ -2665,6 +2721,112 @@
             "filter": "date"
           }
         ]
+      }
+    },
+    {
+      "id": "diagnostics/calc-invalid-input",
+      "source": "tests/filters/calc.test.ts: uses strict numeric parsing and warns while preserving invalid input",
+      "template": "{{ value | calc:\"+1\" }}",
+      "variables": {
+        "value": "42abc"
+      },
+      "expected": {
+        "output": "42abc",
+        "errors": [],
+        "warnings": [
+          {
+            "code": "INVALID_FILTER_INPUT",
+            "filter": "calc"
+          }
+        ]
+      }
+    },
+    {
+      "id": "diagnostics/round-invalid-input",
+      "source": "tests/filters/round.test.ts: uses strict numeric parsing and warns while preserving invalid scalar input",
+      "template": "{{ value | round:1 }}",
+      "variables": {
+        "value": "42abc"
+      },
+      "expected": {
+        "output": "42abc",
+        "errors": [],
+        "warnings": [
+          {
+            "code": "INVALID_FILTER_INPUT",
+            "filter": "round"
+          }
+        ]
+      }
+    },
+    {
+      "id": "typed-values/round-into-yaml-property",
+      "source": "tests/filters/yaml_property.test.ts: preserves the typed value returned by preceding filters",
+      "template": "{{ value | round:2 | yaml_property:\"price\" }}",
+      "variables": {
+        "value": 42.567
+      },
+      "expected": {
+        "output": "price: 42.57",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "typed-values/first-nested-collection",
+      "source": "tests/filters/first.test.ts: preserves nested array shape",
+      "template": "{{ items | first | yaml:flow }}",
+      "variables": {
+        "items": [
+          [
+            1,
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      },
+      "expected": {
+        "output": "[1,2]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "typed-values/last-nested-collection",
+      "source": "tests/filters/last.test.ts: preserves nested array shape",
+      "template": "{{ items | last | yaml:flow }}",
+      "variables": {
+        "items": [
+          [
+            1,
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      },
+      "expected": {
+        "output": "[3]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "typed-values/length-singleton-array",
+      "source": "tests/filters/length.test.ts: uses raw singleton collection shape",
+      "template": "{{ tags | length | yaml }}",
+      "variables": {
+        "tags": [
+          "notes"
+        ]
+      },
+      "expected": {
+        "output": "1",
+        "errors": [],
+        "warnings": []
       }
     }
   ]

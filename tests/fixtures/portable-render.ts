@@ -65,6 +65,45 @@ const diagnostics: RenderFixture[] = [
 			],
 		},
 	},
+	{
+		id: 'diagnostics/calc-invalid-input',
+		source: 'tests/filters/calc.test.ts: uses strict numeric parsing and warns while preserving invalid input',
+		template: '{{ value | calc:"+1" }}',
+		variables: { value: '42abc' },
+		expected: { output: '42abc', errors: [], warnings: [{ code: 'INVALID_FILTER_INPUT', filter: 'calc' }] },
+	},
+	{
+		id: 'diagnostics/round-invalid-input',
+		source: 'tests/filters/round.test.ts: uses strict numeric parsing and warns while preserving invalid scalar input',
+		template: '{{ value | round:1 }}',
+		variables: { value: '42abc' },
+		expected: { output: '42abc', errors: [], warnings: [{ code: 'INVALID_FILTER_INPUT', filter: 'round' }] },
+	},
+];
+
+// Typed values that must survive a filter chain, authored from existing
+// regression tests.
+const typedValues: RenderFixture[] = [
+	example(
+		'typed-values/round-into-yaml-property',
+		'tests/filters/yaml_property.test.ts: preserves the typed value returned by preceding filters',
+		'{{ value | round:2 | yaml_property:"price" }}', { value: 42.567 }, 'price: 42.57',
+	),
+	example(
+		'typed-values/first-nested-collection',
+		'tests/filters/first.test.ts: preserves nested array shape',
+		'{{ items | first | yaml:flow }}', { items: [[1, 2], [3]] }, '[1,2]',
+	),
+	example(
+		'typed-values/last-nested-collection',
+		'tests/filters/last.test.ts: preserves nested array shape',
+		'{{ items | last | yaml:flow }}', { items: [[1, 2], [3]] }, '[3]',
+	),
+	example(
+		'typed-values/length-singleton-array',
+		'tests/filters/length.test.ts: uses raw singleton collection shape',
+		'{{ tags | length | yaml }}', { tags: ['notes'] }, '1',
+	),
 ];
 
 /** Export the authored expectations, without evaluating any templates. */
@@ -93,6 +132,7 @@ export function documentedRenderCorpus(): RenderCorpus {
 				template, variables, expected,
 			)),
 			...diagnostics,
+			...typedValues,
 		],
 	};
 }
