@@ -32,6 +32,9 @@ describe('sort filter', () => {
 		await expect(engine.renderOrThrow('{{ value | sort }}', {
 			variables: { value: '3' },
 		})).resolves.toBe('3');
+		await expect(engine.renderOrThrow('{{ value | sort }}', {
+			variables: { value: ' [3,1,2]' },
+		})).resolves.toBe(' [3,1,2]');
 	});
 
 	test('validates sort direction', () => {

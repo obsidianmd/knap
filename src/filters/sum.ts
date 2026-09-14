@@ -1,7 +1,7 @@
 import { parseTypedParams, splitParams, unquoteParamToken, unwrapParamList } from '../parser-utils';
 import type { FilterContext, ParamValidationResult, TemplateValue } from '../types';
 import { ownPropertyAtPath } from './property_utils';
-import { collectionInputValue } from './value_utils';
+import { collectionInputValue, finiteNumber } from './value_utils';
 
 export const validateSumParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) return { valid: true };
@@ -14,13 +14,6 @@ export const validateSumParams = (param: string | undefined): ParamValidationRes
 	}
 	return { valid: true };
 };
-
-function finiteNumber(value: TemplateValue): number | undefined {
-	if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
-	if (typeof value !== 'string' || value.trim() === '') return undefined;
-	const number = Number(value.trim());
-	return Number.isFinite(number) ? number : undefined;
-}
 
 export const sum = (
 	value: string,

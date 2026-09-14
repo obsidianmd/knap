@@ -402,7 +402,6 @@ export function applyFiltersWithRegistry<TContext = unknown>(
 		processedValue = output;
 	}
 
-	return typeof processedValue === 'string'
-		? processedValue
-		: JSON.stringify(processedValue) ?? '';
+	if (processedValue === undefined || processedValue === null) return '';
+	return typeof processedValue === 'string' ? processedValue : JSON.stringify(processedValue) ?? '';
 }

@@ -15,15 +15,23 @@ describe('last filter', () => {
 	});
 
 	test('handles array of numbers', () => {
-		expect(last('[1,2,3]')).toBe('3');
+		expect(last('[1,2,3]')).toBe(3);
 	});
 
 	test('handles empty array', () => {
-		// Empty array returns the input string as-is
-		expect(last('[]')).toBe('[]');
+		expect(last('[]')).toBeNull();
 	});
 
 	test('renders a selected null as empty text', () => {
-		expect(last('["x",null]')).toBe('');
+		expect(last('["x",null]')).toBeNull();
+	});
+
+	test('preserves nested array shape', () => {
+		expect(last('[[1,2],[3]]')).toEqual([3]);
+	});
+
+	test('uses raw singleton collection shape', () => {
+		expect(last('42', undefined, { variables: {}, rawValue: [42] })).toBe(42);
+		expect(last('', undefined, { variables: {}, rawValue: [''] })).toBe('');
 	});
 });

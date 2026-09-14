@@ -1,7 +1,8 @@
 import type { ParamValidationResult } from '../filters';
-import type { FilterContext } from '../types';
+import type { FilterContext, TemplateValue } from '../types';
 import { cleanScalarParam } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
+import { collectionInputValue, finiteNumber, isPlainObject } from './value_utils';
 
 export const validateRoundParams = (param: string | undefined): ParamValidationResult => {
 	// Param is optional - no param means round to integer
@@ -21,27 +22,45 @@ export const validateRoundParams = (param: string | undefined): ParamValidationR
 	return { valid: true };
 };
 
-export const round = (input: string, param?: string, context?: FilterContext): string => {
-	const roundNumber = (num: number, decimalPlaces?: number): number => {
+export const round = (input: string, param?: string, context?: FilterContext): TemplateValue => {
+	const roundNumber = (num: number, decimalPlaces?: number): number | undefined => {
 		if (decimalPlaces === undefined) {
-			return Math.round(num);
+			const result = Math.round(num);
+			return Number.isFinite(result) ? result : undefined;
 		}
 		const factor = Math.pow(10, decimalPlaces);
-		return Math.round(num * factor) / factor;
+		const result = Math.round(num * factor) / factor;
+		return Number.isFinite(result) ? result : undefined;
 	};
 
-	const processValue = (value: any, decimalPlaces?: number): any => {
+	let encounteredNonFinite = false;
+	const processCollectionValue = (value: TemplateValue, decimalPlaces?: number): TemplateValue => {
 		if (typeof value === 'number') {
-			return roundNumber(value, decimalPlaces);
+			if (!Number.isFinite(value)) {
+				encounteredNonFinite = true;
+				return value;
+			}
+			const result = roundNumber(value, decimalPlaces);
+			if (result === undefined) {
+				encounteredNonFinite = true;
+				return value;
+			}
+			return result;
 		} else if (typeof value === 'string') {
-			const num = parseFloat(value);
-			return isNaN(num) ? value : roundNumber(num, decimalPlaces).toString();
+			const num = finiteNumber(value);
+			if (num === undefined) return value;
+			const result = roundNumber(num, decimalPlaces);
+			if (result === undefined) {
+				encounteredNonFinite = true;
+				return value;
+			}
+			return result;
 		} else if (Array.isArray(value)) {
-			return value.map(item => processValue(item, decimalPlaces));
-		} else if (typeof value === 'object' && value !== null) {
-			const result: {[key: string]: any} = {};
+			return value.map(item => processCollectionValue(item, decimalPlaces));
+		} else if (isPlainObject(value)) {
+			const result: Record<string, TemplateValue> = {};
 			for (const [key, val] of Object.entries(value)) {
-				result[key] = processValue(val, decimalPlaces);
+				result[key] = processCollectionValue(val, decimalPlaces);
 			}
 			return result;
 		}
@@ -52,21 +71,32 @@ export const round = (input: string, param?: string, context?: FilterContext): s
 		const cleanParam = cleanScalarParam(param);
 		const decimalPlaces = cleanParam ? parseInt(cleanParam, 10) : undefined;
 		if (cleanParam !== undefined && isNaN(Number(cleanParam))) {
-			return input; // Return the original input if the parameter is not a valid number
+			return collectionInputValue(input, context, true);
 		}
 
-		let parsedInput: any;
-		try {
-			parsedInput = JSON.parse(input);
-		} catch {
-			// If JSON parsing fails, treat input as a single value
-			parsedInput = input;
+		const value = collectionInputValue(input, context, true);
+		if (value === null || value === undefined) return value;
+		if (!Array.isArray(value) && !isPlainObject(value)) {
+			const num = finiteNumber(value);
+			if (num === undefined) {
+				reportFilterWarning(context, `Could not parse "${input}" as a number`, 'INVALID_FILTER_INPUT');
+				return value;
+			}
+			const result = roundNumber(num, decimalPlaces);
+			if (result === undefined) {
+				reportFilterWarning(context, `Rounding produced a non-finite result for "${input}"`, 'INVALID_FILTER_INPUT');
+				return value;
+			}
+			return result;
 		}
 
-		const result = processValue(parsedInput, decimalPlaces);
-		return typeof result === 'string' ? result : JSON.stringify(result);
+		const result = processCollectionValue(value, decimalPlaces);
+		if (encounteredNonFinite) {
+			reportFilterWarning(context, 'Could not round one or more non-finite collection values', 'INVALID_FILTER_INPUT');
+		}
+		return result;
 	} catch (error) {
 		reportFilterWarning(context, `Could not round value: ${errorMessage(error)}`);
-		return input; // Return original input if any unexpected error occurs
+		return collectionInputValue(input, context, true);
 	}
 };

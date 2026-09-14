@@ -8,36 +8,38 @@ const engine = createEngine({ filters: standardFilters });
 
 describe('nth filter', () => {
 	test('keeps nth element (1-based)', () => {
-		const result = nth('["a","b","c","d","e"]', '3');
-		const parsed = JSON.parse(result);
-		expect(parsed).toEqual(['c']);
+		expect(nth('["a","b","c","d","e"]', '3')).toEqual(['c']);
 	});
 
 	test('keeps every nth element', () => {
-		const result = nth('["a","b","c","d","e","f"]', '2n');
-		const parsed = JSON.parse(result);
-		expect(parsed).toEqual(['b', 'd', 'f']);
+		expect(nth('["a","b","c","d","e","f"]', '2n')).toEqual(['b', 'd', 'f']);
 	});
 
 	test('keeps nth and following (n+offset)', () => {
-		const result = nth('["a","b","c","d","e"]', 'n+3');
-		const parsed = JSON.parse(result);
-		expect(parsed).toEqual(['c', 'd', 'e']);
+		expect(nth('["a","b","c","d","e"]', 'n+3')).toEqual(['c', 'd', 'e']);
 	});
 
 	test('handles group pattern', () => {
-		const result = nth('[1,2,3,4,5,6,7,8,9,10]', '1,2,3:5');
-		const parsed = JSON.parse(result);
-		expect(parsed).toEqual([1, 2, 3, 6, 7, 8]);
+		expect(nth('[1,2,3,4,5,6,7,8,9,10]', '1,2,3:5')).toEqual([1, 2, 3, 6, 7, 8]);
 	});
 
 	test('handles empty array', () => {
 		const result = nth('[]', '3');
-		expect(result).toBe('[]');
+		expect(result).toEqual([]);
 	});
 
 	test('preserves null in its existing array return shape', () => {
-		expect(nth('[null,"x"]', '1')).toBe('[null]');
+		expect(nth('[null,"x"]', '1')).toEqual([null]);
+	});
+
+	test('uses raw singleton collection shape and preserves element types', () => {
+		expect(nth('42', '1', { variables: {}, rawValue: [42] })).toEqual([42]);
+		expect(nth('', '2', { variables: {}, rawValue: [''] })).toEqual([]);
+	});
+
+	test('preserves selected element types', () => {
+		const values = ['42', 42, true, null, [1], { a: 1 }];
+		expect(nth(JSON.stringify(values), '1,2,3,4,5,6:6')).toEqual(values);
 	});
 
 	test('returns original for non-JSON', () => {
@@ -131,7 +133,13 @@ describe('nth filter via renderer', () => {
 			variables: { msg: '["a","b","c","d","e"]' },
 		});
 		expect(result.errors).toHaveLength(0);
-		expect(result.output).toBe('["b"]');
+		expect(result.output).toBe('b');
+	});
+
+	test('passes a singleton selection to downstream text filters using renderer unwrapping', async () => {
+		await expect(engine.renderOrThrow('{{msg|nth:2|upper}}', {
+			variables: { msg: ['a', 'b'] },
+		})).resolves.toBe('B');
 	});
 
 	test('nth:2n gets every 2nd element through template', async () => {

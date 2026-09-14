@@ -3,6 +3,11 @@
 ## Unreleased
 
 - Preserve string types in `yaml` and `yaml_property`, quoting scalar strings such as `"null"`, `"true"`, and `"123"` instead of emitting them as YAML nulls, booleans, or numbers. Typed scalar values remain unquoted, and `parse_json` can be used for explicit coercion.
+- Preserve typed values through filter chains: `calc`, `round`, and `length` now return numbers; `first` and `last` return the selected value; and `nth` returns a typed subset array. `number_format` remains text.
+- Reject blank or partially numeric arithmetic input, and preserve invalid or non-finite `calc` and `round` values with a warning instead of silently coercing them or emitting `Infinity` or `null`.
+- Count singleton arrays as collections in `length`, and return `null` from `first` and `last` when an array is empty.
+- Render typed selector results consistently: singleton `nth` results unwrap during interpolation and downstream text filters, while objects and nested arrays selected by `first` or `last` render as JSON. Numeric strings rounded inside collections become numbers.
+- Align the exported `applyFiltersWithRegistry` helper with template rendering by emitting empty text, rather than `"null"`, when the final filtered value is `null`.
 
 ## 0.5.1
 

@@ -1,7 +1,8 @@
 import type { ParamValidationResult } from '../filters';
-import type { FilterContext } from '../types';
+import type { FilterContext, TemplateValue } from '../types';
 import { cleanScalarParam } from '../parser-utils';
 import { errorMessage, reportFilterWarning } from './warnings';
+import { finiteNumber } from './value_utils';
 
 export const validateCalcParams = (param: string | undefined): ParamValidationResult => {
 	if (!param) {
@@ -32,17 +33,26 @@ export const validateCalcParams = (param: string | undefined): ParamValidationRe
 	return { valid: true };
 };
 
-export const calc = (str: string, param?: string, context?: FilterContext): string => {
+export const calc = (str: string, param?: string, context?: FilterContext): TemplateValue => {
+	const hasRawValue = Boolean(context && Object.prototype.hasOwnProperty.call(context, 'rawValue'));
+	const originalValue = hasRawValue
+		? context?.rawValue
+		: str;
+
 	if (!param) {
-		return str;
+		return originalValue;
+	}
+	if (hasRawValue && (originalValue === null || originalValue === undefined)) {
+		return originalValue;
 	}
 
 	try {
-		// Convert input to number
-		const num = Number(str);
-		if (isNaN(num)) {
+		// calc remains a scalar filter, so use the renderer's string input. This
+		// preserves the deliberate singleton-primitive array unwrapping behavior.
+		const num = finiteNumber(str);
+		if (num === undefined) {
 			reportFilterWarning(context, `Could not parse "${str}" as a number`, 'INVALID_FILTER_INPUT');
-			return str;
+			return originalValue;
 		}
 
 		// Remove outer quotes if present
@@ -53,7 +63,7 @@ export const calc = (str: string, param?: string, context?: FilterContext): stri
 		const value = Number(operation.slice(operator === '**' ? 2 : 1));
 
 		if (isNaN(value)) {
-			return str;
+			return originalValue;
 		}
 
 		let result: number;
@@ -75,13 +85,18 @@ export const calc = (str: string, param?: string, context?: FilterContext): stri
 				result = Math.pow(num, value);
 				break;
 			default:
-				return str;
+				return originalValue;
 		}
 
-		// Convert to string and remove trailing zeros after decimal
-		return Number(result.toFixed(10)).toString();
+		if (!Number.isFinite(result)) {
+			reportFilterWarning(context, `Calculation produced a non-finite result for "${str}"`, 'INVALID_FILTER_INPUT');
+			return originalValue;
+		}
+
+		// Keep the existing floating-point cleanup, but preserve the numeric type.
+		return Number(result.toFixed(10));
 	} catch (error) {
 		reportFilterWarning(context, `Could not calculate value: ${errorMessage(error)}`);
-		return str;
+		return originalValue;
 	}
 };
