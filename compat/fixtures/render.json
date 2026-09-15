@@ -1,0 +1,2672 @@
+{
+  "format_version": 1,
+  "knap_version": "0.6.0",
+  "preset": "standard",
+  "cases": [
+    {
+      "id": "filters/date/format-a-date",
+      "source": "src/docs/filter-docs.ts: date: Format a date",
+      "template": "{{ published | date:\"MMMM D, YYYY\" }}",
+      "variables": {
+        "published": "2024-12-01"
+      },
+      "expected": {
+        "output": "December 1, 2024",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/date/specify-the-data-format",
+      "source": "src/docs/filter-docs.ts: date: Specify the data format",
+      "template": "{{ published | date:(\"YYYY-MM-DD\", \"MM/DD/YYYY\") }}",
+      "variables": {
+        "published": "12/01/2024"
+      },
+      "expected": {
+        "output": "2024-12-01",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/date/iso-week-and-literal-text",
+      "source": "src/docs/filter-docs.ts: date: ISO week and literal text",
+      "template": "{{ published | date:\"[Week] WW, GGGG\" }}",
+      "variables": {
+        "published": "2024-12-01"
+      },
+      "expected": {
+        "output": "Week 48, 2024",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/date-modify/add-time",
+      "source": "src/docs/filter-docs.ts: date_modify: Add time",
+      "template": "{{ published | date_modify:\"+1 year\" }}",
+      "variables": {
+        "published": "2024-12-01"
+      },
+      "expected": {
+        "output": "2025-12-01",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/date-modify/subtract-time",
+      "source": "src/docs/filter-docs.ts: date_modify: Subtract time",
+      "template": "{{ published | date_modify:\"-2 months\" }}",
+      "variables": {
+        "published": "2024-12-01"
+      },
+      "expected": {
+        "output": "2024-10-01",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/date-modify/cross-midnight-and-format",
+      "source": "src/docs/filter-docs.ts: date_modify: Cross midnight and format",
+      "template": "{{ published | date_modify:\"+4 hours\" | date:\"MMMM D, YYYY\" }}",
+      "variables": {
+        "published": "2024-12-01T22:00:00"
+      },
+      "expected": {
+        "output": "December 2, 2024",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/duration/iso-8601-duration",
+      "source": "src/docs/filter-docs.ts: duration: ISO 8601 duration",
+      "template": "{{ duration | duration:\"HH:mm:ss\" }}",
+      "variables": {
+        "duration": "PT1H30M"
+      },
+      "expected": {
+        "output": "01:30:00",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/duration/seconds",
+      "source": "src/docs/filter-docs.ts: duration: Seconds",
+      "template": "{{ seconds | duration:\"H:mm:ss\" }}",
+      "variables": {
+        "seconds": 3665
+      },
+      "expected": {
+        "output": "1:01:05",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/duration/default-format",
+      "source": "src/docs/filter-docs.ts: duration: Default format",
+      "template": "{{ duration | duration }}",
+      "variables": {
+        "duration": "PT5M30S"
+      },
+      "expected": {
+        "output": "05:30",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/duration/more-than-24-hours",
+      "source": "src/docs/filter-docs.ts: duration: More than 24 hours",
+      "template": "{{ duration | duration:\"HH:mm:ss\" }}",
+      "variables": {
+        "duration": "P1DT2H"
+      },
+      "expected": {
+        "output": "26:00:00",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/camel/basic-usage",
+      "source": "src/docs/filter-docs.ts: camel: Basic usage",
+      "template": "{{ title | camel }}",
+      "variables": {
+        "title": "Hello world"
+      },
+      "expected": {
+        "output": "helloWorld",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/capitalize/basic-usage",
+      "source": "src/docs/filter-docs.ts: capitalize: Basic usage",
+      "template": "{{ title | capitalize }}",
+      "variables": {
+        "title": "hELLO wORLD"
+      },
+      "expected": {
+        "output": "Hello world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/decode-uri/unicode-text",
+      "source": "src/docs/filter-docs.ts: decode_uri: Unicode text",
+      "template": "{{ value | decode_uri }}",
+      "variables": {
+        "value": "%E4%BD%A0%E5%A5%BD"
+      },
+      "expected": {
+        "output": "你好",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/decode-uri/spaces",
+      "source": "src/docs/filter-docs.ts: decode_uri: Spaces",
+      "template": "{{ value | decode_uri }}",
+      "variables": {
+        "value": "hello%20world"
+      },
+      "expected": {
+        "output": "hello world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/encode-uri/basic-usage",
+      "source": "src/docs/filter-docs.ts: encode_uri: Basic usage",
+      "template": "{{ value | encode_uri }}",
+      "variables": {
+        "value": "hello world/你好"
+      },
+      "expected": {
+        "output": "hello%20world%2F%E4%BD%A0%E5%A5%BD",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/kebab/basic-usage",
+      "source": "src/docs/filter-docs.ts: kebab: Basic usage",
+      "template": "{{ title | kebab }}",
+      "variables": {
+        "title": "Hello World"
+      },
+      "expected": {
+        "output": "hello-world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/lower/basic-usage",
+      "source": "src/docs/filter-docs.ts: lower: Basic usage",
+      "template": "{{ title | lower }}",
+      "variables": {
+        "title": "HELLO WORLD"
+      },
+      "expected": {
+        "output": "hello world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/pascal/basic-usage",
+      "source": "src/docs/filter-docs.ts: pascal: Basic usage",
+      "template": "{{ title | pascal }}",
+      "variables": {
+        "title": "hello world"
+      },
+      "expected": {
+        "output": "HelloWorld",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/replace/remove-text",
+      "source": "src/docs/filter-docs.ts: replace: Remove text",
+      "template": "{{ message | replace:\",\":\"\" }}",
+      "variables": {
+        "message": "hello, world!"
+      },
+      "expected": {
+        "output": "hello world!",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/replace/multiple-replacements",
+      "source": "src/docs/filter-docs.ts: replace: Multiple replacements",
+      "template": "{{ message | replace:\"e\":\"a\",\"o\":\"0\" }}",
+      "variables": {
+        "message": "hello world"
+      },
+      "expected": {
+        "output": "hall0 w0rld",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/replace/regular-expression",
+      "source": "src/docs/filter-docs.ts: replace: Regular expression",
+      "template": "{{ message | replace:\"/[aeiou]/g\":\"*\" }}",
+      "variables": {
+        "message": "hello world"
+      },
+      "expected": {
+        "output": "h*ll* w*rld",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/replace/case-insensitive-match",
+      "source": "src/docs/filter-docs.ts: replace: Case-insensitive match",
+      "template": "{{ message | replace:\"/hello/i\":\"hi\" }}",
+      "variables": {
+        "message": "HELLO world"
+      },
+      "expected": {
+        "output": "hi world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/safe-name/basic-usage",
+      "source": "src/docs/filter-docs.ts: safe_name: Basic usage",
+      "template": "{{ title | safe_name }}",
+      "variables": {
+        "title": "notes/2024: recap?"
+      },
+      "expected": {
+        "output": "notes2024 recap",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/snake/basic-usage",
+      "source": "src/docs/filter-docs.ts: snake: Basic usage",
+      "template": "{{ title | snake }}",
+      "variables": {
+        "title": "Hello World"
+      },
+      "expected": {
+        "output": "hello_world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/title/basic-usage",
+      "source": "src/docs/filter-docs.ts: title: Basic usage",
+      "template": "{{ title | title }}",
+      "variables": {
+        "title": "hello world"
+      },
+      "expected": {
+        "output": "Hello World",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/indent/basic-usage",
+      "source": "src/docs/filter-docs.ts: indent: Basic usage",
+      "template": "{{ text | indent }}",
+      "variables": {
+        "text": "First\nSecond"
+      },
+      "expected": {
+        "output": "  First\n  Second",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/indent/choose-a-width",
+      "source": "src/docs/filter-docs.ts: indent: Choose a width",
+      "template": "{{ text | indent:4 }}",
+      "variables": {
+        "text": "- One\n- Two"
+      },
+      "expected": {
+        "output": "    - One\n    - Two",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/trim/basic-usage",
+      "source": "src/docs/filter-docs.ts: trim: Basic usage",
+      "template": "{{ title | trim }}",
+      "variables": {
+        "title": "  hello world  "
+      },
+      "expected": {
+        "output": "hello world",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/truncate/default-suffix",
+      "source": "src/docs/filter-docs.ts: truncate: Default suffix",
+      "template": "{{ text | truncate:10 }}",
+      "variables": {
+        "text": "A concise introduction to Knap"
+      },
+      "expected": {
+        "output": "A concise…",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/truncate/custom-suffix",
+      "source": "src/docs/filter-docs.ts: truncate: Custom suffix",
+      "template": "{{ text | truncate:(12, \"...\") }}",
+      "variables": {
+        "text": "A concise introduction"
+      },
+      "expected": {
+        "output": "A concise...",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/truncate/no-suffix",
+      "source": "src/docs/filter-docs.ts: truncate: No suffix",
+      "template": "{{ text | truncate:(9, \"\") }}",
+      "variables": {
+        "text": "A concise introduction"
+      },
+      "expected": {
+        "output": "A concise",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/truncatewords/default-suffix",
+      "source": "src/docs/filter-docs.ts: truncatewords: Default suffix",
+      "template": "{{ text | truncatewords:3 }}",
+      "variables": {
+        "text": "A concise introduction to Knap"
+      },
+      "expected": {
+        "output": "A concise introduction…",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/truncatewords/no-suffix",
+      "source": "src/docs/filter-docs.ts: truncatewords: No suffix",
+      "template": "{{ text | truncatewords:(3, \"\") }}",
+      "variables": {
+        "text": "A concise introduction to Knap"
+      },
+      "expected": {
+        "output": "A concise introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/uncamel/camelcase",
+      "source": "src/docs/filter-docs.ts: uncamel: camelCase",
+      "template": "{{ name | uncamel }}",
+      "variables": {
+        "name": "camelCase"
+      },
+      "expected": {
+        "output": "camel case",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/uncamel/pascalcase",
+      "source": "src/docs/filter-docs.ts: uncamel: PascalCase",
+      "template": "{{ name | uncamel }}",
+      "variables": {
+        "name": "PascalCase"
+      },
+      "expected": {
+        "output": "pascal case",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/uncamel/initialism",
+      "source": "src/docs/filter-docs.ts: uncamel: Initialism",
+      "template": "{{ name | uncamel }}",
+      "variables": {
+        "name": "myHTMLParser"
+      },
+      "expected": {
+        "output": "my html parser",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/unescape/newline",
+      "source": "src/docs/filter-docs.ts: unescape: Newline",
+      "template": "{{ value | unescape }}",
+      "variables": {
+        "value": "line1\\nline2"
+      },
+      "expected": {
+        "output": "line1\nline2",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/unescape/quotes",
+      "source": "src/docs/filter-docs.ts: unescape: Quotes",
+      "template": "{{ value | unescape }}",
+      "variables": {
+        "value": "He said \\\"hello\\\""
+      },
+      "expected": {
+        "output": "He said \"hello\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/upper/basic-usage",
+      "source": "src/docs/filter-docs.ts: upper: Basic usage",
+      "template": "{{ title | upper }}",
+      "variables": {
+        "title": "Hello world"
+      },
+      "expected": {
+        "output": "HELLO WORLD",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/blockquote/basic-usage",
+      "source": "src/docs/filter-docs.ts: blockquote: Basic usage",
+      "template": "{{ quote | blockquote }}",
+      "variables": {
+        "quote": "First line\nSecond line"
+      },
+      "expected": {
+        "output": "> First line\n> Second line",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/bold/asterisks",
+      "source": "src/docs/filter-docs.ts: bold: Asterisks",
+      "template": "{{ text | bold }}",
+      "variables": {
+        "text": "Important"
+      },
+      "expected": {
+        "output": "**Important**",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/bold/underscores",
+      "source": "src/docs/filter-docs.ts: bold: Underscores",
+      "template": "{{ text | bold:_ }}",
+      "variables": {
+        "text": "Important"
+      },
+      "expected": {
+        "output": "__Important__",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/callout/type-and-title",
+      "source": "src/docs/filter-docs.ts: callout: Type and title",
+      "template": "{{ message | callout:(\"tip\", \"Note\") }}",
+      "variables": {
+        "message": "Remember this"
+      },
+      "expected": {
+        "output": "> [!tip] Note\n> Remember this",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/callout/collapsed-callout",
+      "source": "src/docs/filter-docs.ts: callout: Collapsed callout",
+      "template": "{{ message | callout:(\"info\", \"Details\", true) }}",
+      "variables": {
+        "message": "More details"
+      },
+      "expected": {
+        "output": "> [!info]- Details\n> More details",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/code/inline",
+      "source": "src/docs/filter-docs.ts: code: Inline",
+      "template": "{{ source | code }}",
+      "variables": {
+        "source": "const answer = 42"
+      },
+      "expected": {
+        "output": "`const answer = 42`",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/code/language-block",
+      "source": "src/docs/filter-docs.ts: code: Language block",
+      "template": "{{ source | code:\"typescript\" }}",
+      "variables": {
+        "source": "const answer = 42"
+      },
+      "expected": {
+        "output": "```typescript\nconst answer = 42\n```",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/code-block/basic-usage",
+      "source": "src/docs/filter-docs.ts: code_block: Basic usage",
+      "template": "{{ source | code_block:\"typescript\" }}",
+      "variables": {
+        "source": "const answer = 42"
+      },
+      "expected": {
+        "output": "```typescript\nconst answer = 42\n```",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/comment/basic-usage",
+      "source": "src/docs/filter-docs.ts: comment: Basic usage",
+      "template": "{{ note | comment }}",
+      "variables": {
+        "note": "Hidden note"
+      },
+      "expected": {
+        "output": "%%Hidden note%%",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/embed/file",
+      "source": "src/docs/filter-docs.ts: embed: File",
+      "template": "{{ target | embed }}",
+      "variables": {
+        "target": "diagram.png"
+      },
+      "expected": {
+        "output": "![[diagram.png]]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/embed/alias",
+      "source": "src/docs/filter-docs.ts: embed: Alias",
+      "template": "{{ target | embed:\"Preview\" }}",
+      "variables": {
+        "target": "Project Atlas"
+      },
+      "expected": {
+        "output": "![[Project Atlas|Preview]]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/embed/array-data",
+      "source": "src/docs/filter-docs.ts: embed: Array data",
+      "template": "{{ targets | embed }}",
+      "variables": {
+        "targets": [
+          "one.md",
+          "two.md"
+        ]
+      },
+      "expected": {
+        "output": "[\"![[one.md]]\",\"![[two.md]]\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/escape-md/basic-usage",
+      "source": "src/docs/filter-docs.ts: escape_md: Basic usage",
+      "template": "{{ text | escape_md }}",
+      "variables": {
+        "text": "# Draft *title*"
+      },
+      "expected": {
+        "output": "\\# Draft \\*title\\*",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/footnote/array-footnotes",
+      "source": "src/docs/filter-docs.ts: footnote: Array footnotes",
+      "template": "{{ notes | footnote }}",
+      "variables": {
+        "notes": [
+          "First item",
+          "Second item"
+        ]
+      },
+      "expected": {
+        "output": "[^1]: First item\n\n[^2]: Second item",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/footnote/object-footnotes",
+      "source": "src/docs/filter-docs.ts: footnote: Object footnotes",
+      "template": "{{ notes | footnote }}",
+      "variables": {
+        "notes": {
+          "First Note": "Content 1",
+          "Second Note": "Content 2"
+        }
+      },
+      "expected": {
+        "output": "[^first-note]: Content 1\n\n[^second-note]: Content 2",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/fragment-link/basic-usage",
+      "source": "src/docs/filter-docs.ts: fragment_link: Basic usage",
+      "template": "{{ highlights | fragment_link:\"https://example.com\" }}",
+      "variables": {
+        "highlights": [
+          "Selected text",
+          "Another passage"
+        ]
+      },
+      "expected": {
+        "output": "[\"Selected text [link](https://example.com#:~:text=Selected%20text)\",\"Another passage [link](https://example.com#:~:text=Another%20passage)\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/fragment-link/custom-link-text",
+      "source": "src/docs/filter-docs.ts: fragment_link: Custom link text",
+      "template": "{{ highlights | fragment_link:\"Source:https://example.com\" }}",
+      "variables": {
+        "highlights": [
+          "Selected text",
+          "Another passage"
+        ]
+      },
+      "expected": {
+        "output": "[\"Selected text [Source](https://example.com#:~:text=Selected%20text)\",\"Another passage [Source](https://example.com#:~:text=Another%20passage)\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h1/basic-usage",
+      "source": "src/docs/filter-docs.ts: h1: Basic usage",
+      "template": "{{ title | h1 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "# Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h2/basic-usage",
+      "source": "src/docs/filter-docs.ts: h2: Basic usage",
+      "template": "{{ title | h2 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "## Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h3/basic-usage",
+      "source": "src/docs/filter-docs.ts: h3: Basic usage",
+      "template": "{{ title | h3 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "### Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h4/basic-usage",
+      "source": "src/docs/filter-docs.ts: h4: Basic usage",
+      "template": "{{ title | h4 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "#### Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h5/basic-usage",
+      "source": "src/docs/filter-docs.ts: h5: Basic usage",
+      "template": "{{ title | h5 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "##### Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/h6/basic-usage",
+      "source": "src/docs/filter-docs.ts: h6: Basic usage",
+      "template": "{{ title | h6 }}",
+      "variables": {
+        "title": "Introduction"
+      },
+      "expected": {
+        "output": "###### Introduction",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/hard-break/basic-usage",
+      "source": "src/docs/filter-docs.ts: hard_break: Basic usage",
+      "template": "{{ text | hard_break }}",
+      "variables": {
+        "text": "First line\nSecond line\n\nNew paragraph"
+      },
+      "expected": {
+        "output": "First line  \nSecond line\n\nNew paragraph",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/highlight/default",
+      "source": "src/docs/filter-docs.ts: highlight: Default",
+      "template": "{{ text | highlight }}",
+      "variables": {
+        "text": "Remember this"
+      },
+      "expected": {
+        "output": "==Remember this==",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/highlight/color",
+      "source": "src/docs/filter-docs.ts: highlight: Color",
+      "template": "{{ text | highlight:blue }}",
+      "variables": {
+        "text": "Remember this"
+      },
+      "expected": {
+        "output": "==🔵Remember this==",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/hr/after",
+      "source": "src/docs/filter-docs.ts: hr: After",
+      "template": "{{ text | hr }}",
+      "variables": {
+        "text": "Section end"
+      },
+      "expected": {
+        "output": "Section end\n\n---",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/hr/before",
+      "source": "src/docs/filter-docs.ts: hr: Before",
+      "template": "{{ text | hr:before }}",
+      "variables": {
+        "text": "Section start"
+      },
+      "expected": {
+        "output": "---\n\nSection start",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/image/string-data",
+      "source": "src/docs/filter-docs.ts: image: String data",
+      "template": "{{ url | image:\"Cover art\" }}",
+      "variables": {
+        "url": "cover.jpg"
+      },
+      "expected": {
+        "output": "![Cover art](cover.jpg)",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/image/array-data",
+      "source": "src/docs/filter-docs.ts: image: Array data",
+      "template": "{{ images | image:\"Illustration\" }}",
+      "variables": {
+        "images": [
+          "cover.jpg",
+          "diagram.png"
+        ]
+      },
+      "expected": {
+        "output": "[\"![Illustration](cover.jpg)\",\"![Illustration](diagram.png)\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/image/object-data",
+      "source": "src/docs/filter-docs.ts: image: Object data",
+      "template": "{{ images | image }}",
+      "variables": {
+        "images": {
+          "cover.jpg": "Cover art",
+          "diagram.png": "Architecture diagram"
+        }
+      },
+      "expected": {
+        "output": "[\"![Cover art](cover.jpg)\",\"![Architecture diagram](diagram.png)\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/italic/asterisk",
+      "source": "src/docs/filter-docs.ts: italic: Asterisk",
+      "template": "{{ text | italic }}",
+      "variables": {
+        "text": "Emphasized"
+      },
+      "expected": {
+        "output": "*Emphasized*",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/italic/underscore",
+      "source": "src/docs/filter-docs.ts: italic: Underscore",
+      "template": "{{ text | italic:_ }}",
+      "variables": {
+        "text": "Emphasized"
+      },
+      "expected": {
+        "output": "_Emphasized_",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/link/string-data",
+      "source": "src/docs/filter-docs.ts: link: String data",
+      "template": "{{ url | link:\"Example\" }}",
+      "variables": {
+        "url": "https://example.com"
+      },
+      "expected": {
+        "output": "[Example](https://example.com)",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/link/array-data",
+      "source": "src/docs/filter-docs.ts: link: Array data",
+      "template": "{{ urls | link:\"Source\" }}",
+      "variables": {
+        "urls": [
+          "https://one.example",
+          "https://two.example"
+        ]
+      },
+      "expected": {
+        "output": "[Source](https://one.example)\n[Source](https://two.example)",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/link/object-data",
+      "source": "src/docs/filter-docs.ts: link: Object data",
+      "template": "{{ links | link }}",
+      "variables": {
+        "links": {
+          "https://one.example": "One",
+          "https://two.example": "Two"
+        }
+      },
+      "expected": {
+        "output": "[One](https://one.example)\n[Two](https://two.example)",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/list/bullet-list",
+      "source": "src/docs/filter-docs.ts: list: Bullet list",
+      "template": "{{ items | list }}",
+      "variables": {
+        "items": [
+          "Apple",
+          "Pear"
+        ]
+      },
+      "expected": {
+        "output": "- Apple\n- Pear",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/list/numbered-list",
+      "source": "src/docs/filter-docs.ts: list: Numbered list",
+      "template": "{{ items | list:numbered }}",
+      "variables": {
+        "items": [
+          "Apple",
+          "Pear"
+        ]
+      },
+      "expected": {
+        "output": "1. Apple\n2. Pear",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/list/task-list",
+      "source": "src/docs/filter-docs.ts: list: Task list",
+      "template": "{{ items | list:task }}",
+      "variables": {
+        "items": [
+          "Write draft",
+          "Review edits"
+        ]
+      },
+      "expected": {
+        "output": "- [ ] Write draft\n- [ ] Review edits",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/list/numbered-task-list",
+      "source": "src/docs/filter-docs.ts: list: Numbered task list",
+      "template": "{{ items | list:numbered-task }}",
+      "variables": {
+        "items": [
+          "Write draft",
+          "Review edits"
+        ]
+      },
+      "expected": {
+        "output": "1. [ ] Write draft\n2. [ ] Review edits",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/math/basic-usage",
+      "source": "src/docs/filter-docs.ts: math: Basic usage",
+      "template": "{{ expression | math }}",
+      "variables": {
+        "expression": "x^2 + y^2"
+      },
+      "expected": {
+        "output": "$x^2 + y^2$",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/math-block/basic-usage",
+      "source": "src/docs/filter-docs.ts: math_block: Basic usage",
+      "template": "{{ expression | math_block }}",
+      "variables": {
+        "expression": "x^2 + y^2"
+      },
+      "expected": {
+        "output": "$$\nx^2 + y^2\n$$",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strike/basic-usage",
+      "source": "src/docs/filter-docs.ts: strike: Basic usage",
+      "template": "{{ text | strike }}",
+      "variables": {
+        "text": "Removed"
+      },
+      "expected": {
+        "output": "~~Removed~~",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table/array-of-objects",
+      "source": "src/docs/filter-docs.ts: table: Array of objects",
+      "template": "{{ people | table }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Ada",
+            "role": "Engineer"
+          },
+          {
+            "name": "Lin",
+            "role": "Designer"
+          }
+        ]
+      },
+      "expected": {
+        "output": "| name | role |\n| - | - |\n| Ada | Engineer |\n| Lin | Designer |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table/simple-array",
+      "source": "src/docs/filter-docs.ts: table: Simple array",
+      "template": "{{ names | table }}",
+      "variables": {
+        "names": [
+          "Ada",
+          "Lin"
+        ]
+      },
+      "expected": {
+        "output": "| Value |\n| - |\n| Ada |\n| Lin |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table/array-of-arrays",
+      "source": "src/docs/filter-docs.ts: table: Array of arrays",
+      "template": "{{ rows | table:(\"Name\", \"Role\") }}",
+      "variables": {
+        "rows": [
+          [
+            "Ada",
+            "Engineer"
+          ],
+          [
+            "Lin",
+            "Designer"
+          ]
+        ]
+      },
+      "expected": {
+        "output": "| Name | Role |\n| - | - |\n| Ada | Engineer |\n| Lin | Designer |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table/custom-columns",
+      "source": "src/docs/filter-docs.ts: table: Custom columns",
+      "template": "{{ values | table:(\"Name\", \"Role\") }}",
+      "variables": {
+        "values": [
+          "Ada",
+          "Writer",
+          "Lin",
+          "Editor"
+        ]
+      },
+      "expected": {
+        "output": "| Name | Role |\n| - | - |\n| Ada | Writer |\n| Lin | Editor |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table-pretty/object-array",
+      "source": "src/docs/filter-docs.ts: table_pretty: Object array",
+      "template": "{{ people | table_pretty }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Ada",
+            "role": "Engineer"
+          },
+          {
+            "name": "Lin",
+            "role": "Designer"
+          }
+        ]
+      },
+      "expected": {
+        "output": "| name | role     |\n| ---- | -------- |\n| Ada  | Engineer |\n| Lin  | Designer |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/table-pretty/custom-columns",
+      "source": "src/docs/filter-docs.ts: table_pretty: Custom columns",
+      "template": "{{ values | table_pretty:(\"Name\", \"Role\") }}",
+      "variables": {
+        "values": [
+          "Ada",
+          "Writer",
+          "Lin",
+          "Editor"
+        ]
+      },
+      "expected": {
+        "output": "| Name | Role   |\n| ---- | ------ |\n| Ada  | Writer |\n| Lin  | Editor |",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/wikilink/string-with-alias",
+      "source": "src/docs/filter-docs.ts: wikilink: String with alias",
+      "template": "{{ page | wikilink:\"Atlas\" }}",
+      "variables": {
+        "page": "Project Atlas"
+      },
+      "expected": {
+        "output": "[[Project Atlas|Atlas]]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/wikilink/array-data",
+      "source": "src/docs/filter-docs.ts: wikilink: Array data",
+      "template": "{{ pages | wikilink }}",
+      "variables": {
+        "pages": [
+          "Project Atlas",
+          "Daily Notes"
+        ]
+      },
+      "expected": {
+        "output": "[\"[[Project Atlas]]\",\"[[Daily Notes]]\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/wikilink/object-data",
+      "source": "src/docs/filter-docs.ts: wikilink: Object data",
+      "template": "{{ pages | wikilink }}",
+      "variables": {
+        "pages": {
+          "Project Atlas": "Atlas",
+          "Daily Notes": "Journal"
+        }
+      },
+      "expected": {
+        "output": "[\"[[Project Atlas|Atlas]]\",\"[[Daily Notes|Journal]]\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml/scalar",
+      "source": "src/docs/filter-docs.ts: yaml: Scalar",
+      "template": "{{ title | yaml }}",
+      "variables": {
+        "title": "A: value #1"
+      },
+      "expected": {
+        "output": "\"A: value #1\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml/block-list",
+      "source": "src/docs/filter-docs.ts: yaml: Block list",
+      "template": "genre:\n{{ genres | yaml | indent:2 }}",
+      "variables": {
+        "genres": [
+          "Action",
+          "Sci-fi"
+        ]
+      },
+      "expected": {
+        "output": "genre:\n  - \"Action\"\n  - \"Sci-fi\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml/flow-list",
+      "source": "src/docs/filter-docs.ts: yaml: Flow list",
+      "template": "genre: {{ genres | yaml:flow }}",
+      "variables": {
+        "genres": [
+          "Action",
+          "Sci-fi"
+        ]
+      },
+      "expected": {
+        "output": "genre: [\"Action\",\"Sci-fi\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml/frontmatter-from-an-object",
+      "source": "src/docs/filter-docs.ts: yaml: Frontmatter from an object",
+      "template": "---\n{{ metadata | yaml }}\n---",
+      "variables": {
+        "metadata": {
+          "year": 1999,
+          "genre": [
+            "Action",
+            "Sci-fi"
+          ]
+        }
+      },
+      "expected": {
+        "output": "---\nyear: 1999\ngenre:\n  - \"Action\"\n  - \"Sci-fi\"\n---",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml/wikilink-list",
+      "source": "src/docs/filter-docs.ts: yaml: Wikilink list",
+      "template": "director:\n{{ directors | wikilink | yaml | indent:2 }}",
+      "variables": {
+        "directors": [
+          "Lana Wachowski",
+          "Lilly Wachowski"
+        ]
+      },
+      "expected": {
+        "output": "director:\n  - \"[[Lana Wachowski]]\"\n  - \"[[Lilly Wachowski]]\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml-property/scalar",
+      "source": "src/docs/filter-docs.ts: yaml_property: Scalar",
+      "template": "{{ year | yaml_property:\"year\" }}",
+      "variables": {
+        "year": 1999
+      },
+      "expected": {
+        "output": "year: 1999",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml-property/wikilink-list",
+      "source": "src/docs/filter-docs.ts: yaml_property: Wikilink list",
+      "template": "{{ directors | wikilink | yaml_property:\"director\" }}",
+      "variables": {
+        "directors": [
+          "Lana Wachowski",
+          "Lilly Wachowski"
+        ]
+      },
+      "expected": {
+        "output": "director:\n  - \"[[Lana Wachowski]]\"\n  - \"[[Lilly Wachowski]]\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml-property/nested-object",
+      "source": "src/docs/filter-docs.ts: yaml_property: Nested object",
+      "template": "{{ details | yaml_property:\"movie\" }}",
+      "variables": {
+        "details": {
+          "year": 1999,
+          "genre": [
+            "Action",
+            "Sci-fi"
+          ]
+        }
+      },
+      "expected": {
+        "output": "movie:\n  year: 1999\n  genre:\n    - \"Action\"\n    - \"Sci-fi\"",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/yaml-property/empty-list",
+      "source": "src/docs/filter-docs.ts: yaml_property: Empty list",
+      "template": "{{ tags | yaml_property:\"tags\" }}",
+      "variables": {
+        "tags": []
+      },
+      "expected": {
+        "output": "tags: []",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/calc/addition",
+      "source": "src/docs/filter-docs.ts: calc: Addition",
+      "template": "{{ count | calc:\"+10\" }}",
+      "variables": {
+        "count": 5
+      },
+      "expected": {
+        "output": "15",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/calc/exponentiation",
+      "source": "src/docs/filter-docs.ts: calc: Exponentiation",
+      "template": "{{ count | calc:\"**3\" }}",
+      "variables": {
+        "count": 2
+      },
+      "expected": {
+        "output": "8",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/number-format/decimal-places",
+      "source": "src/docs/filter-docs.ts: number_format: Decimal places",
+      "template": "{{ amount | number_format:2 }}",
+      "variables": {
+        "amount": 1234567.89
+      },
+      "expected": {
+        "output": "1,234,567.89",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/number-format/custom-separators",
+      "source": "src/docs/filter-docs.ts: number_format: Custom separators",
+      "template": "{{ amount | number_format:(2, \",\", \".\") }}",
+      "variables": {
+        "amount": 1234.567
+      },
+      "expected": {
+        "output": "1.234,57",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/number-format/array-data",
+      "source": "src/docs/filter-docs.ts: number_format: Array data",
+      "template": "{{ amounts | number_format:2 }}",
+      "variables": {
+        "amounts": [
+          1200,
+          3500.5
+        ]
+      },
+      "expected": {
+        "output": "[\"1,200.00\",\"3,500.50\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/round/basic-usage",
+      "source": "src/docs/filter-docs.ts: round: Basic usage",
+      "template": "{{ value | round:2 }}",
+      "variables": {
+        "value": 3.14159
+      },
+      "expected": {
+        "output": "3.14",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/first/basic-usage",
+      "source": "src/docs/filter-docs.ts: first: Basic usage",
+      "template": "{{ items | first }}",
+      "variables": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "expected": {
+        "output": "a",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/compact/array",
+      "source": "src/docs/filter-docs.ts: compact: Array",
+      "template": "{{ items | compact }}",
+      "variables": {
+        "items": [
+          null,
+          "",
+          "one",
+          0,
+          false,
+          "two"
+        ]
+      },
+      "expected": {
+        "output": "[\"one\",0,false,\"two\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/compact/object",
+      "source": "src/docs/filter-docs.ts: compact: Object",
+      "template": "{{ values | compact }}",
+      "variables": {
+        "values": {
+          "empty": "",
+          "missing": null,
+          "count": 0,
+          "enabled": false
+        }
+      },
+      "expected": {
+        "output": "{\"count\":0,\"enabled\":false}",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/join/basic-usage",
+      "source": "src/docs/filter-docs.ts: join: Basic usage",
+      "template": "{{ tags | join:\", \" }}",
+      "variables": {
+        "tags": [
+          "notes",
+          "ideas",
+          "books"
+        ]
+      },
+      "expected": {
+        "output": "notes, ideas, books",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/last/basic-usage",
+      "source": "src/docs/filter-docs.ts: last: Basic usage",
+      "template": "{{ items | last }}",
+      "variables": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "expected": {
+        "output": "c",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/length/array-length",
+      "source": "src/docs/filter-docs.ts: length: Array length",
+      "template": "{{ tags | length }}",
+      "variables": {
+        "tags": [
+          "notes",
+          "ideas",
+          "books"
+        ]
+      },
+      "expected": {
+        "output": "3",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/length/string-length",
+      "source": "src/docs/filter-docs.ts: length: String length",
+      "template": "{{ title | length }}",
+      "variables": {
+        "title": "Knap"
+      },
+      "expected": {
+        "output": "4",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/length/object-length",
+      "source": "src/docs/filter-docs.ts: length: Object length",
+      "template": "{{ author | length }}",
+      "variables": {
+        "author": {
+          "name": "Ada",
+          "role": "Writer"
+        }
+      },
+      "expected": {
+        "output": "2",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/map/property-shorthand",
+      "source": "src/docs/filter-docs.ts: map: Property shorthand",
+      "template": "{{ people | map:\"name\" }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Ada"
+          },
+          {
+            "name": "Lin"
+          }
+        ]
+      },
+      "expected": {
+        "output": "[\"Ada\",\"Lin\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/map/nested-property",
+      "source": "src/docs/filter-docs.ts: map: Nested property",
+      "template": "{{ people | map:\"author.name\" }}",
+      "variables": {
+        "people": [
+          {
+            "author": {
+              "name": "Ada"
+            }
+          },
+          {
+            "author": {
+              "name": "Lin"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "output": "[\"Ada\",\"Lin\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/map/construct-objects",
+      "source": "src/docs/filter-docs.ts: map: Construct objects",
+      "template": "{{ people | map:person => ({name: person.name, role: person.role}) }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Ada",
+            "role": "Engineer"
+          },
+          {
+            "name": "Lin",
+            "role": "Designer"
+          }
+        ]
+      },
+      "expected": {
+        "output": "[{\"name\":\"Ada\",\"role\":\"Engineer\"},{\"name\":\"Lin\",\"role\":\"Designer\"}]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/map/build-strings",
+      "source": "src/docs/filter-docs.ts: map: Build strings",
+      "template": "{{ genres | map:item => \"genres/${item}\" }}",
+      "variables": {
+        "genres": [
+          "rock",
+          "pop"
+        ]
+      },
+      "expected": {
+        "output": "[\"genres/rock\",\"genres/pop\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/merge/append-one-value",
+      "source": "src/docs/filter-docs.ts: merge: Append one value",
+      "template": "{{ tags | merge:\"books\" }}",
+      "variables": {
+        "tags": [
+          "notes",
+          "ideas"
+        ]
+      },
+      "expected": {
+        "output": "[\"notes\",\"ideas\",\"books\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/merge/append-multiple-values",
+      "source": "src/docs/filter-docs.ts: merge: Append multiple values",
+      "template": "{{ tags | merge:(\"ideas\", \"books\") }}",
+      "variables": {
+        "tags": [
+          "notes",
+          "drafts"
+        ]
+      },
+      "expected": {
+        "output": "[\"notes\",\"drafts\",\"ideas\",\"books\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/nth/every-nth-item",
+      "source": "src/docs/filter-docs.ts: nth: Every nth item",
+      "template": "{{ items | nth:2n }}",
+      "variables": {
+        "items": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "e",
+          "f"
+        ]
+      },
+      "expected": {
+        "output": "[\"b\",\"d\",\"f\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/nth/repeating-groups",
+      "source": "src/docs/filter-docs.ts: nth: Repeating groups",
+      "template": "{{ items | nth:2,3:4 }}",
+      "variables": {
+        "items": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "expected": {
+        "output": "[2,3,6,7]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/object/keys",
+      "source": "src/docs/filter-docs.ts: object: Keys",
+      "template": "{{ person | object:\"keys\" }}",
+      "variables": {
+        "person": {
+          "name": "Ada",
+          "role": "Writer"
+        }
+      },
+      "expected": {
+        "output": "[\"name\",\"role\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/object/values",
+      "source": "src/docs/filter-docs.ts: object: Values",
+      "template": "{{ person | object:\"values\" }}",
+      "variables": {
+        "person": {
+          "name": "Ada",
+          "role": "Writer"
+        }
+      },
+      "expected": {
+        "output": "[\"Ada\",\"Writer\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/object/key-value-pairs",
+      "source": "src/docs/filter-docs.ts: object: Key-value pairs",
+      "template": "{{ person | object:\"array\" }}",
+      "variables": {
+        "person": {
+          "name": "Ada",
+          "role": "Writer"
+        }
+      },
+      "expected": {
+        "output": "[[\"name\",\"Ada\"],[\"role\",\"Writer\"]]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/parse-json/basic-usage",
+      "source": "src/docs/filter-docs.ts: parse_json: Basic usage",
+      "template": "{{ value | parse_json | join:\", \" }}",
+      "variables": {
+        "value": "[\"one\",\"two\"]"
+      },
+      "expected": {
+        "output": "one, two",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/reverse/string",
+      "source": "src/docs/filter-docs.ts: reverse: String",
+      "template": "{{ word | reverse }}",
+      "variables": {
+        "word": "abc"
+      },
+      "expected": {
+        "output": "cba",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/reverse/array",
+      "source": "src/docs/filter-docs.ts: reverse: Array",
+      "template": "{{ items | reverse }}",
+      "variables": {
+        "items": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      "expected": {
+        "output": "[\"c\",\"b\",\"a\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/reverse/object",
+      "source": "src/docs/filter-docs.ts: reverse: Object",
+      "template": "{{ values | reverse }}",
+      "variables": {
+        "values": {
+          "first": 1,
+          "second": 2
+        }
+      },
+      "expected": {
+        "output": "{\"second\":2,\"first\":1}",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/slice/string-range",
+      "source": "src/docs/filter-docs.ts: slice: String range",
+      "template": "{{ word | slice:1,4 }}",
+      "variables": {
+        "word": "hello"
+      },
+      "expected": {
+        "output": "ell",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/slice/array-range",
+      "source": "src/docs/filter-docs.ts: slice: Array range",
+      "template": "{{ items | slice:1,3 }}",
+      "variables": {
+        "items": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ]
+      },
+      "expected": {
+        "output": "[\"b\",\"c\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/slice/negative-start",
+      "source": "src/docs/filter-docs.ts: slice: Negative start",
+      "template": "{{ word | slice:-3 }}",
+      "variables": {
+        "word": "hello"
+      },
+      "expected": {
+        "output": "llo",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/slice/negative-end",
+      "source": "src/docs/filter-docs.ts: slice: Negative end",
+      "template": "{{ word | slice:0,-2 }}",
+      "variables": {
+        "word": "hello"
+      },
+      "expected": {
+        "output": "hel",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/sort/numbers",
+      "source": "src/docs/filter-docs.ts: sort: Numbers",
+      "template": "{{ values | sort }}",
+      "variables": {
+        "values": [
+          10,
+          2,
+          1
+        ]
+      },
+      "expected": {
+        "output": "[1,2,10]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/sort/descending",
+      "source": "src/docs/filter-docs.ts: sort: Descending",
+      "template": "{{ values | sort:\"desc\" }}",
+      "variables": {
+        "values": [
+          "a",
+          "c",
+          "b"
+        ]
+      },
+      "expected": {
+        "output": "[\"c\",\"b\",\"a\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/sort/object-property",
+      "source": "src/docs/filter-docs.ts: sort: Object property",
+      "template": "{{ people | sort:\"name\" }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Lin"
+          },
+          {
+            "name": "Ada"
+          }
+        ]
+      },
+      "expected": {
+        "output": "[{\"name\":\"Ada\"},{\"name\":\"Lin\"}]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/split/separator",
+      "source": "src/docs/filter-docs.ts: split: Separator",
+      "template": "{{ value | split:\",\" }}",
+      "variables": {
+        "value": "a,b,c"
+      },
+      "expected": {
+        "output": "[\"a\",\"b\",\"c\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/split/characters",
+      "source": "src/docs/filter-docs.ts: split: Characters",
+      "template": "{{ value | split }}",
+      "variables": {
+        "value": "abc"
+      },
+      "expected": {
+        "output": "[\"a\",\"b\",\"c\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/split/regular-expression",
+      "source": "src/docs/filter-docs.ts: split: Regular expression",
+      "template": "{{ value | split:[0-9] }}",
+      "variables": {
+        "value": "a1b2c"
+      },
+      "expected": {
+        "output": "[\"a\",\"b\",\"c\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/sum/numeric-values",
+      "source": "src/docs/filter-docs.ts: sum: Numeric values",
+      "template": "{{ values | sum }}",
+      "variables": {
+        "values": [
+          10,
+          "2.5",
+          "",
+          "none"
+        ]
+      },
+      "expected": {
+        "output": "12.5",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/sum/object-property",
+      "source": "src/docs/filter-docs.ts: sum: Object property",
+      "template": "{{ items | sum:\"amount\" }}",
+      "variables": {
+        "items": [
+          {
+            "amount": 10
+          },
+          {
+            "amount": "2.5"
+          },
+          {}
+        ]
+      },
+      "expected": {
+        "output": "12.5",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/template/object",
+      "source": "src/docs/filter-docs.ts: template: Object",
+      "template": "{{ person | template:\"${name}: ${role}\" }}",
+      "variables": {
+        "person": {
+          "name": "Ada",
+          "role": "Engineer"
+        }
+      },
+      "expected": {
+        "output": "Ada: Engineer",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/template/array-of-objects",
+      "source": "src/docs/filter-docs.ts: template: Array of objects",
+      "template": "{{ people | template:\"${name}: ${role}\" }}",
+      "variables": {
+        "people": [
+          {
+            "name": "Ada",
+            "role": "Engineer"
+          },
+          {
+            "name": "Lin",
+            "role": "Designer"
+          }
+        ]
+      },
+      "expected": {
+        "output": "Ada: Engineer\n\nLin: Designer",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/template/strings",
+      "source": "src/docs/filter-docs.ts: template: Strings",
+      "template": "{{ values | template:\"- ${str}\" }}",
+      "variables": {
+        "values": [
+          "rock",
+          "pop"
+        ]
+      },
+      "expected": {
+        "output": "- rock\n\n- pop",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/unique/primitive-values",
+      "source": "src/docs/filter-docs.ts: unique: Primitive values",
+      "template": "{{ tags | unique }}",
+      "variables": {
+        "tags": [
+          "notes",
+          "ideas",
+          "notes"
+        ]
+      },
+      "expected": {
+        "output": "[\"notes\",\"ideas\"]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/unique/objects-in-an-array",
+      "source": "src/docs/filter-docs.ts: unique: Objects in an array",
+      "template": "{{ items | unique }}",
+      "variables": {
+        "items": [
+          {
+            "a": 1
+          },
+          {
+            "b": 2
+          },
+          {
+            "a": 1
+          }
+        ]
+      },
+      "expected": {
+        "output": "[{\"a\":1},{\"b\":2}]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/unique/duplicate-object-values",
+      "source": "src/docs/filter-docs.ts: unique: Duplicate object values",
+      "template": "{{ values | unique }}",
+      "variables": {
+        "values": {
+          "first": "same",
+          "second": "different",
+          "third": "same"
+        }
+      },
+      "expected": {
+        "output": "{\"second\":\"different\",\"third\":\"same\"}",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/where/boolean-property",
+      "source": "src/docs/filter-docs.ts: where: Boolean property",
+      "template": "{{ posts | where:(\"published\", true) | map:\"title\" | join:\", \" }}",
+      "variables": {
+        "posts": [
+          {
+            "title": "One",
+            "published": true
+          },
+          {
+            "title": "Two",
+            "published": false
+          }
+        ]
+      },
+      "expected": {
+        "output": "One",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/where/typed-equality",
+      "source": "src/docs/filter-docs.ts: where: Typed equality",
+      "template": "{{ items | where:(\"value\", \"1\") }}",
+      "variables": {
+        "items": [
+          {
+            "value": 1
+          },
+          {
+            "value": "1"
+          }
+        ]
+      },
+      "expected": {
+        "output": "[{\"value\":\"1\"}]",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/remove-attr/one-attribute",
+      "source": "src/docs/filter-docs.ts: remove_attr: One attribute",
+      "template": "{{ html | remove_attr:\"class\" }}",
+      "variables": {
+        "html": "<div class=\"card\" id=\"intro\">Hello</div>"
+      },
+      "expected": {
+        "output": "<div id=\"intro\">Hello</div>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/remove-attr/multiple-attributes",
+      "source": "src/docs/filter-docs.ts: remove_attr: Multiple attributes",
+      "template": "{{ html | remove_attr:(\"class\", \"style\") }}",
+      "variables": {
+        "html": "<div class=\"card\" id=\"intro\" style=\"color:red\">Hello</div>"
+      },
+      "expected": {
+        "output": "<div id=\"intro\">Hello</div>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/remove-tags/one-tag",
+      "source": "src/docs/filter-docs.ts: remove_tags: One tag",
+      "template": "{{ html | remove_tags:\"b\" }}",
+      "variables": {
+        "html": "<p>Hello <b>world</b>!</p>"
+      },
+      "expected": {
+        "output": "<p>Hello world!</p>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/remove-tags/multiple-tags",
+      "source": "src/docs/filter-docs.ts: remove_tags: Multiple tags",
+      "template": "{{ html | remove_tags:(\"strong\", \"em\") }}",
+      "variables": {
+        "html": "<p><strong>Hello</strong> <em>world</em></p>"
+      },
+      "expected": {
+        "output": "<p>Hello world</p>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/replace-tags/basic-usage",
+      "source": "src/docs/filter-docs.ts: replace_tags: Basic usage",
+      "template": "{{ html | replace_tags:\"strong\":\"h2\" }}",
+      "variables": {
+        "html": "<strong>Title</strong>"
+      },
+      "expected": {
+        "output": "<h2>Title</h2>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strip-attr/basic-usage",
+      "source": "src/docs/filter-docs.ts: strip_attr: Basic usage",
+      "template": "{{ html | strip_attr:\"href\" }}",
+      "variables": {
+        "html": "<a href=\"/about\" class=\"nav\">About</a>"
+      },
+      "expected": {
+        "output": "<a href=\"/about\">About</a>",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strip-md/inline-formatting",
+      "source": "src/docs/filter-docs.ts: strip_md: Inline formatting",
+      "template": "{{ text | strip_md }}",
+      "variables": {
+        "text": "**Bold** and [linked](https://example.com)"
+      },
+      "expected": {
+        "output": "Bold and linked",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strip-md/block-formatting",
+      "source": "src/docs/filter-docs.ts: strip_md: Block formatting",
+      "template": "{{ text | strip_md }}",
+      "variables": {
+        "text": "# Heading\n\n> Quoted text"
+      },
+      "expected": {
+        "output": "Heading\n\nQuoted text",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strip-tags/remove-every-tag",
+      "source": "src/docs/filter-docs.ts: strip_tags: Remove every tag",
+      "template": "{{ html | strip_tags }}",
+      "variables": {
+        "html": "<p>Hello <b>world</b>!</p>"
+      },
+      "expected": {
+        "output": "Hello world!",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "filters/strip-tags/keep-selected-tags",
+      "source": "src/docs/filter-docs.ts: strip_tags: Keep selected tags",
+      "template": "{{ html | strip_tags:\"b\" }}",
+      "variables": {
+        "html": "<p>Hello <b>world</b>!</p>"
+      },
+      "expected": {
+        "output": "Hello <b>world</b>!",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "logic/if/choose-a-branch",
+      "source": "website/lib/logic-docs.ts: if: Choose a branch",
+      "template": "{% if published %}Published{% elseif draft %}Draft{% else %}Archived{% endif %}",
+      "variables": {
+        "published": false,
+        "draft": true
+      },
+      "expected": {
+        "output": "Draft",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "logic/for/list-tags",
+      "source": "website/lib/logic-docs.ts: for: List tags",
+      "template": "{% for tag in tags %}- #{{ tag | kebab }}{% endfor %}",
+      "variables": {
+        "tags": [
+          "science fiction",
+          "novel"
+        ]
+      },
+      "expected": {
+        "output": "- #science-fiction\n- #novel",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "logic/set/create-a-slug",
+      "source": "website/lib/logic-docs.ts: set: Create a slug",
+      "template": "{% set slug = title | kebab %}File: {{ slug }}.md",
+      "variables": {
+        "title": "Hello World"
+      },
+      "expected": {
+        "output": "File: hello-world.md",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/if",
+      "source": "tests/fixtures/clipper-help.ts: if",
+      "template": "{% if author %}\nAuthor: {{author}}\n{% endif %}",
+      "variables": {
+        "author": "Ada"
+      },
+      "expected": {
+        "output": "Author: Ada",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/elseif",
+      "source": "tests/fixtures/clipper-help.ts: elseif",
+      "template": "{% if status == \"published\" %}\nLive article\n{% elseif status == \"draft\" %}\nDraft article\n{% else %}\nUnknown status\n{% endif %}",
+      "variables": {
+        "status": "draft"
+      },
+      "expected": {
+        "output": "Draft article",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/assignment-with-filters",
+      "source": "tests/fixtures/clipper-help.ts: assignment with filters",
+      "template": "{% set slug = title|lower|replace:\" \":\"-\" %}\nFile: {{slug}}.md",
+      "variables": {
+        "title": "Hello World"
+      },
+      "expected": {
+        "output": "File: hello-world.md",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/fallback",
+      "source": "tests/fixtures/clipper-help.ts: fallback",
+      "template": "{{title ?? \"Untitled\"}}",
+      "variables": {},
+      "expected": {
+        "output": "Untitled",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/chained-fallback",
+      "source": "tests/fixtures/clipper-help.ts: chained fallback",
+      "template": "{{title ?? headline ?? \"No title\"}}",
+      "variables": {
+        "headline": "News"
+      },
+      "expected": {
+        "output": "News",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/filter-before-fallback",
+      "source": "tests/fixtures/clipper-help.ts: filter before fallback",
+      "template": "{{title|upper ?? \"UNTITLED\"}}",
+      "variables": {
+        "title": "News"
+      },
+      "expected": {
+        "output": "NEWS",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/filter-fallback-value",
+      "source": "tests/fixtures/clipper-help.ts: filter fallback value",
+      "template": "{{title ?? \"Untitled\"|lower}}",
+      "variables": {},
+      "expected": {
+        "output": "untitled",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/index",
+      "source": "tests/fixtures/clipper-help.ts: index",
+      "template": "{{items[0]}}",
+      "variables": {
+        "items": [
+          "Ada",
+          "Grace"
+        ]
+      },
+      "expected": {
+        "output": "Ada",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/quoted-key",
+      "source": "tests/fixtures/clipper-help.ts: quoted key",
+      "template": "{{user[\"name\"]}} / {{data[\"my-key\"]}}",
+      "variables": {
+        "user": {
+          "name": "Ada"
+        },
+        "data": {
+          "my-key": "Grace"
+        }
+      },
+      "expected": {
+        "output": "Ada / Grace",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/nested-loops",
+      "source": "tests/fixtures/clipper-help.ts: nested loops",
+      "template": "{% for section in sections %}\n## {{section.title}}\n{% for item in section.items %}\n- {{item}}\n{% endfor %}\n{% endfor %}",
+      "variables": {
+        "sections": [
+          {
+            "title": "People",
+            "items": [
+              "Ada",
+              "Grace"
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "output": "## People\n- Ada\n- Grace",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/combined-logic",
+      "source": "tests/fixtures/clipper-help.ts: combined logic",
+      "template": "{% for item in items %}\n{% if item.active %}\n- {{item.name}}\n{% endif %}\n{% endfor %}",
+      "variables": {
+        "items": [
+          {
+            "name": "Ada",
+            "active": true
+          },
+          {
+            "name": "Grace",
+            "active": false
+          }
+        ]
+      },
+      "expected": {
+        "output": "- Ada",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/empty-iterations-before-and-after-content",
+      "source": "tests/fixtures/clipper-help.ts: empty iterations before and after content",
+      "template": "{% for item in items %}\n{% if item.active %}\n- {{item.name}}\n{% endif %}\n{% endfor %}",
+      "variables": {
+        "items": [
+          {
+            "active": false
+          },
+          {
+            "name": "Ada",
+            "active": true
+          },
+          {
+            "active": false
+          },
+          {
+            "name": "Grace",
+            "active": true
+          },
+          {
+            "active": false
+          }
+        ]
+      },
+      "expected": {
+        "output": "- Ada\n- Grace",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "clipper-logic/loop-metadata",
+      "source": "tests/fixtures/clipper-help.ts: loop metadata",
+      "template": "{% for tag in tags %}{{loop.index}}/{{loop.index0}}/{{tag_index}}/{{loop.length}}/{{loop.first}}/{{loop.last}}: {{tag}}{% endfor %}",
+      "variables": {
+        "tags": [
+          "a",
+          "b"
+        ]
+      },
+      "expected": {
+        "output": "1/0/0/2/true/false: a\n2/1/1/2/false/true: b",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "diagnostics/unclosed-variable",
+      "source": "tests/engine.test.ts: returns coded parse and runtime errors without logging",
+      "template": "{{title",
+      "variables": {},
+      "expected": {
+        "output": "",
+        "errors": [
+          "PARSE_ERROR"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "diagnostics/unknown-filter",
+      "source": "tests/property-access.test.ts: registry lookup only calls registered filters",
+      "template": "{{ value | toString }}",
+      "variables": {
+        "value": "value"
+      },
+      "expected": {
+        "output": "value",
+        "errors": [
+          "UNKNOWN_FILTER"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "diagnostics/pass-through-warnings",
+      "source": "tests/engine.test.ts: reports pass-through filter failures as non-fatal warnings",
+      "template": "{{ value | replace:\"/[/\":\"x\" }}\n{{ published | date:\"YYYY-MM-DD\" }}",
+      "variables": {
+        "value": "a[b",
+        "published": "not-a-date"
+      },
+      "expected": {
+        "output": "a[b\nnot-a-date",
+        "errors": [],
+        "warnings": [
+          {
+            "code": "INVALID_FILTER_INPUT",
+            "filter": "replace"
+          },
+          {
+            "code": "INVALID_FILTER_INPUT",
+            "filter": "date"
+          }
+        ]
+      }
+    }
+  ]
+}

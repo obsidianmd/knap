@@ -8,6 +8,11 @@ pnpm check
 
 Keep the public API runtime-agnostic. Browser selectors, application state, and model or prompt execution belong in host integrations supplied through resolvers and custom filters.
 
+The [portable rendering fixtures](compat/fixtures/README.md) make selected
+documentation examples and regression expectations reusable by other language
+implementations. If a change affects their source examples, update the fixtures
+with `pnpm test:compat --update`, review the JSON diff, and run `pnpm check` again.
+
 ## Release checks
 
 Before changing the package version, verify both the repository and the exact package contents:
