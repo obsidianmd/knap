@@ -86,6 +86,7 @@
 		"editors:check": "node editors/build.mjs --check",
 		"build": "tsup",
 		"test": "vitest run",
+		"test:compat": "vitest run tests/portable-compatibility.test.ts",
 		"bench": "vitest bench --run",
 		"typecheck": "tsc --noEmit",
 		"check": "pnpm editors:check && pnpm typecheck && pnpm test && pnpm build",
