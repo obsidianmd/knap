@@ -59,6 +59,41 @@ describe('Tokenizer', () => {
 			expect(result.tokens[2].trimRight).toBe(false);
 		});
 
+		test('tokenizes variable with left and right whitespace trimming', () => {
+			const result = tokenize('{{- title -}}');
+			expect(result.errors).toHaveLength(0);
+			expect(result.tokens.map(t => t.type)).toEqual(['variable_start', 'identifier', 'variable_end', 'eof']);
+			expect(result.tokens[0].value).toBe('{{-');
+			expect(result.tokens[0].trimLeft).toBe(true);
+			expect(result.tokens[2].value).toBe('-}}');
+			expect(result.tokens[2].trimRight).toBe(true);
+		});
+
+		test('tokenizes object literal followed by trimming variable end', () => {
+			const result = tokenize('{{ {a:1}-}}');
+			expect(result.errors).toHaveLength(0);
+			const endToken = result.tokens.find(t => t.type === 'variable_end');
+			expect(endToken?.value).toBe('-}}');
+			expect(endToken?.trimRight).toBe(true);
+		});
+
+		test('still reports malformed brace when not followed by -}}', () => {
+			const result = tokenize('{{ x }-y}}');
+			expect(result.errors.length).toBeGreaterThan(0);
+		});
+
+		test('treats leading hyphen after {{ as trimLeft rather than unary minus', () => {
+			const trimResult = tokenize('{{-5}}');
+			expect(trimResult.errors).toHaveLength(0);
+			expect(trimResult.tokens[0].trimLeft).toBe(true);
+			expect(trimResult.tokens[1]).toMatchObject({ type: 'number', value: '5' });
+
+			const negResult = tokenize('{{ -5 }}');
+			expect(negResult.errors).toHaveLength(0);
+			expect(negResult.tokens[0].trimLeft).toBe(false);
+			expect(negResult.tokens[1]).toMatchObject({ type: 'number', value: '-5' });
+		});
+
 		test('tokenizes nested property access', () => {
 			const result = tokenize('{{author.name}}');
 			expect(result.errors).toHaveLength(0);
@@ -109,6 +144,19 @@ describe('Tokenizer', () => {
 			expect(result.errors).toHaveLength(0);
 			expect(result.tokens[0].trimLeft).toBe(false);
 			expect(result.tokens[3].trimRight).toBe(true);
+		});
+
+		test('tokenizes tag with left whitespace trimming', () => {
+			const ifResult = tokenize('{%- if x %}');
+			expect(ifResult.errors).toHaveLength(0);
+			expect(ifResult.tokens[0].value).toBe('{%-');
+			expect(ifResult.tokens[0].trimLeft).toBe(true);
+
+			const setResult = tokenize('{%- set x = "" -%}');
+			expect(setResult.errors).toHaveLength(0);
+			expect(setResult.tokens[0].value).toBe('{%-');
+			expect(setResult.tokens[0].trimLeft).toBe(true);
+			expect(setResult.tokens[setResult.tokens.length - 2].value).toBe('-%}');
 		});
 	});
 
@@ -274,6 +322,15 @@ describe('Tokenizer', () => {
 			const varStart = result.tokens.find(t => t.type === 'variable_start');
 			expect(varStart?.line).toBe(2);
 			expect(varStart?.column).toBe(1);
+		});
+
+		test('tracks line and column numbers for trimming markers', () => {
+			const result = tokenize('ab\n  {{-x}}');
+			expect(result.errors).toHaveLength(0);
+
+			const varStart = result.tokens.find(t => t.type === 'variable_start');
+			expect(varStart?.line).toBe(2);
+			expect(varStart?.column).toBe(3);
 		});
 
 		test('tracks position across multiline template', () => {

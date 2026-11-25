@@ -237,14 +237,17 @@ function tokenizeText(state: TokenizerState): void {
 			return;
 		}
 
+		const tokenColumn = state.column;
 		advance(state, 2);
+		const trimLeft = input[state.pos] === '-';
+		if (trimLeft) advance(state, 1);
 
 		state.tokens.push({
 			type: isVariable ? 'variable_start' : 'tag_start',
-			value: isVariable ? '{{' : '{%',
+			value: isVariable ? (trimLeft ? '{{-' : '{{') : (trimLeft ? '{%-' : '{%'),
 			line: state.line,
-			column: state.column - 2,
-			trimLeft: false,
+			column: tokenColumn,
+			trimLeft,
 		});
 
 		state.mode = isVariable ? 'variable' : 'tag';
@@ -285,6 +288,20 @@ function tokenizeVariable(state: TokenizerState): void {
 		return;
 	}
 
+	// Check for trimming variable end: -}}
+	if (lookAhead(state, '-}}')) {
+		state.tokens.push({
+			type: 'variable_end',
+			value: '-}}',
+			line: state.line,
+			column: state.column,
+			trimRight: true,
+		});
+		advance(state, 3);
+		state.mode = 'text';
+		return;
+	}
+
 	// Check for malformed variable end: } without another } (common typo)
 	// But NOT if followed by characters that indicate it's part of an expression
 	// (e.g., }| for object literal followed by filter, }, for object property separator)
@@ -292,7 +309,8 @@ function tokenizeVariable(state: TokenizerState): void {
 	if (state.input[state.pos] === '}' && nextChar !== '}') {
 		// These characters after } indicate it's a valid rbrace in an expression
 		const validAfterBrace = ['|', ',', ')', ']', ' ', '\t', '\n', '\r'];
-		if (!validAfterBrace.includes(nextChar)) {
+		const isTrimmingEnd = nextChar === '-' && state.input[state.pos + 2] === '}';
+		if (!validAfterBrace.includes(nextChar) && !isTrimmingEnd) {
 			state.errors.push({
 				message: `Malformed variable: expected '}}' but found '}'. Did you forget a '}'?`,
 				line: state.line,

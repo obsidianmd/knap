@@ -408,6 +408,28 @@ describe('Renderer', () => {
 			expect(result.errors).toHaveLength(0);
 			expect(result.output).toBe('Hello World!');
 		});
+
+		test('renders variables with left and right whitespace trimming', async () => {
+			const ctx = createContext({ name: 'World' });
+
+			const both = await render('Hello  {{- name -}}  !', ctx);
+			expect(both.errors).toHaveLength(0);
+			expect(both.output).toBe('HelloWorld!');
+
+			const leftOnly = await render('Hello  {{- name }}  !', ctx);
+			expect(leftOnly.errors).toHaveLength(0);
+			expect(leftOnly.output).toBe('HelloWorld  !');
+
+			const rightOnly = await render('Hello  {{ name -}}  !', ctx);
+			expect(rightOnly.errors).toHaveLength(0);
+			expect(rightOnly.output).toBe('Hello  World!');
+		});
+
+		test('renders tags with left whitespace trimming', async () => {
+			const result = await render('Hello  {%- set x = "" -%}{{ x }}World', createContext());
+			expect(result.errors).toHaveLength(0);
+			expect(result.output).toBe('HelloWorld');
+		});
 	});
 
 	describe('Complex Templates', () => {
