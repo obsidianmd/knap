@@ -207,13 +207,7 @@ async function renderVariable(node: VariableNode, state: RenderState): Promise<s
 
 	try {
 		const value = await evaluateExpression(node.expression, state);
-		const result = valueToString(value, state);
-
-		if (node.trimRight) {
-			state.pendingTrimRight = true;
-		}
-
-		return result;
+		return valueToString(value, state);
 	} catch (error) {
 		state.errors.push(toRenderError(error, 'Error evaluating variable', node.line, node.column));
 		return '';
@@ -408,6 +402,10 @@ function appendNodeOutput(output: string, nodeOutput: string, node: ASTNode, sta
 		state.pendingTrimRight = false;
 	} else {
 		output += nodeOutput;
+	}
+
+	if (node.type === 'variable' && node.trimRight) {
+		state.pendingTrimRight = true;
 	}
 
 	return output;
